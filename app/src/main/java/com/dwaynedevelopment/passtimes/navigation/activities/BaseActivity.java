@@ -2,15 +2,20 @@ package com.dwaynedevelopment.passtimes.navigation.activities;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.adapters.NavPageAdapter;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class BaseActivity extends AppCompatActivity {
+
+    private BottomNavigationViewEx bottomNav;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,11 +25,15 @@ public class BaseActivity extends AppCompatActivity {
         bottomNavigationSetup();
     }
 
-    //
+    // Setup bottom navigationa with view pager
     private void bottomNavigationSetup() {
-        BottomNavigationViewEx bottomNav = findViewById(R.id.bottom_navigation_controller);
-        NavigationUtils.bottomNavigationSetup(this, bottomNav);
+        bottomNav = findViewById(R.id.bottom_navigation_controller);
+        NavigationUtils.bottomNavigationSetup(bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
+
+        viewPager = findViewById(R.id.viewpager);
+        NavPageAdapter adapter = new NavPageAdapter(getSupportFragmentManager());
+        NavigationUtils.viewPagerSetup(viewPager, adapter);
     }
 
     BottomNavigationViewEx.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -35,17 +44,19 @@ public class BaseActivity extends AppCompatActivity {
         }
     };
 
+    // Notify view pager to change current Item selected
     public void selectedFragment(MenuItem item) {
-
         item.setChecked(true);
         int navItem = item.getItemId();
 
         switch (navItem) {
             case R.id.nv_item_feed:
-                // TODO: LOAD FRAGMENT
+                // Set viewpager current item to feed without animation
+                viewPager.setCurrentItem(0, false);
                 break;
             case R.id.nv_item_profile:
-                // TODO: LOAD FRAGMENT
+                // Set viewpager current item to profile without animation
+                viewPager.setCurrentItem(1, false);
                 break;
         }
     }

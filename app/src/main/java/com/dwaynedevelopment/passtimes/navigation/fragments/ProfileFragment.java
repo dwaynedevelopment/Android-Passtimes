@@ -10,12 +10,13 @@ import android.view.ViewGroup;
 
 import com.dwaynedevelopment.passtimes.R;
 
-public class FeedFragment extends Fragment {
+public class ProfileFragment extends Fragment {
 
-    public static FeedFragment newInstance() {
+    public static ProfileFragment newInstance() {
+        
         Bundle args = new Bundle();
         
-        FeedFragment fragment = new FeedFragment();
+        ProfileFragment fragment = new ProfileFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -23,6 +24,6 @@ public class FeedFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_feed, container, false);
+        return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 }
