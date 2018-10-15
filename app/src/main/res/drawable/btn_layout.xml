@@ -1,0 +1,9 @@
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/vw_shadow"/>
+    <item
+        android:drawable="@drawable/btn_selector"
+        android:bottom="4px" />
+
+</layer-list>

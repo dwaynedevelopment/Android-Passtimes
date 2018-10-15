@@ -20,7 +20,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="140dp"
         android:contentDescription="@null"
-        android:src="@drawable/ic_network" />
+        android:src="@drawable/ic_red_badge" />
 
     <TextView
         android:id="@+id/tv_header_one"
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/iv_networking"
         android:layout_marginTop="45dp"
-        android:text="@string/tv_onboarding_one"
+        android:text="Earn achivements and points"
         style="@style/OnboardingTitles"/>
 
     <TextView
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_header_one"
         android:layout_margin="20dp"
-        android:text="Meet up with new people or friends by attending or creating events." />
+        android:text="Receive points and compete other players and friends." />
 
 
 

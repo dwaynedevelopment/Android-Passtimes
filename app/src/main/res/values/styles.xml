@@ -4,8 +4,44 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorLightPrimary</item>
-        <item name="colorPrimaryDark">@color/colorLightPrimary</item>
+        <item name="colorPrimaryDark">@color/colorDarkPrimary</item>
         <item name="colorAccent">@color/colorPrimaryAccent</item>
+    </style>
+
+    <style name="ActionButtons">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorLightSecondary</item>
+        <item name="android:layout_marginEnd">25dp</item>
+        <item name="android:layout_marginStart">25dp</item>
+        <item name="android:background">@drawable/btn_layout</item>
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!--android:layout_margin="45dp"
+    android:fontFamily="sans-serif-medium"
+    android:gravity="center"
+    android:textSize="24sp"
+    android:textStyle="bold"
+    android:textColor="@color/colorPrimaryAccent"-->
+
+    <style name="OnboardingTitles">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/colorPrimaryAccent</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="OnboardingSubTitles">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/colorDarkPrimary</item>
+        <item name="android:gravity">center</item>
     </style>
 
 </resources>

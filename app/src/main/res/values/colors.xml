@@ -14,4 +14,9 @@
     <color name="colorSecondaryAccent">#20c6ae</color>
     <color name="colorThirdAccent">#C4C4C4</color>
 
+    <!-- View Shadows -->
+    <color name="shadowPrimary">#CECECE</color>
+    <color name="shadowSecondary">#ECECEC</color>
+    <color name="shadowThird">#F5F5F5</color>
+
 </resources>
