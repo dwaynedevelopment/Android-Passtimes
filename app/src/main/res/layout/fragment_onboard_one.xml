@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--
+    android:fontFamily="sans-serif"           // roboto regular
+    android:fontFamily="sans-serif-light"     // roboto light
+    android:fontFamily="sans-serif-condensed" // roboto condensed
+    android:fontFamily="sans-serif-thin"      // roboto thin (android 4.2)
+    android:fontFamily="sans-serif-medium"    // roboto medium (android 5.0)
+    -->
+
+    <ImageView
+        android:id="@+id/iv_networking"
+        android:layout_width="155dp"
+        android:layout_height="155dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="140dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_network" />
+
+    <TextView
+        android:id="@+id/tv_header_one"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_networking"
+        android:layout_marginTop="45dp"
+        android:text="@string/tv_onboarding_one"
+        style="@style/OnboardingTitles"/>
+
+    <TextView
+        android:id="@+id/tv_subheader_one"
+        style="@style/OnboardingSubTitles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_header_one"
+        android:layout_margin="20dp"
+        android:text="Meet up with new people or friends by attending or creating events." />
+
+
+
+
+
+</RelativeLayout>
