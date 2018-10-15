@@ -8,10 +8,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NavPageAdapter extends FragmentStatePagerAdapter {
+public class OnboardPageAdapter extends FragmentStatePagerAdapter {
     private final List<Fragment> mFragmentList = new ArrayList<>();
 
-    public NavPageAdapter(FragmentManager manager) {
+    public OnboardPageAdapter(FragmentManager manager) {
         super(manager);
     }
 
@@ -35,6 +35,8 @@ public class NavPageAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return mFragmentList.size();
     }
+
+
 
 
 }
