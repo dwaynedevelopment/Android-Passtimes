@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    android:layout_height="match_parent"
-<<<<<<< HEAD
-    tools:context=".onboarding.activities.OnboardActivity">
-=======
-    android:layout_width="match_parent"
+<android.support.constraint.ConstraintLayout android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent">
 
     <LinearLayout
         android:id="@+id/ll_onboarding_layouts"
@@ -14,7 +10,6 @@
         android:layout_height="wrap_content"
         android:weightSum="1"
         android:orientation="vertical">
->>>>>>> onboarding
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_onboarding"
@@ -97,8 +92,4 @@
         </LinearLayout>
 
     </LinearLayout>
-
-
-
-
 </android.support.constraint.ConstraintLayout>
