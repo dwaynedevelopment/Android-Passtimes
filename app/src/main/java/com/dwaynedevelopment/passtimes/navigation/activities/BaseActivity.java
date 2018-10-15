@@ -1,14 +1,13 @@
-package com.dwaynedevelopment.passtimes.onboarding.activities;
+package com.dwaynedevelopment.passtimes.navigation.activities;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.onboarding.activities.utils.NavigationUtils;
+import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class BaseActivity extends AppCompatActivity {

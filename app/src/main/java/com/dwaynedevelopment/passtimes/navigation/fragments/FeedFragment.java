@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes.onboarding.activities.fragments;
+package com.dwaynedevelopment.passtimes.navigation.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

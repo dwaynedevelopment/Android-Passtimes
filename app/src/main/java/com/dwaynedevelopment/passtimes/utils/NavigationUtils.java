@@ -1,12 +1,10 @@
-package com.dwaynedevelopment.passtimes.onboarding.activities.utils;
+package com.dwaynedevelopment.passtimes.utils;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.support.v4.app.Fragment;
 
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.onboarding.activities.fragments.FeedFragment;
+import com.dwaynedevelopment.passtimes.navigation.fragments.FeedFragment;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
