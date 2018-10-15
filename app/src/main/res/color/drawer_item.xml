@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--Check State Color-->
+    <item android:color="@color/colorAccent" android:state_checked="true"/>
+    <!--Default Color-->
+    <item android:color="@android:color/black"/>
+</selector>

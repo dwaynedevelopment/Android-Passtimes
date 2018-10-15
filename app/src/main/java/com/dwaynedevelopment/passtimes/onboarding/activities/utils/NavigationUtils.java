@@ -17,22 +17,11 @@ public class NavigationUtils {
         add(FeedFragment.newInstance());
     }};
 
-    public static void bottomNavigationInitialization(Context context, BottomNavigationViewEx bottomNav) {
+    // Initialize bottom navifation with desired properties
+    public static void bottomNavigationSetup(Context context, BottomNavigationViewEx bottomNav) {
         bottomNav.enableAnimation(false);
+        bottomNav.setIconsMarginTop(60);
         //bottomNav.enableShiftingMode(false);
         //bottomNav.enableItemShiftingMode(false);
-
-        final int[][] state = new int[][]{
-                new int[]{android.R.attr.state_checked}, // checked
-                new int[]{-android.R.attr.state_checked} // unchecked
-        };
-
-        final int[] color = new int[]{
-                (context.getResources().getColor(R.color.colorAccent)),
-                (Color.WHITE)
-        };
-
-        bottomNav.setItemIconTintList(new ColorStateList(state, color));
-
     }
 }
