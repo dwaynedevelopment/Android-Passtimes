@@ -1,14 +1,11 @@
 package com.dwaynedevelopment.passtimes.utils;
 
-import android.content.Context;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
-import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.NavPageAdapter;
-import com.dwaynedevelopment.passtimes.navigation.fragments.FeedFragment;
-import com.dwaynedevelopment.passtimes.navigation.fragments.ProfileFragment;
+import com.dwaynedevelopment.passtimes.navigation.fragments.feed.FeedFragment;
+import com.dwaynedevelopment.passtimes.navigation.fragments.profile.ProfileFragment;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;

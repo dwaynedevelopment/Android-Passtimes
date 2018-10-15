@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes.navigation.fragments;
+package com.dwaynedevelopment.passtimes.navigation.fragments.profile;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,13 +12,10 @@ import com.dwaynedevelopment.passtimes.R;
 
 public class ProfileFragment extends Fragment {
 
+    public ProfileFragment() {
+    }
     public static ProfileFragment newInstance() {
-        
-        Bundle args = new Bundle();
-        
-        ProfileFragment fragment = new ProfileFragment();
-        fragment.setArguments(args);
-        return fragment;
+        return new ProfileFragment();
     }
 
     @Nullable

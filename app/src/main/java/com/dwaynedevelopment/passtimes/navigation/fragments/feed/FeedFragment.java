@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes.navigation.fragments;
+package com.dwaynedevelopment.passtimes.navigation.fragments.feed;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,12 +12,11 @@ import com.dwaynedevelopment.passtimes.R;
 
 public class FeedFragment extends Fragment {
 
+    public FeedFragment() {
+    }
+
     public static FeedFragment newInstance() {
-        Bundle args = new Bundle();
-        
-        FeedFragment fragment = new FeedFragment();
-        fragment.setArguments(args);
-        return fragment;
+        return new FeedFragment();
     }
 
     @Nullable
