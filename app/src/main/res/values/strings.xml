@@ -4,4 +4,12 @@
     <string name="tv_onboarding_one">Connect with the Community</string>
     <string name="bottom_message_one">Don’t have an account?</string>
     <string name="bottom_message_two">Sign Up</string>
+    <string name="terms_title">By signing up to Passtimes, you are agreeing with the</string>
+    <string name="terms_title_cont">Terms and Privacy Policy.</string>
+    <string name="login_message">Already have an account?</string>
+    <string name="log_in_message_cont">Log In</string>
+    <string name="terms_description">Passtimes enables you and other members to arrange real-world Pick up games and Game events. The terms “Passtimes,” “we,” “us,” and “our” include Passtimes, Inc. and our affiliates. We use the terms “you” and “your” to mean any person using our Platform, and any organization or person using the Platform on an organization’s behalf. We use the word “Platform” to mean any website, application, or service offered by Passtimes, including content we offer and electronic communications we send. </string>
+    <string name="terms_description_cont">We provide our Platform to you subject to these Terms of Service. We use the terms “Terms of Service” and “Agreement” interchangeably to mean this document together with our Usage and Content Policies, Group Policies, Organizer and Leadership Standards, Member Restrictions, Payment Policies, and Trademark Usage Guidelines. Your use of the Platform signifies that you agree to this Agreement. If you are using the Platform for an organization, you agree to this Agreement on behalf of that organization, and represent you have authority to bind that organization to the terms contained in this Agreement. If you do not or are unable to agree to this Agreement, do not use our Platform.</string>
+    <string name="terms_header">Terms and</string>
+    <string name="terms_header_cont">Privacy Policy</string>
 </resources>
