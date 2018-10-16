@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.account.login.activities.LoginActivity;
 import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.adapters.OnboardPageAdapter;
 
@@ -69,13 +70,14 @@ public class OnboardActivity extends AppCompatActivity {
         Intent intent = null;
 
         if (R.id.btn_login == id) {
-
+            intent = new Intent(this, LoginActivity.class);
         } else if (R.id.ll_bottom_message == id) {
             intent = new Intent(this, SignUpActivity.class);
         }
 
         if (intent != null) {
             startActivity(intent);
+            finish();
         }
 
     }

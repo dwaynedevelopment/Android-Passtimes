@@ -256,7 +256,7 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/ll_bottom_login"
+        android:id="@+id/ll_bottom_signup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -269,7 +269,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:text="@string/bottom_message_one"
+            android:text="@string/login_message"
             android:textColor="@color/colorDarkPrimary"
             android:textSize="12sp"
             android:textStyle="normal" />
@@ -280,7 +280,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:fontFamily="sans-serif-medium"
-            android:text="@string/bottom_message_two"
+            android:text="@string/log_in_message_cont"
             android:textColor="@color/colorSecondaryAccent"
             android:textSize="13sp"
             android:textStyle="bold" />

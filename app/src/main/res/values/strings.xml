@@ -6,4 +6,6 @@
     <string name="bottom_message_two">Sign Up</string>
     <string name="terms_title">By signing up to Passtimes, you are agreeing with the</string>
     <string name="terms_title_cont">Terms and Privacy Policy.</string>
+    <string name="login_message">Already have an account?</string>
+    <string name="log_in_message_cont">Log In</string>
 </resources>
