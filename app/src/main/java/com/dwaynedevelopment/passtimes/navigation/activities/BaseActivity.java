@@ -34,6 +34,8 @@ public class BaseActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewpager);
         NavPageAdapter adapter = new NavPageAdapter(getSupportFragmentManager());
         NavigationUtils.viewPagerSetup(viewPager, adapter);
+
+        viewPager.setCurrentItem(0);
     }
 
     BottomNavigationViewEx.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
