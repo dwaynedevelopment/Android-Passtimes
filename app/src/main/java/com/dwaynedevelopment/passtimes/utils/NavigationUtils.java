@@ -3,7 +3,7 @@ package com.dwaynedevelopment.passtimes.utils;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
-import com.dwaynedevelopment.passtimes.adapters.NavPageAdapter;
+import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.navigation.fragments.feed.FeedFragment;
 import com.dwaynedevelopment.passtimes.navigation.fragments.profile.ProfileFragment;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -26,7 +26,7 @@ public class NavigationUtils {
         //bottomNav.enableItemShiftingMode(false);
     }
 
-    public static void viewPagerSetup(ViewPager viewPager, NavPageAdapter adapter) {
+    public static void viewPagerSetup(ViewPager viewPager, ViewPagerAdapter adapter) {
         for (Fragment fragment : fragments) {
             adapter.addFragment(fragment);
         }

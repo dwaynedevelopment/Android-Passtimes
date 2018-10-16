@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.adapters.NavPageAdapter;
+import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
@@ -32,7 +32,7 @@ public class BaseActivity extends AppCompatActivity {
         bottomNav.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 
         viewPager = findViewById(R.id.viewpager);
-        NavPageAdapter adapter = new NavPageAdapter(getSupportFragmentManager());
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         NavigationUtils.viewPagerSetup(viewPager, adapter);
 
         viewPager.setCurrentItem(0);

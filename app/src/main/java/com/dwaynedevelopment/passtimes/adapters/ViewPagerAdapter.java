@@ -8,10 +8,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OnboardPageAdapter extends FragmentStatePagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private final List<Fragment> mFragmentList = new ArrayList<>();
 
-    public OnboardPageAdapter(FragmentManager manager) {
+    public ViewPagerAdapter(FragmentManager manager) {
         super(manager);
     }
 
@@ -35,8 +35,5 @@ public class OnboardPageAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return mFragmentList.size();
     }
-
-
-
 
 }

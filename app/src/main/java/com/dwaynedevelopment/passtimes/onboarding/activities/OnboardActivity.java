@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.account.login.activities.LoginActivity;
 import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
-import com.dwaynedevelopment.passtimes.adapters.OnboardPageAdapter;
+import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
 
 import static com.dwaynedevelopment.passtimes.utils.OnboardingUtils.setupOnboardingViewPager;
 
@@ -30,7 +30,7 @@ public class OnboardActivity extends AppCompatActivity {
         TabLayout dotLayout = findViewById(R.id.tl_dots);
         dotLayout.setupWithViewPager(onboardingViewPager, true);
 
-        setupOnboardingViewPager(new OnboardPageAdapter(getSupportFragmentManager()), onboardingViewPager);
+        setupOnboardingViewPager(new ViewPagerAdapter(getSupportFragmentManager()), onboardingViewPager);
 
         Button loginButton = findViewById(R.id.btn_login);
         loginButton.setOnClickListener(bottomSignUpListener);
