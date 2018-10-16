@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/ic_close_terms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close"
+        android:layout_marginTop="35dp"
+        android:layout_marginStart="16dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@null"/>
+
+    <TextView
+        android:id="@+id/tv_terms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/colorDarkPrimary"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/terms_header"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_below="@id/ic_close_terms"/>
+
+    <TextView
+        android:id="@+id/tv_terms_cont"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/colorDarkPrimary"
+        android:layout_marginStart="16dp"
+        android:text="@string/terms_header_cont"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_below="@id/tv_terms"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="145dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_heart"
+        android:layout_toEndOf="@id/tv_terms_cont"
+        android:contentDescription="@null"
+        />
+
+    <TextView
+        android:id="@+id/tv_terms_and_conditions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/colorDarkPrimary"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/terms_description"
+        android:layout_below="@id/tv_terms_cont"/>
+
+    <TextView
+        android:id="@+id/tv_terms_and_conditions_cont"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/colorDarkPrimary"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/terms_description_cont"
+        android:layout_below="@id/tv_terms_and_conditions"/>
+
+
+
+</RelativeLayout>

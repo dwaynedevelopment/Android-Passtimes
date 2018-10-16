@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes.account.login.fragments;
+package com.dwaynedevelopment.passtimes.account.terms.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,31 +8,33 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.account.login.interfaces.ILoginHandler;
+import com.dwaynedevelopment.passtimes.account.terms.interfaces.ITermsHandler;
 
-public class LoginFragment extends Fragment {
+public class TermsFragment extends Fragment {
 
-    private ILoginHandler iLoginHandler;
+    private ITermsHandler iTermsHandler;
 
-    public static LoginFragment newInstance() {
-        return new LoginFragment();
+    public static TermsFragment newInstance() {
+        return new TermsFragment();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof ILoginHandler) {
-            iLoginHandler = (ILoginHandler) context;
+        if (context instanceof ITermsHandler) {
+            iTermsHandler = (ITermsHandler) context;
         }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        return inflater.inflate(R.layout.fragment_terms, container, false);
     }
 
     @Override
@@ -43,17 +45,18 @@ public class LoginFragment extends Fragment {
             //AppCompatActivity activity = (AppCompatActivity) getActivity();
             if (getView() != null) {
                 View view = getView();
-                LinearLayout signUpLayout = view.findViewById(R.id.ll_bottom_login);
-                signUpLayout.setOnClickListener(signUpLayoutListener);
+                ImageButton closeTermsButton = view.findViewById(R.id.ic_close_terms);
+                closeTermsButton.setOnClickListener(closeTermsListener);
             }
         }
     }
 
-    private final View.OnClickListener signUpLayoutListener = new View.OnClickListener() {
+    private final View.OnClickListener closeTermsListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (iLoginHandler != null) {
-                iLoginHandler.invokeSignUp();
+
+            if (iTermsHandler != null) {
+                iTermsHandler.dismissTerms();
             }
         }
     };

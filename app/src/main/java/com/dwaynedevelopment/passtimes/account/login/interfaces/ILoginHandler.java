@@ -1,5 +1,5 @@
 package com.dwaynedevelopment.passtimes.account.login.interfaces;
 
-public interface ISignUpHandler {
-    void invokeLogin();
+public interface ILoginHandler {
+    void invokeSignUp();
 }

@@ -6,8 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.account.terms.activities.TermsActivity;
 import com.dwaynedevelopment.passtimes.account.login.activities.LoginActivity;
-import com.dwaynedevelopment.passtimes.account.login.interfaces.ISignUpHandler;
+import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 import com.dwaynedevelopment.passtimes.account.signup.fragments.SignUpFragment;
 
 public class SignUpActivity extends AppCompatActivity implements ISignUpHandler {
@@ -29,6 +30,12 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     @Override
     public void invokeLogin() {
         Intent intent = new Intent(this, LoginActivity.class) ;
+        startActivity(intent);
+    }
+
+    @Override
+    public void invokeTerms() {
+        Intent intent = new Intent(this, TermsActivity.class) ;
         startActivity(intent);
     }
 }

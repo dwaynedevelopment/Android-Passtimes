@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.account.login.interfaces.ISignUpHandler;
+import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 
 public class SignUpFragment extends Fragment {
 
@@ -45,6 +45,8 @@ public class SignUpFragment extends Fragment {
                 View view = getView();
                 LinearLayout loginLayout = view.findViewById(R.id.ll_bottom_signup);
                 loginLayout.setOnClickListener(signUpLayoutListener);
+                LinearLayout termsLayout = view.findViewById(R.id.ll_terms);
+                termsLayout.setOnClickListener(signUpLayoutListener);
             }
         }
     }
@@ -52,8 +54,19 @@ public class SignUpFragment extends Fragment {
     private final View.OnClickListener signUpLayoutListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
             if (iSignUpHandler != null) {
-                iSignUpHandler.invokeLogin();
+                int id = v.getId();
+                final int login = R.id.ll_bottom_signup;
+                final int terms = R.id.ll_terms;
+                switch (id) {
+                    case login:
+                        iSignUpHandler.invokeLogin();
+                        break;
+                    case terms:
+                        iSignUpHandler.invokeTerms();
+                        break;
+                }
             }
         }
     };

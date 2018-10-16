@@ -20,6 +20,7 @@
         <activity android:name=".navigation.activities.BaseActivity" />
         <activity android:name=".account.signup.activities.SignUpActivity" />
         <activity android:name=".account.login.activities.LoginActivity" />
+        <activity android:name=".account.terms.activities.TermsActivity" />
     </application>
 
 </manifest>

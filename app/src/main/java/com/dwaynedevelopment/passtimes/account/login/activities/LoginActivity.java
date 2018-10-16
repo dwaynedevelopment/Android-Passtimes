@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.account.login.fragments.LoginFragment;
 import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
-import com.dwaynedevelopment.passtimes.account.signup.interfaces.ILoginHandler;
+import com.dwaynedevelopment.passtimes.account.login.interfaces.ILoginHandler;
 
 public class LoginActivity extends AppCompatActivity implements ILoginHandler {
 

@@ -56,7 +56,6 @@ public class OnboardActivity extends AppCompatActivity {
             final int signup = R.id.ll_bottom_message;
             switch (id) {
                 case login:
-                    //TODO: Login Intent.
                     intentHandler(login);
                     break;
                 case signup:
