@@ -18,6 +18,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".navigation.activities.BaseActivity" />
+        <activity android:name=".account.signup.activities.SignUpActivity" />
+        <activity android:name=".account.login.activities.LoginActivity" />
     </application>
 
 </manifest>

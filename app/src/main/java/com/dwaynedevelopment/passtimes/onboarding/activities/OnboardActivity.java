@@ -1,5 +1,6 @@
 package com.dwaynedevelopment.passtimes.onboarding.activities;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -7,10 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.adapters.OnboardPageAdapter;
+
 import static com.dwaynedevelopment.passtimes.utils.OnboardingUtils.setupOnboardingViewPager;
 
 public class OnboardActivity extends AppCompatActivity {
@@ -33,6 +35,7 @@ public class OnboardActivity extends AppCompatActivity {
         loginButton.setOnClickListener(bottomSignUpListener);
         LinearLayout bottomLinearLayout = findViewById(R.id.ll_bottom_message);
         bottomLinearLayout.setOnClickListener(bottomSignUpListener);
+
     }
 
     @Override
@@ -47,17 +50,33 @@ public class OnboardActivity extends AppCompatActivity {
     private final View.OnClickListener bottomSignUpListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.btn_login:
+            int id = v.getId();
+            final int login = R.id.btn_login;
+            final int signup = R.id.ll_bottom_message;
+            switch (id) {
+                case login:
                     //TODO: Login Intent.
-                        break;
-                case R.id.ll_bottom_message:
-                    //TODO: Signup Intent.
-                        break;
-
-                    default:
-                        break;
+                    intentHandler(login);
+                    break;
+                case signup:
+                    intentHandler(signup);
+                    break;
             }
         }
     };
+
+    private void intentHandler(int id) {
+        Intent intent = null;
+
+        if (R.id.btn_login == id) {
+
+        } else if (R.id.ll_bottom_message == id) {
+            intent = new Intent(this, SignUpActivity.class);
+        }
+
+        if (intent != null) {
+            startActivity(intent);
+        }
+
+    }
 }
