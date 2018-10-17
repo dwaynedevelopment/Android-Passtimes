@@ -111,8 +111,8 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                     }
                 }, 750);
                 break;
-                default:
-                    break;
+            default:
+                break;
         }
 
     }
@@ -131,13 +131,13 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
 
     @Override
     public void invokeLogin() {
-        Intent intent = new Intent(this, LoginActivity.class) ;
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
     @Override
     public void invokeTerms() {
-        Intent intent = new Intent(this, TermsActivity.class) ;
+        Intent intent = new Intent(this, TermsActivity.class);
         startActivity(intent);
     }
 
@@ -151,34 +151,33 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
 
     @Override
     public void authenticateSignUpWithEmail(String email, String password, String name) {
+        if (userPhotoUri != null) {
+            progress = findViewById(R.id.pb_dots);
+            progress.setVisibility(View.VISIBLE);
+            progress.startAnimation();
+            username = name;
+            mAuth.getFireAuth().createUserWithEmailAndPassword(email, password)
+                    .continueWithTask(signUpWithTaskListener)
+                    .addOnSuccessListener(this, onSuccessListener)
+                    .addOnFailureListener(this, onFailureListener);
+        } else {
+            Snackbar snackbar = invokeSnackBar(SignUpActivity.this,
+                    "Image not selected.",
+                    getResources().getColor(R.color.colorDarkPrimary),
+                    getResources().getColor(R.color.colorPrimaryAccent),
+                    getResources().getColor(R.color.colorSecondaryAccent));
 
-            if (userPhotoUri != null) {
-                progress = findViewById(R.id.pb_dots);
-                progress.setVisibility(View.VISIBLE);
-                progress.startAnimation();
-                username = name;
-                mAuth.getFireAuth().createUserWithEmailAndPassword(email, password)
-                        .continueWithTask(signUpWithTaskListener)
-                        .addOnSuccessListener(this, onSuccessListener)
-                        .addOnFailureListener(this, onFailureListener);
-            } else {
-                Snackbar snackbar = invokeSnackBar(SignUpActivity.this,
-                        "Image not selected.",
-                        getResources().getColor(R.color.colorDarkPrimary),
-                        getResources().getColor(R.color.colorPrimaryAccent),
-                        getResources().getColor(R.color.colorSecondaryAccent));
-
-                snackbar.setAction("Retry", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (permissionReadExternalStorage(SignUpActivity.this)) {
-                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            startActivityForResult(galleryIntent, REQUEST_GALLERY_IMAGE_SELECT);
-                        }
+            snackbar.setAction("Retry", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (permissionReadExternalStorage(SignUpActivity.this)) {
+                        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(galleryIntent, REQUEST_GALLERY_IMAGE_SELECT);
                     }
-                });
-                snackbar.show();
-            }
+                }
+            });
+            snackbar.show();
+        }
     }
 
     private final Continuation<AuthResult, Task<Void>> signUpWithTaskListener = new Continuation<AuthResult, Task<Void>>() {
@@ -234,19 +233,13 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                 Thread.sleep(1000);
                 progress.stopAnimation();
                 progress.setVisibility(View.GONE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
-            try {
-                Thread.sleep(750);
                 finish();
                 Intent intent = new Intent(SignUpActivity.this, BaseActivity.class);
                 startActivity(intent);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     };
 

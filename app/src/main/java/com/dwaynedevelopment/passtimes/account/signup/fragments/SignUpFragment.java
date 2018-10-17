@@ -84,7 +84,6 @@ public class SignUpFragment extends Fragment {
     private final View.OnClickListener signUpLayoutListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             if (iSignUpHandler != null) {
                 int id = v.getId();
                 final int login = R.id.ll_bottom_signup;

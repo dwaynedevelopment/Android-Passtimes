@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
+import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
@@ -25,7 +26,7 @@ public class BaseActivity extends AppCompatActivity {
         bottomNavigationSetup();
     }
 
-    // Setup bottom navigationa with view pager
+    // Setup bottom navigation with view pager
     private void bottomNavigationSetup() {
         bottomNav = findViewById(R.id.bottom_navigation_controller);
         NavigationUtils.bottomNavigationSetup(bottomNav);
@@ -38,7 +39,7 @@ public class BaseActivity extends AppCompatActivity {
         viewPager.setCurrentItem(0);
     }
 
-    BottomNavigationViewEx.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
             selectedFragment(menuItem);
@@ -61,5 +62,11 @@ public class BaseActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(1, false);
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AuthUtils.getInstance().signOutFromHostAndSocial();
     }
 }

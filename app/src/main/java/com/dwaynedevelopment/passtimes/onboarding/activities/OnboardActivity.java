@@ -32,7 +32,7 @@ public class OnboardActivity extends AppCompatActivity {
 
         setupOnboardingViewPager(new ViewPagerAdapter(getSupportFragmentManager()), onboardingViewPager);
 
-        Button loginButton = findViewById(R.id.btn_login);
+        Button loginButton = findViewById(R.id.btn_login_onboard);
         loginButton.setOnClickListener(bottomSignUpListener);
 
         LinearLayout bottomLinearLayout = findViewById(R.id.ll_bottom_message);
@@ -53,7 +53,7 @@ public class OnboardActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             int id = v.getId();
-            final int login = R.id.btn_login;
+            final int login = R.id.btn_login_onboard;
             final int signup = R.id.ll_bottom_message;
             switch (id) {
                 case login:
@@ -69,7 +69,7 @@ public class OnboardActivity extends AppCompatActivity {
     private void intentHandler(int id) {
         Intent intent = null;
 
-        if (R.id.btn_login == id) {
+        if (R.id.btn_login_onboard == id) {
             intent = new Intent(this, LoginActivity.class);
         } else if (R.id.ll_bottom_message == id) {
             intent = new Intent(this, SignUpActivity.class);

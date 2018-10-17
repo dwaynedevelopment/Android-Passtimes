@@ -5,6 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.eyalbira.loadingdots.LoadingDots
+        android:id="@+id/pb_dot"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:LoadingDots_auto_play="true"
+        app:LoadingDots_dots_color="@color/colorSecondaryAccent"
+        app:LoadingDots_dots_count="5"
+        app:LoadingDots_dots_size="13dp"
+        app:LoadingDots_dots_space="5dp"
+        app:LoadingDots_loop_duration="800"
+        app:LoadingDots_loop_start_delay="100"
+        app:LoadingDots_jump_duration="200"
+        app:LoadingDots_jump_height="4dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tv_login_title"
         android:layout_width="wrap_content"
@@ -76,14 +93,14 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_signup"
+        android:id="@+id/btn_login"
         style="@style/ActionButtons"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="15dp"
-        android:text="Sign Up"
+        android:text="Login"
         android:layout_below="@id/ll_login_form"/>
 
     <LinearLayout
@@ -93,7 +110,7 @@
         android:layout_margin="16dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:layout_below="@+id/btn_signup">
+        android:layout_below="@+id/btn_login">
 
         <TextView
             android:id="@+id/tv_password_title"
