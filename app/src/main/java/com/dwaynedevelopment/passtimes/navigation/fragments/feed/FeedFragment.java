@@ -17,6 +17,10 @@ import android.view.ViewGroup;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
 
+import java.util.Calendar;
+
+import devs.mulham.horizontalcalendar.HorizontalCalendar;
+
 public class FeedFragment extends Fragment {
 
     public FeedFragment() {

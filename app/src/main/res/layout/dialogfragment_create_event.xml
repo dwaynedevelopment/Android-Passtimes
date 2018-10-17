@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/ab_create_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -17,9 +18,96 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="WORKING FULL SCREEN DIALOG"/>
+        app:layout_anchor="@id/ab_create_event"
+        app:layout_anchorGravity="bottom"
+        android:layout_gravity="bottom">
+
+        <TextView
+            style="@style/Titles"
+            android:id="@+id/tv_pick_sport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pick A Sport"/>
+        
+        <TextView
+            style="@style/Titles"
+            android:id="@+id/tv_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Categories"
+            android:layout_below="@+id/tv_pick_sport"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/ti_title"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@android:color/transparent"
+            android:textColorHint="@color/colorThirdAccent"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_below="@+id/tv_categories">
+
+            <EditText
+                android:id="@+id/et_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Title"
+                android:textSize="18sp"
+                android:inputType="text"
+                android:textColor="@color/colorDarkPrimary"
+                android:background="@drawable/et_dynamic_style"
+                android:padding="10dp"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/ti_location"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@android:color/transparent"
+            android:textColorHint="@color/colorThirdAccent"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_below="@id/ti_title">
+
+            <EditText
+                android:id="@+id/et_location"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Location"
+                android:textSize="18sp"
+                android:inputType="text"
+                android:textColor="@color/colorDarkPrimary"
+                android:background="@drawable/et_dynamic_style"
+                android:padding="10dp"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            style="@style/Titles"
+            android:id="@+id/tv_date_and_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date And Time"
+            android:layout_below="@+id/ti_location"/>
+
+        <devs.mulham.horizontalcalendar.HorizontalCalendarView
+            android:id="@+id/horizontal_calendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_below="@id/tv_date_and_time"
+            android:background="@android:color/transparent"
+            app:textColorSelected="@color/colorDarkPrimary"
+            app:textColorNormal="@color/colorDarkPrimary" />
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
