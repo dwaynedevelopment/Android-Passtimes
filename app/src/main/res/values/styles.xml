@@ -70,4 +70,16 @@
         <!--<item name="android:windowExitAnimation">@anim/slide_down</item>-->
     </style>
 
+    <style name="Margin">
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+    </style>
+
+    <style name="Titles" parent="Margin">
+        <item name="android:textSize">30dp</item>
+        <item name="android:textColor">@color/colorDarkPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

@@ -12,4 +12,11 @@
     <string name="terms_description_cont">We provide our Platform to you subject to these Terms of Service. We use the terms “Terms of Service” and “Agreement” interchangeably to mean this document together with our Usage and Content Policies, Group Policies, Organizer and Leadership Standards, Member Restrictions, Payment Policies, and Trademark Usage Guidelines. Your use of the Platform signifies that you agree to this Agreement. If you are using the Platform for an organization, you agree to this Agreement on behalf of that organization, and represent you have authority to bind that organization to the terms contained in this Agreement. If you do not or are unable to agree to this Agreement, do not use our Platform.</string>
     <string name="terms_header">Terms and</string>
     <string name="terms_header_cont">Privacy Policy</string>
+
+    <string name="number_picker_formatter">%02d</string>
+
+    <string-array name="number_picker_am_pm">
+        <item>"AM"</item>
+        <item>"PM"</item>
+    </string-array>
 </resources>
