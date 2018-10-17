@@ -49,7 +49,7 @@ public class AuthUtils {
 
     public StorageReference getStorage() { return mStorage; }
 
-    public boolean isCurrentUserAuthenticated() {
+    private boolean isCurrentUserAuthenticated() {
         return mFireAuth.getCurrentUser() != null;
     }
 

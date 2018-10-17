@@ -5,6 +5,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
 import android.view.MenuItem;
 
 import com.dwaynedevelopment.passtimes.R;
@@ -13,18 +14,20 @@ import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+
 public class BaseActivity extends AppCompatActivity {
 
     private BottomNavigationViewEx bottomNav;
     private ViewPager viewPager;
 
+    private static final String TAG = "BaseActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-
         bottomNavigationSetup();
     }
+
 
     // Setup bottom navigation with view pager
     private void bottomNavigationSetup() {

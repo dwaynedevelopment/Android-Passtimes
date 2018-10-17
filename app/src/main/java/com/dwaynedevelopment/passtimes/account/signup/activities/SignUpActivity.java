@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +20,7 @@ import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 import com.dwaynedevelopment.passtimes.account.signup.fragments.SignUpFragment;
 import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
+import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.eyalbira.loadingdots.LoadingDots;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -215,31 +217,40 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
         }
     };
 
+    private static final String TAG = "SignUpActivity";
+
     private final OnCompleteListener<Uri> uploadedWithCredentials = new OnCompleteListener<Uri>() {
         @Override
         public void onComplete(@NonNull Task<Uri> task) {
             UserProfileChangeRequest updateProfile = new UserProfileChangeRequest.Builder()
                     .setPhotoUri(task.getResult())
                     .build();
+            Log.i(TAG, "onComplete: " + task.getResult());
             Objects.requireNonNull(mAuth.getFireAuth().getCurrentUser()).updateProfile(updateProfile);
         }
     };
 
-
     private final OnSuccessListener<Uri> completedSignUpListener = new OnSuccessListener<Uri>() {
         @Override
         public void onSuccess(Uri uri) {
-            try {
-                Thread.sleep(1000);
-                progress.stopAnimation();
-                progress.setVisibility(View.GONE);
-
-                finish();
-                Intent intent = new Intent(SignUpActivity.this, BaseActivity.class);
-                startActivity(intent);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    progress.stopAnimation();
+                    progress.setVisibility(View.GONE);
+                    DatabaseUtils database = DatabaseUtils.getInstance();
+                    database.insertUser(mAuth.getCurrentSignedUser());
+                }
+            }, 250);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                    DatabaseUtils.getInstance().updateImage(mAuth.getCurrentSignedUser());
+                    Intent intent = new Intent(SignUpActivity.this, BaseActivity.class);
+                    startActivity(intent);
+                }
+            }, 1500);
         }
     };
 

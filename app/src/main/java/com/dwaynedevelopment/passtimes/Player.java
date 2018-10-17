@@ -1,10 +1,17 @@
 package com.dwaynedevelopment.passtimes;
 
+import com.google.firebase.database.Exclude;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class Player {
 
     private String id;
     private String name;
     private String thumbnail;
+
+    public Player() {}
 
     public Player(String id, String name, String thumbnail) {
         this.id = id;
@@ -34,5 +41,15 @@ public class Player {
 
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
+        result.put("name", name);
+        result.put("thumbnail", thumbnail);
+
+        return result;
     }
 }

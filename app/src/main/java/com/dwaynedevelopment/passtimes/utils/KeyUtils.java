@@ -5,4 +5,5 @@ public class KeyUtils {
     public static final int REQUEST_GALLERY_IMAGE_SELECT = 0x1005;
     public static final String ROOT_STORAGE_USER_PROFILES = "ROOT_STORAGE_USER_PROFILES";
     public static final int SOCIAL_PROFILE_DIMEN = 300;
+    public static final String DATABASE_REFERENCE_USERS = "players";
 }
