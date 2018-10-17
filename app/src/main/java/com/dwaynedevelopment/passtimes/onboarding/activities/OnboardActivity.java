@@ -34,6 +34,7 @@ public class OnboardActivity extends AppCompatActivity {
 
         Button loginButton = findViewById(R.id.btn_login);
         loginButton.setOnClickListener(bottomSignUpListener);
+
         LinearLayout bottomLinearLayout = findViewById(R.id.ll_bottom_message);
         bottomLinearLayout.setOnClickListener(bottomSignUpListener);
 

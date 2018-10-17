@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.CoordinatorLayout android:id="@+id/cl_signup_layout"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.eyalbira.loadingdots.LoadingDots
+        android:id="@+id/pb_dots"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:LoadingDots_auto_play="true"
+        app:LoadingDots_dots_color="@color/colorSecondaryAccent"
+        app:LoadingDots_dots_count="5"
+        app:LoadingDots_dots_size="13dp"
+        app:LoadingDots_dots_space="5dp"
+        app:LoadingDots_loop_duration="800"
+        app:LoadingDots_loop_start_delay="100"
+        app:LoadingDots_jump_duration="200"
+        app:LoadingDots_jump_height="4dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+
 
     <TextView
         android:id="@+id/tv_signup_title"
@@ -22,16 +47,18 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="16dp"
+        android:elevation="1dp"
         android:visibility="gone"/>
 
     <View
+        android:id="@+id/vw_placeholder"
         android:layout_width="110dp"
         android:layout_height="110dp"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/vw_profile_signup"
-        android:elevation="2dp" />
+        android:elevation="1dp" />
 
     <ImageButton
         android:id="@+id/ic_camera_signup"
@@ -286,11 +313,6 @@
             android:textStyle="bold" />
 
     </LinearLayout>
-
-
-
-
-
-
-
 </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>
