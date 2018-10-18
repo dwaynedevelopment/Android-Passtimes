@@ -12,6 +12,7 @@
     <color name="colorPrimaryAccent">#d93d5a</color>
     <color name="colorPrimaryAccentActive">#c13650</color>
     <color name="colorSecondaryAccent">#20c6ae</color>
+    <color name="colorSecondaryAccentActive">#178979</color>
     <color name="colorThirdAccent">#C4C4C4</color>
 
     <!-- View Shadows -->

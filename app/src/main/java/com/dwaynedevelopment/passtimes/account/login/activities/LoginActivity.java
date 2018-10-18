@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.account.FavoriteActivity;
 import com.dwaynedevelopment.passtimes.account.login.fragments.LoginFragment;
 import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.account.login.interfaces.ILoginHandler;
@@ -67,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
                     progress.setVisibility(View.GONE);
 
                     finish();
-                    Intent intent = new Intent(LoginActivity.this, BaseActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, FavoriteActivity.class);
                     startActivity(intent);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

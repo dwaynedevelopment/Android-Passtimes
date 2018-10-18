@@ -14,6 +14,7 @@
     <string name="terms_header_cont">Privacy Policy</string>
 
     <string name="number_picker_formatter">%02d</string>
+    <string name="continue_btn_title">Continue</string>
 
     <string-array name="number_picker_am_pm">
         <item>"AM"</item>

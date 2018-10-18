@@ -9,10 +9,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_
 
 public class DatabaseUtils {
 
-    public static enum Reference {
-        sports,
-        events
-    }
+
 
     private FirebaseDatabase mDatabase;
 
@@ -30,8 +27,8 @@ public class DatabaseUtils {
         return instance;
     }
 
-    public DatabaseReference reference(Reference reference) {
-        return mDatabase.getReference(reference.toString());
+    public DatabaseReference reference(String DATABASE_REFERENCE) {
+        return mDatabase.getReference(DATABASE_REFERENCE);
     }
 
     public void insertUser(Player player) {
@@ -40,6 +37,10 @@ public class DatabaseUtils {
 
     public void updateImage(Player player) {
         mDatabase.getReference(DATABASE_REFERENCE_USERS).child(player.getId()).child("thumbnail").setValue(player.getThumbnail());
+    }
+
+    public void insertFavorites(Player player) {
+        mDatabase.getReference(DATABASE_REFERENCE_USERS).child(player.getId()).child("favorites").setValue(player.getFavorites());
     }
 
     public void addEvent(Event event) {

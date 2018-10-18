@@ -3,6 +3,7 @@ package com.dwaynedevelopment.passtimes.models;
 import com.google.firebase.database.Exclude;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Player {
@@ -10,8 +11,16 @@ public class Player {
     private String id;
     private String name;
     private String thumbnail;
+    private HashMap<String, HashMap<String, String>> favorites;
 
     public Player() {}
+
+    public Player(String id, String name, String thumbnail, HashMap<String, HashMap<String, String>> favorites) {
+        this.id = id;
+        this.name = name;
+        this.thumbnail = thumbnail;
+        this.favorites = favorites;
+    }
 
     public Player(String id, String name, String thumbnail) {
         this.id = id;
@@ -43,13 +52,11 @@ public class Player {
         this.thumbnail = thumbnail;
     }
 
-    @Exclude
-    public Map<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("id", id);
-        result.put("name", name);
-        result.put("thumbnail", thumbnail);
+    public HashMap<String, HashMap<String, String>> getFavorites() {
+        return favorites;
+    }
 
-        return result;
+    public void setFavorites(HashMap<String, HashMap<String, String>> favorites) {
+        this.favorites = favorites;
     }
 }

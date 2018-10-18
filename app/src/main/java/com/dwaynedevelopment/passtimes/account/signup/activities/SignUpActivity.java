@@ -14,6 +14,7 @@ import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.account.FavoriteActivity;
 import com.dwaynedevelopment.passtimes.account.terms.activities.TermsActivity;
 import com.dwaynedevelopment.passtimes.account.login.activities.LoginActivity;
 import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
@@ -247,7 +248,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                 public void run() {
                     finish();
                     DatabaseUtils.getInstance().updateImage(mAuth.getCurrentSignedUser());
-                    Intent intent = new Intent(SignUpActivity.this, BaseActivity.class);
+                    Intent intent = new Intent(SignUpActivity.this, FavoriteActivity.class);
                     startActivity(intent);
                 }
             }, 1500);

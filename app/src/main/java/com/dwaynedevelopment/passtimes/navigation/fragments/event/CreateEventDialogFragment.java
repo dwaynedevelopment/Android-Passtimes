@@ -62,35 +62,6 @@ public class CreateEventDialogFragment extends DialogFragment {
             dialog.getWindow().setLayout(width, height);
         }
 
-        mDb = DatabaseUtils.getInstance();
-        DatabaseUtils.Reference sportsRef = DatabaseUtils.Reference.sports;
-        mDb.reference(sportsRef).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<Sport> sportsArray = new ArrayList<>();
-
-                for (DataSnapshot ds: dataSnapshot.getChildren()) {
-                    Sport sport = new Sport();
-                    sport.setCategory(ds.getValue(Sport.class).getCategory());
-                    sport.setUrl(ds.getValue(Sport.class).getUrl());
-
-                    sportsArray.add(sport);
-                }
-                SportsViewAdapter adapter = new SportsViewAdapter(getContext(), sportsArray);
-
-                RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), RadioGroup.HORIZONTAL, false));
-                recyclerView.setAdapter(adapter);
-
-                btnSelectedSport = null;
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Nullable

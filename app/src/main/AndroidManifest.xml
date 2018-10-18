@@ -40,6 +40,7 @@
         <activity android:name=".account.signup.activities.SignUpActivity" />
         <activity android:name=".account.login.activities.LoginActivity" />
         <activity android:name=".account.terms.activities.TermsActivity" />
+        <activity android:name=".account.FavoriteActivity" />
     </application>
 
 </manifest>
