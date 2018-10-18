@@ -87,6 +87,7 @@ public class CreateEventDialogFragment extends DialogFragment {
         super.onActivityCreated(savedInstanceState);
 
         mDb = DatabaseUtils.getInstance();
+        mAuth = AuthUtils.getInstance();
 
         if(getView() != null) {
             Toolbar createEventToolbar = getView().findViewById(R.id.tb_create_event);
