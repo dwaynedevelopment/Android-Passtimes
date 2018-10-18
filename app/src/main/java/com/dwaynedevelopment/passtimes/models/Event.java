@@ -1,6 +1,7 @@
 package com.dwaynedevelopment.passtimes.models;
 
 import java.util.Calendar;
+import java.util.UUID;
 
 public class Event {
 
@@ -13,7 +14,10 @@ public class Event {
     }
 
     public Event(String title, String location, String day) {
-
+        this.id = UUID.randomUUID().toString();
+        this.title = title;
+        this.location = location;
+        this.day = day;
     }
 
     public String getId() {

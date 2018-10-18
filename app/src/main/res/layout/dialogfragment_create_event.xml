@@ -18,96 +18,140 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fillViewport="false"
+        android:scrollbars="none"
         app:layout_anchor="@id/ab_create_event"
         app:layout_anchorGravity="bottom"
         android:layout_gravity="bottom">
 
-        <TextView
-            style="@style/Titles"
-            android:id="@+id/tv_pick_sport"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Pick A Sport"/>
-        
-        <TextView
-            style="@style/Titles"
-            android:id="@+id/tv_categories"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Categories"
-            android:layout_below="@+id/tv_pick_sport"/>
+            android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/ti_title"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@android:color/transparent"
-            android:textColorHint="@color/colorThirdAccent"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_below="@+id/tv_categories">
-
-            <EditText
-                android:id="@+id/et_title"
+            <TextView
+                style="@style/Titles"
+                android:id="@+id/tv_pick_sport"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="Title"
-                android:textSize="18sp"
-                android:inputType="text"
-                android:textColor="@color/colorDarkPrimary"
-                android:background="@drawable/et_dynamic_style"
-                android:padding="10dp"/>
+                android:layout_height="wrap_content"
+                android:text="Pick A Sport"/>
 
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/ti_location"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@android:color/transparent"
-            android:textColorHint="@color/colorThirdAccent"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_below="@id/ti_title">
-
-            <EditText
-                android:id="@+id/et_location"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_sports"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="Location"
-                android:textSize="18sp"
-                android:inputType="text"
-                android:textColor="@color/colorDarkPrimary"
-                android:background="@drawable/et_dynamic_style"
-                android:padding="10dp"/>
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_pick_sport"
+                android:layout_marginTop="14dp"/>
 
-        </android.support.design.widget.TextInputLayout>
+            <TextView
+                style="@style/Titles"
+                android:id="@+id/tv_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Categories"
+                android:layout_below="@+id/rv_sports"/>
 
-        <TextView
-            style="@style/Titles"
-            android:id="@+id/tv_date_and_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Date And Time"
-            android:layout_below="@+id/ti_location"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_categories"
+                android:layout_marginTop="16dp"/>
 
-        <devs.mulham.horizontalcalendar.HorizontalCalendarView
-            android:id="@+id/horizontal_calendar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_below="@id/tv_date_and_time"
-            android:background="@android:color/transparent"
-            app:textColorSelected="@color/colorDarkPrimary"
-            app:textColorNormal="@color/colorDarkPrimary" />
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/ti_title"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@android:color/transparent"
+                android:textColorHint="@color/colorThirdAccent"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_below="@+id/rv_categories">
 
-    </RelativeLayout>
+                <EditText
+                    android:id="@+id/et_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Title"
+                    android:textSize="18sp"
+                    android:inputType="text"
+                    android:maxLength="16"
+                    android:textColor="@color/colorDarkPrimary"
+                    android:background="@drawable/et_dynamic_style"
+                    android:padding="10dp"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/ti_location"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@android:color/transparent"
+                android:textColorHint="@color/colorThirdAccent"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_below="@id/ti_title">
+
+                <EditText
+                    android:id="@+id/et_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Location"
+                    android:textSize="18sp"
+                    android:inputType="text"
+                    android:textColor="@color/colorDarkPrimary"
+                    android:background="@drawable/et_dynamic_style"
+                    android:padding="10dp"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                style="@style/Titles"
+                android:id="@+id/tv_date_and_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Date And Time"
+                android:layout_below="@+id/ti_location"/>
+
+            <devs.mulham.horizontalcalendar.HorizontalCalendarView
+                android:id="@+id/horizontal_calendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_below="@id/tv_date_and_time"
+                android:background="@android:color/transparent"
+                app:textColorSelected="@color/colorDarkPrimary"
+                app:textColorNormal="@color/colorDarkPrimary" />
+
+            <include
+                android:id="@+id/ll_times"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                layout="@layout/time_selector"
+                android:layout_below="@+id/horizontal_calendar"
+                android:layout_marginTop="16dp"
+                android:layout_centerHorizontal="true"/>
+
+            <TimePicker
+                android:id="@+id/time_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorDarkPrimary"
+                android:timePickerMode="spinner"
+                android:layout_below="@+id/ll_times"
+                android:visibility="gone"/>
+
+
+        </RelativeLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+
 
 </android.support.design.widget.CoordinatorLayout>

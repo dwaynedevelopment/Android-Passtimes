@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Patterns;
 
-import com.dwaynedevelopment.passtimes.Player;
+import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

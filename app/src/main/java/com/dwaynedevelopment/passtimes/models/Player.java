@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes;
+package com.dwaynedevelopment.passtimes.models;
 
 import com.google.firebase.database.Exclude;
 
