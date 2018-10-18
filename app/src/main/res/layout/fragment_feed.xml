@@ -5,27 +5,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/ab_feed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tb_feed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-    </android.support.design.widget.AppBarLayout>
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_anchor="@id/ab_feed"
-        app:layout_anchorGravity="bottom"
-        android:layout_gravity="bottom">
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/ab_feed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tb_feed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+        </android.support.design.widget.AppBarLayout>
+
+
+        <TextView
+            android:id="@+id/tv_attending"
+            style="@style/Titles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Attending"
+            android:layout_below="@id/ab_feed"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_attending"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_below="@+id/tv_attending"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp">
+        </android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/tv_ongoing"
+            style="@style/Titles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rv_attending"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="0dp"
+            android:text="On going" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_ongoing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/tv_ongoing"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp">
+        </android.support.v7.widget.RecyclerView>
+
+
+
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
