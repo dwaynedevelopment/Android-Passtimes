@@ -22,7 +22,10 @@ import android.widget.TimePicker;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.SportsViewAdapter;
+import com.dwaynedevelopment.passtimes.models.Event;
+import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.models.Sport;
+import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.google.firebase.database.DataSnapshot;
@@ -42,6 +45,7 @@ public class CreateEventDialogFragment extends DialogFragment {
 
     private HorizontalCalendar mHorizontalCalendar;
     private DatabaseUtils mDb;
+    private AuthUtils mAuth;
 
     TextView tvStartTime;
     Button btnSelectedSport;
@@ -62,7 +66,9 @@ public class CreateEventDialogFragment extends DialogFragment {
             dialog.getWindow().setLayout(width, height);
         }
 
+        mAuth = AuthUtils.getInstance();
         mDb = DatabaseUtils.getInstance();
+
         DatabaseUtils.Reference sportsRef = DatabaseUtils.Reference.sports;
         mDb.reference(sportsRef).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -140,6 +146,7 @@ public class CreateEventDialogFragment extends DialogFragment {
         }
     }
 
+    // Save and close event creator
     Toolbar.OnMenuItemClickListener menuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
@@ -147,9 +154,9 @@ public class CreateEventDialogFragment extends DialogFragment {
                 dismiss();
             } else if(item.getItemId() == R.id.action_save) {
                 // TODO: Validate inputs
-                Log.i(TAG, "onMenuItemClick: " + btnSelectedSport.getText().toString());
-                //Event event = new Event("Giorgio", "Casa", "16");
-                //mDb.addEvent(event);
+                Player currentPlayer = mAuth.getCurrentSignedUser();
+                Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), "Soccer","Giorgio's event", 28.596285, -81.301245, "Full Sail University", CalendarUtils.getStartCalendarDate(), 5);
+                mDb.addEvent(event);
                 dismiss();
             }
             return false;

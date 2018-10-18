@@ -34,21 +34,19 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tve"
+                    android:id="@+id/tv_month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AUG"
                     android:textColor="@color/colorLightPrimary"
-                    android:textSize="8sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tvd"
+                    android:id="@+id/tv_day"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="sans-serif-light"
-                    android:text="10"
                     android:textColor="@color/colorLightPrimary"
                     android:textSize="14sp"
                     android:textStyle="normal" />
@@ -117,37 +115,37 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_sport"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
-                android:text="Baseball"
                 android:textColor="@color/colorThirdAccent"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
-                android:text="Batting Diabetes"
                 android:textColor="@color/colorDarkPrimary"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tv_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
-                android:text="Yo Go Pro Baseball"
                 android:textColor="@color/colorDarkPrimary"
                 android:textSize="16sp"
                 android:textStyle="normal" />
 
             <TextView
+                android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
-                android:text="Tuesday 3:45 PM"
                 android:textColor="@color/colorDarkPrimary"
                 android:textSize="15sp"
                 android:textStyle="normal" />
