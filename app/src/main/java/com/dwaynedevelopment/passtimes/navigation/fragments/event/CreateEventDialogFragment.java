@@ -1,6 +1,8 @@
 package com.dwaynedevelopment.passtimes.navigation.fragments.event;
 
 import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -32,9 +35,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
@@ -48,7 +53,8 @@ public class CreateEventDialogFragment extends DialogFragment {
     private AuthUtils mAuth;
 
     private Calendar mCalendar;
-    private TextView tvStartTime;
+    private EditText etStartTime;
+    private EditText etEndTime;
     private Button btnSelectedSport;
 
     @Override
@@ -138,13 +144,15 @@ public class CreateEventDialogFragment extends DialogFragment {
 
             mHorizontalCalendar.setCalendarListener(horizontalCalendarListener);
 
-            tvStartTime = getView().findViewById(R.id.tv_start_time);
-            tvStartTime.setText(CalendarUtils.getCurrentTimeAsString(mCalendar));
-            tvStartTime.setOnClickListener(clickListener);
+            etStartTime = getView().findViewById(R.id.et_start_time);
+            etStartTime.setShowSoftInputOnFocus(false);
+            etStartTime.setKeyListener(null);
+            etStartTime.setOnFocusChangeListener(focusChangeListener);
 
-            TextView tvEndTime = getView().findViewById(R.id.tv_end_time);
-            tvEndTime.setText(CalendarUtils.getCurrentTimeAsString(mCalendar));
-            tvEndTime.setOnClickListener(clickListener);
+            etEndTime = getView().findViewById(R.id.et_end_time);
+            etEndTime.setShowSoftInputOnFocus(false);
+            etEndTime.setKeyListener(null);
+            etEndTime.setOnFocusChangeListener(focusChangeListener);
         }
     }
 
@@ -173,42 +181,51 @@ public class CreateEventDialogFragment extends DialogFragment {
         @Override
         public void onDateSelected(Calendar date, int position) {
             // TODO: get date selected
+            date.set(Calendar.HOUR_OF_DAY, mCalendar.get(Calendar.HOUR_OF_DAY));
+            date.set(Calendar.MINUTE, mCalendar.get(Calendar.MINUTE));
             mCalendar = date;
         }
     };
 
-    View.OnClickListener clickListener = new View.OnClickListener() {
+    View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
         @Override
-        public void onClick(View v) {
+        public void onFocusChange(View v, boolean hasFocus) {
             int id = v.getId();
+            Context context = getContext();
 
-            switch (id) {
-                case R.id.tv_start_time:
-                    TimePicker timePicker = getView().findViewById(R.id.time_spinner);
-                    timePicker.setOnTimeChangedListener(timeChangedListener);
+            if(!hasFocus) {
 
-                    Animation timePickerAnimation = null;
-                    // Check if TimePicker is visible and perform corresponding animation
-                    if(timePicker.getVisibility() == View.VISIBLE) {
-                        timePickerAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.collapsible);
-                        timePicker.setVisibility(View.GONE);
-                        timePicker.startAnimation(timePickerAnimation);
-                    } else {
-                        timePicker.setVisibility(View.VISIBLE);
-                        timePickerAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.expandable);
-                        timePicker.startAnimation(timePickerAnimation);
-                    }
-                    break;
+            } else {
+                switch (id) {
+                    case R.id.et_start_time:
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog, startTimeSetListener, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), false);
+                        timePickerDialog.show();
+                        break;
+                    case R.id.et_end_time:
+                        timePickerDialog = new TimePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog, endTimeSetListener, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), false);
+                        timePickerDialog.show();
+                        break;
+                }
             }
-
         }
     };
 
-    TimePicker.OnTimeChangedListener timeChangedListener = new TimePicker.OnTimeChangedListener() {
+    TimePickerDialog.OnTimeSetListener startTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
-        public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-            // Set calendar with net time, get the string from the calendar and set the time text to the new time
-            tvStartTime.setText(CalendarUtils.getCurrentTimeAsString(CalendarUtils.setTime(hourOfDay, minute)));
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            mCalendar.setTime(CalendarUtils.setTime(mCalendar, hourOfDay, minute));
+            etStartTime.setText(new SimpleDateFormat("hh:mm aa", Locale.US).format(mCalendar.getTime()));
         }
     };
+
+    TimePickerDialog.OnTimeSetListener endTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            Calendar startTime = Calendar.getInstance();
+            startTime.setTime(CalendarUtils.setTime(startTime, hourOfDay, minute));
+            etEndTime.setText(new SimpleDateFormat("hh:mm aa", Locale.US).format(startTime.getTime()));
+        }
+    };
+
+
 }

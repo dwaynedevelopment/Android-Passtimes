@@ -99,10 +99,7 @@ public class FeedFragment extends Fragment {
 
                 }
             });
-
-
         }
-
     }
 
     Toolbar.OnMenuItemClickListener menuItemClickListener = new Toolbar.OnMenuItemClickListener() {

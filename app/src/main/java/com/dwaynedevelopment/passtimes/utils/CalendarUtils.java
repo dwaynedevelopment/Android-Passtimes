@@ -27,11 +27,10 @@ public class CalendarUtils {
         return new SimpleDateFormat("hh:mm a", Locale.US).format(time);
     }
 
-    public static Calendar setTime(int hours, int minutes) {
-        mCalendar = Calendar.getInstance();
-        mCalendar.set(Calendar.HOUR_OF_DAY, hours);
-        mCalendar.set(Calendar.MINUTE, minutes);
+    public static Date setTime(Calendar calendar, int hours, int minutes) {
+        calendar.set(Calendar.HOUR_OF_DAY, hours);
+        calendar.set(Calendar.MINUTE, minutes);
 
-        return mCalendar;
+        return calendar.getTime();
     }
 }
