@@ -13,21 +13,12 @@
         android:src="@drawable/ic_hd_oval"
         android:contentDescription="@null"/>
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/ab_profile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="@color/colorPrimaryAccent">
-
     <android.support.v7.widget.Toolbar
         android:id="@+id/tb_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-    </android.support.design.widget.AppBarLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ci_profile"
@@ -36,21 +27,19 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="26dp"
-        android:layout_below="@id/ab_profile"
-        android:src="@drawable/ic_settings" />
+        android:layout_below="@id/tb_profile" />
 
     <TextView
         android:id="@+id/tv_profile_name"
         style="@style/Titles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ab_profile"
+        android:layout_below="@id/tb_profile"
         android:layout_alignStart="@+id/im_header"
         android:layout_marginStart="16dp"
         android:layout_marginTop="36dp"
         android:textColor="@color/colorLightPrimary"
-        android:layout_toStartOf="@+id/ci_profile"
-        android:text="Jonathan Becerra" />
+        android:layout_toStartOf="@+id/ci_profile" />
 
 
 </RelativeLayout>

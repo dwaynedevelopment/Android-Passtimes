@@ -10,12 +10,13 @@ import android.view.MenuItem;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
+import com.dwaynedevelopment.passtimes.navigation.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements INavigationHandler {
 
     private BottomNavigationViewEx bottomNav;
     private ViewPager viewPager;
@@ -28,6 +29,15 @@ public class BaseActivity extends AppCompatActivity {
         bottomNavigationSetup();
     }
 
+
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem() == 0) {
+            super.onBackPressed();
+        } else {
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+        }
+    }
 
     // Setup bottom navigation with view pager
     private void bottomNavigationSetup() {
@@ -42,7 +52,7 @@ public class BaseActivity extends AppCompatActivity {
         viewPager.setCurrentItem(0);
     }
 
-    BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private final BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
             selectedFragment(menuItem);
@@ -65,5 +75,10 @@ public class BaseActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(1, false);
                 break;
         }
+    }
+
+    @Override
+    public void invokeSettings() {
+        viewPager.setCurrentItem(2, true);
     }
 }

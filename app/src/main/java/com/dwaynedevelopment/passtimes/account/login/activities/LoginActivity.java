@@ -2,6 +2,7 @@ package com.dwaynedevelopment.passtimes.account.login.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,14 +12,17 @@ import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.account.login.fragments.LoginFragment;
 import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.account.login.interfaces.ILoginHandler;
+import com.dwaynedevelopment.passtimes.favorites.activities.FavoriteActivity;
 import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
+import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.eyalbira.loadingdots.LoadingDots;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 
 import static com.dwaynedevelopment.passtimes.utils.AuthUtils.showTaskException;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_REGISTRATION;
 
 public class LoginActivity extends AppCompatActivity implements ILoginHandler {
 
@@ -59,19 +63,21 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
         @Override
         public void onComplete(@NonNull Task<AuthResult> task) {
             if (task.isSuccessful()) {
-                // Sign in success, update UI with the signed-in user's information
-                try {
-                    Thread.sleep(1000);
-                    progress.stopAnimation();
-                    progress.setVisibility(View.GONE);
-
-                    finish();
-                    Intent intent = new Intent(LoginActivity.this, BaseActivity.class);
-                    startActivity(intent);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progress.stopAnimation();
+                        progress.setVisibility(View.GONE);
+                    }
+                }, 250);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                        Intent intent = new Intent(LoginActivity.this, BaseActivity.class);
+                        startActivity(intent);
+                    }
+                }, 1000);
             } else {
                 // If sign in fails, display a message to the user.
                 showTaskException(LoginActivity.this, task);

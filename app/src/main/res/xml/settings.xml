@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="">
+
+        <Preference
+            android:key="com.dwaynedevelopment.passtimes.PREFERENCE_SIGN_OUT"
+            android:title="Sign Out"
+            android:icon="@drawable/ic_signout"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

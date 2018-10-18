@@ -6,6 +6,7 @@ import android.support.v4.view.ViewPager;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.navigation.fragments.feed.FeedFragment;
 import com.dwaynedevelopment.passtimes.navigation.fragments.profile.ProfileFragment;
+import com.dwaynedevelopment.passtimes.navigation.fragments.profile.SettingsPreferenceFragment;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class NavigationUtils {
     public static ArrayList<Fragment> fragments = new ArrayList<Fragment>() {{
         add(FeedFragment.newInstance());
         add(ProfileFragment.newInstance());
+        add(SettingsPreferenceFragment.newInstance());
     }};
 
     // Initialize custom bottom navigation

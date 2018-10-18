@@ -4,6 +4,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent">
 
+    <com.eyalbira.loadingdots.LoadingDots
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pb_dot_onboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:LoadingDots_auto_play="true"
+        app:LoadingDots_dots_color="@color/colorSecondaryAccent"
+        app:LoadingDots_dots_count="5"
+        app:LoadingDots_dots_size="13dp"
+        app:LoadingDots_dots_space="5dp"
+        app:LoadingDots_jump_duration="200"
+        app:LoadingDots_jump_height="4dp"
+        app:LoadingDots_loop_duration="800"
+        app:LoadingDots_loop_start_delay="100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
     <LinearLayout
         android:id="@+id/ll_onboarding_layouts"
         android:layout_width="match_parent"
@@ -21,6 +42,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_onboarding_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -29,18 +51,19 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/ll_onboarding_layouts"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone">
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tl_dots"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:tabBackground="@drawable/dot_selector"
             app:tabGravity="center"
-            app:tabIndicatorHeight="0dp"
-            android:layout_margin="10dp"/>
+            app:tabIndicatorHeight="0dp" />
 
         <Button
             android:id="@+id/btn_login_onboard"

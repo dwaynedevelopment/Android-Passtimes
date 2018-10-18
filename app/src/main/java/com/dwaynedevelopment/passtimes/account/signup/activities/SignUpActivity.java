@@ -252,7 +252,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                     intent.putExtra(EXTRA_REGISTRATION, true);
                     startActivity(intent);
                 }
-            }, 1500);
+            }, 1000);
         }
     };
 

@@ -1,6 +1,7 @@
 package com.dwaynedevelopment.passtimes.onboarding.activities;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,30 +14,61 @@ import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.account.login.activities.LoginActivity;
 import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
+import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
+import com.dwaynedevelopment.passtimes.utils.AuthUtils;
+import com.eyalbira.loadingdots.LoadingDots;
 
 import static com.dwaynedevelopment.passtimes.utils.OnboardingUtils.setupOnboardingViewPager;
 
 public class OnboardActivity extends AppCompatActivity {
 
     private ViewPager onboardingViewPager;
+    private AuthUtils mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboard);
 
-        onboardingViewPager = findViewById(R.id.vp_onboarding);
+        mAuth = AuthUtils.getInstance();
+        LinearLayout bottomLayout = findViewById(R.id.ll_onboarding_bottom);
+        final LoadingDots progress = findViewById(R.id.pb_dot_onboard);
+        if (mAuth.getCurrentSignedUser() != null) {
+            bottomLayout.setVisibility(View.GONE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    progress.setVisibility(View.VISIBLE);
+                    progress.startAnimation();
+                }
+            }, 250);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    progress.stopAnimation();
+                    progress.setVisibility(View.GONE);
+                    finish();
+                    Intent intent = new Intent(OnboardActivity.this, BaseActivity.class);
+                    startActivity(intent);
+                }
+            }, 1500);
 
-        TabLayout dotLayout = findViewById(R.id.tl_dots);
-        dotLayout.setupWithViewPager(onboardingViewPager, true);
+        } else {
+            bottomLayout.setVisibility(View.VISIBLE);
+            onboardingViewPager = findViewById(R.id.vp_onboarding);
 
-        setupOnboardingViewPager(new ViewPagerAdapter(getSupportFragmentManager()), onboardingViewPager);
+            TabLayout dotLayout = findViewById(R.id.tl_dots);
+            dotLayout.setupWithViewPager(onboardingViewPager, true);
 
-        Button loginButton = findViewById(R.id.btn_login_onboard);
-        loginButton.setOnClickListener(bottomSignUpListener);
+            setupOnboardingViewPager(new ViewPagerAdapter(getSupportFragmentManager()), onboardingViewPager);
 
-        LinearLayout bottomLinearLayout = findViewById(R.id.ll_bottom_message);
-        bottomLinearLayout.setOnClickListener(bottomSignUpListener);
+            Button loginButton = findViewById(R.id.btn_login_onboard);
+            loginButton.setOnClickListener(bottomSignUpListener);
+
+            LinearLayout bottomLinearLayout = findViewById(R.id.ll_bottom_message);
+            bottomLinearLayout.setOnClickListener(bottomSignUpListener);
+        }
+
 
     }
 
@@ -76,8 +108,8 @@ public class OnboardActivity extends AppCompatActivity {
         }
 
         if (intent != null) {
-            startActivity(intent);
             finish();
+            startActivity(intent);
         }
 
     }
