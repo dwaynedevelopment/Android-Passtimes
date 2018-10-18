@@ -1,14 +1,20 @@
 package com.dwaynedevelopment.passtimes.utils;
 
 import com.dwaynedevelopment.passtimes.models.Event;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class DatabaseUtils {
 
-    private FirebaseDatabase database;
+    public static enum Reference {
+        sports,
+        events
+    }
+
+    private FirebaseDatabase mDatabase;
 
     private DatabaseUtils() {
-        database = FirebaseDatabase.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
     }
 
     private static DatabaseUtils instance = null;
@@ -21,7 +27,11 @@ public class DatabaseUtils {
         return instance;
     }
 
-    public void addEvent(Event event) {
+    public DatabaseReference reference(Reference reference) {
+        return mDatabase.getReference(reference.toString());
+    }
 
+    public void addEvent(Event event) {
+        mDatabase.getReference("events").child(event.getId()).setValue(event);
     }
 }
