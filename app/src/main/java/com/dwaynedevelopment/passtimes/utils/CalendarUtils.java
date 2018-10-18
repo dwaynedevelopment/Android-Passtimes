@@ -9,14 +9,6 @@ public class CalendarUtils {
 
     private static Calendar mCalendar;
 
-    // Get current calendar passed from where is invoked
-    // It needs to get Calendar as parameter to get the
-    public static long getStartCalendarDate() {
-        mCalendar = Calendar.getInstance();
-
-        return mCalendar.getTimeInMillis();
-    }
-
     public static String getMonthFromDate(long date) {
         return new SimpleDateFormat("MMM", Locale.US).format(new Date(date));
     }

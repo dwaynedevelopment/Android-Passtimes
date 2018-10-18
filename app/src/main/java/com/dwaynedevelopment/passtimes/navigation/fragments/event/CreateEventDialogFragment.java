@@ -34,9 +34,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
-import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
 
 public class CreateEventDialogFragment extends DialogFragment {
@@ -47,8 +47,9 @@ public class CreateEventDialogFragment extends DialogFragment {
     private DatabaseUtils mDb;
     private AuthUtils mAuth;
 
-    TextView tvStartTime;
-    Button btnSelectedSport;
+    private Calendar mCalendar;
+    private TextView tvStartTime;
+    private Button btnSelectedSport;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -118,11 +119,13 @@ public class CreateEventDialogFragment extends DialogFragment {
             createEventToolbar.setOnMenuItemClickListener(menuItemClickListener);
 
             // TODO: layout
+            mCalendar = Calendar.getInstance();
+
             Calendar startDate = Calendar.getInstance();
-            startDate.add(Calendar.DAY_OF_WEEK, 0);
+            startDate.add(Calendar.WEEK_OF_MONTH, 0);
 
             Calendar endDate = Calendar.getInstance();
-            endDate.add(Calendar.DAY_OF_WEEK, 6);
+            endDate.add(Calendar.WEEK_OF_MONTH, 1);
 
             mHorizontalCalendar = new HorizontalCalendar.Builder(getView(), R.id.horizontal_calendar)
                     .range(startDate, endDate)
@@ -134,14 +137,13 @@ public class CreateEventDialogFragment extends DialogFragment {
                     .build();
 
             mHorizontalCalendar.setCalendarListener(horizontalCalendarListener);
-            mHorizontalCalendar.refresh();
 
             tvStartTime = getView().findViewById(R.id.tv_start_time);
-            tvStartTime.setText(CalendarUtils.getCurrentTimeAsString(Calendar.getInstance()));
+            tvStartTime.setText(CalendarUtils.getCurrentTimeAsString(mCalendar));
             tvStartTime.setOnClickListener(clickListener);
 
             TextView tvEndTime = getView().findViewById(R.id.tv_end_time);
-            tvEndTime.setText(CalendarUtils.getCurrentTimeAsString(Calendar.getInstance()));
+            tvEndTime.setText(CalendarUtils.getCurrentTimeAsString(mCalendar));
             tvEndTime.setOnClickListener(clickListener);
         }
     }
@@ -154,8 +156,12 @@ public class CreateEventDialogFragment extends DialogFragment {
                 dismiss();
             } else if(item.getItemId() == R.id.action_save) {
                 // TODO: Validate inputs
+
+                TextView title = getView().findViewById(R.id.et_title);
+                TextView location = getView().findViewById(R.id.et_location);
+
                 Player currentPlayer = mAuth.getCurrentSignedUser();
-                Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), "Soccer","Giorgio's event", 28.596285, -81.301245, "Full Sail University", CalendarUtils.getStartCalendarDate(), 5);
+                Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), "Soccer",title.getText().toString(), 28.596285, -81.301245, location.getText().toString(), mCalendar.getTimeInMillis(), 5);
                 mDb.addEvent(event);
                 dismiss();
             }
@@ -167,11 +173,7 @@ public class CreateEventDialogFragment extends DialogFragment {
         @Override
         public void onDateSelected(Calendar date, int position) {
             // TODO: get date selected
-        }
-
-        @Override
-        public void onCalendarScroll(HorizontalCalendarView calendarView, int dx, int dy) {
-            super.onCalendarScroll(calendarView, dx, dy);
+            mCalendar = date;
         }
     };
 

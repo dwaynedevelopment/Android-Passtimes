@@ -29,8 +29,6 @@ import com.google.firebase.database.DatabaseError;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import devs.mulham.horizontalcalendar.HorizontalCalendar;
-
 public class FeedFragment extends Fragment {
 
     DatabaseUtils mDb;

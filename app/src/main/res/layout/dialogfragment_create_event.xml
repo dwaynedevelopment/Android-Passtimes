@@ -45,7 +45,9 @@
                 android:layout_below="@+id/tv_pick_sport"
                 android:layout_marginTop="14dp"/>
 
+            <!--CHANGE VISIBILITY FOR BETA-->
             <TextView
+                android:visibility="gone"
                 style="@style/Titles"
                 android:id="@+id/tv_categories"
                 android:layout_width="match_parent"
@@ -53,7 +55,9 @@
                 android:text="Categories"
                 android:layout_below="@+id/rv_sports"/>
 
+            <!--CHANGE VISIBILITY FOR BETA-->
             <android.support.v7.widget.RecyclerView
+                android:visibility="gone"
                 android:id="@+id/rv_categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
