@@ -1,5 +1,6 @@
 package com.dwaynedevelopment.passtimes.adapters;
 
+import android.arch.lifecycle.LifecycleObserver;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -11,51 +12,69 @@ import android.widget.TextView;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
+import com.firebase.ui.common.ChangeEventType;
+import com.firebase.ui.database.ChangeEventListener;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
-public class FeedOnGoingViewAdapter  extends RecyclerView.Adapter<FeedOnGoingViewAdapter.ViewHolder> {
+public class FeedOnGoingViewAdapter  extends FirebaseRecyclerAdapter<Event, FeedOnGoingViewAdapter.OnGoingViewHolder> implements ChangeEventListener, LifecycleObserver {
 
     private Context context;
-    private ArrayList<Event> eventsArray;
 
-    public FeedOnGoingViewAdapter(Context context, ArrayList<Event> eventsArray) {
+    public FeedOnGoingViewAdapter(Context context, FirebaseRecyclerOptions<Event> options) {
+        super(options);
         this.context = context;
-        this.eventsArray= eventsArray;
     }
 
     @NonNull
     @Override
-    public FeedOnGoingViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+    public FeedOnGoingViewAdapter.OnGoingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_ongoing, parent, false);
-        return new FeedOnGoingViewAdapter.ViewHolder(view);
+        return new OnGoingViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Event event = eventsArray.get(i);
+    protected void onBindViewHolder(@NonNull OnGoingViewHolder holder, int position, @NonNull Event event) {
 
         String month = CalendarUtils.getMonthFromDate(event.getDate());
-        viewHolder.tvMonth.setText(month);
+        holder.tvMonth.setText(month);
         String day = CalendarUtils.getDayFromDate(event.getDate());
-        viewHolder.tvDay.setText(day);
+        holder.tvDay.setText(day);
 
-        viewHolder.tvSport.setText(event.getSport());
-        viewHolder.tvTitle.setText(event.getTitle());
-        viewHolder.tvLocation.setText(event.getLocation());
+        holder.tvSport.setText(event.getSport());
+        holder.tvTitle.setText(event.getTitle());
+        holder.tvLocation.setText(event.getLocation());
 
         String time = CalendarUtils.getTimeFromDate(event.getDate());
-        viewHolder.tvTime.setText(time);
+        holder.tvTime.setText(time);
     }
-
 
     @Override
-    public int getItemCount() {
-        return eventsArray.size();
+    public void onChildChanged(@NonNull ChangeEventType type, @NonNull DataSnapshot snapshot, int newIndex, int oldIndex) {
+        super.onChildChanged(type, snapshot, newIndex, oldIndex);
+
+        switch (type) {
+            case ADDED:
+                notifyItemInserted(newIndex);
+                break;
+            case CHANGED:
+                notifyItemChanged(newIndex);
+                break;
+            case REMOVED:
+                notifyItemRemoved(oldIndex);
+                break;
+            case MOVED:
+                notifyItemMoved(oldIndex, newIndex);
+                break;
+            default:
+                throw new IllegalStateException("Incomplete case statement");
+        }
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public class OnGoingViewHolder extends RecyclerView.ViewHolder {
 
         //private
         private TextView tvMonth;
@@ -65,7 +84,7 @@ public class FeedOnGoingViewAdapter  extends RecyclerView.Adapter<FeedOnGoingVie
         private TextView tvLocation;
         private TextView tvTime;
 
-        ViewHolder(View itemView) {
+        OnGoingViewHolder(View itemView) {
             super(itemView);
             tvMonth = itemView.findViewById(R.id.tv_month);
             tvDay = itemView.findViewById(R.id.tv_day);

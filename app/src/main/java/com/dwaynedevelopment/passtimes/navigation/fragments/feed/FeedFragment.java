@@ -22,6 +22,8 @@ import com.dwaynedevelopment.passtimes.adapters.SportsViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,6 +36,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_
 public class FeedFragment extends Fragment {
 
     DatabaseUtils mDb;
+    FeedOnGoingViewAdapter mAdapter;
 
     public FeedFragment() {
     }
@@ -60,46 +63,58 @@ public class FeedFragment extends Fragment {
             feedToolbar.setOnMenuItemClickListener(menuItemClickListener);
 
             mDb = DatabaseUtils.getInstance();
-            mDb.reference(DATABASE_REFERENCE_EVENTS).addChildEventListener(new ChildEventListener() {
-                ArrayList<Event> eventsArray = new ArrayList<>();
 
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    // Retrieve new events added to the database only
-                    Event event = dataSnapshot.getValue(Event.class);
-                    eventsArray.add(event);
+            FirebaseRecyclerOptions<Event> options = new FirebaseRecyclerOptions.Builder<Event>()
+                    .setQuery(mDb.reference(DATABASE_REFERENCE_EVENTS), Event.class).build();
 
-                    FeedOnGoingViewAdapter adapter = new FeedOnGoingViewAdapter(getContext(), eventsArray);
 
-                    RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-                    recyclerView.setAdapter(adapter);
-                }
+            mAdapter = new FeedOnGoingViewAdapter(getContext(), options);
 
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+            recyclerView.setAdapter(mAdapter);
 
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    Event event = dataSnapshot.getValue(Event.class);
-                    if(eventsArray.contains(event)) {
-                        eventsArray.remove(event);
-                    }
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+//            mDb.reference(DATABASE_REFERENCE_EVENTS).addChildEventListener(new ChildEventListener() {
+//                ArrayList<Event> eventsArray = new ArrayList<>();
+//
+//                @Override
+//                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                    // Retrieve new events added to the database only
+//                    Event event = dataSnapshot.getValue(Event.class);
+//                    eventsArray.add(event);
+//
+//                    FeedOnGoingViewAdapter adapter = new FeedOnGoingViewAdapter(getContext(), eventsArray);
+//
+//                    RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
+//                    recyclerView.setHasFixedSize(true);
+//                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+//                    recyclerView.setAdapter(adapter);
+//                }
+//
+//                @Override
+//                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                }
+//
+//                @Override
+//                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//                    Event event = dataSnapshot.getValue(Event.class);
+//                    if(eventsArray.contains(event)) {
+//                        eventsArray.remove(event);
+//                    }
+//                }
+//
+//                @Override
+//                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
         }
     }
 
@@ -114,4 +129,20 @@ public class FeedFragment extends Fragment {
             return false;
         }
     };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(mAdapter != null) {
+            mAdapter.startListening();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mAdapter != null) {
+            mAdapter.stopListening();
+        }
+    }
 }
