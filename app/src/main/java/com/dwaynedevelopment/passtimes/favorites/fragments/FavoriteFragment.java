@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes.account;
+package com.dwaynedevelopment.passtimes.favorites.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,23 +19,25 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.adapters.FavoriteViewAdapter;
+import com.dwaynedevelopment.passtimes.favorites.interfaces.IFavoriteHandler;
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.models.Sport;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
+import com.eyalbira.loadingdots.LoadingDots;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Objects;
 
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_FAVORITE_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_SPORTS;
+import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
 
 public class FavoriteFragment extends Fragment {
 
@@ -44,8 +46,7 @@ public class FavoriteFragment extends Fragment {
     private IFavoriteHandler iFavoriteHandler;
     private FavoritesReceiver favoritesReceiver;
     private ArrayList<Sport> selectedFavorites = new ArrayList<>();
-    private List<HashMap<String, String>> favoriteSports = new ArrayList<>();
-    private HashMap<String, HashMap<String, String>> fav = new HashMap<>();
+    private HashMap<String, HashMap<String, String>> favoriteSports = new HashMap<>();
 
 
     public static FavoriteFragment newInstance() {
@@ -100,23 +101,36 @@ public class FavoriteFragment extends Fragment {
         public void onClick(View v) {
             if (mAuth.getCurrentSignedUser() != null) {
                 Player player = mAuth.getCurrentSignedUser();
-                player.setFavorites(fav);
+                player.setFavorites(favoriteSports);
 
-                Log.i(TAG, "onClick: " + player.getFavorites().size());
+                if (getView() != null) {
+                    final LoadingDots progress = getView().findViewById(R.id.pb_dots_fav);
+                    progress.setVisibility(View.VISIBLE);
+                    progress.startAnimation();
 
-                mDb.insertFavorites(player);
+                    Log.i(TAG, "onClick: " + player.getFavorites().size());
+                    mDb.insertFavorites(player);
 
-//                if (!favoriteSports.isEmpty()) {
-//
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (iFavoriteHandler != null) {
-//                                iFavoriteHandler.invokeBaseActivity();
-//                            }
-//                        }
-//                    }, 1000);
-//                }
+                    if (player.getFavorites().size() >= 1) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (iFavoriteHandler != null) {
+                                    progress.stopAnimation();
+                                    progress.setVisibility(View.GONE);
+                                    iFavoriteHandler.dismissActivity();
+                                }
+                            }
+                        }, 1000);
+                    } else {
+                        progress.stopAnimation();
+                        progress.setVisibility(View.GONE);
+                        invokeSnackBar((AppCompatActivity) Objects.requireNonNull(getContext()),
+                                "Please select a sport.",
+                                getResources().getColor(R.color.colorDarkPrimary),
+                                getResources().getColor(R.color.colorPrimaryAccent));
+                    }
+                }
             }
         }
     };
@@ -166,7 +180,7 @@ public class FavoriteFragment extends Fragment {
                 HashMap<String, String> selected = new HashMap<>();
                 selected.put("id", selectedFavorites.get(i).getId());
                 selected.put("category", selectedFavorites.get(i).getCategory());
-                fav.put(selectedFavorites.get(i).getId(), selected);
+                favoriteSports.put(selectedFavorites.get(i).getId(), selected);
             }
 
         }

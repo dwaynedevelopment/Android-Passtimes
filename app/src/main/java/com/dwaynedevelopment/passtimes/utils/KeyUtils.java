@@ -8,4 +8,5 @@ public class KeyUtils {
     public static final String DATABASE_REFERENCE_USERS = "players";
     public static final String DATABASE_REFERENCE_SPORTS = "sports";
     public static final String ACTION_FAVORITE_SELECTED = "com.dwaynedevelopment.passtimes.ACTION_FAVORITE_SELECTED";
+    public static final String EXTRA_REGISTRATION  = "REGISTRATION";
 }

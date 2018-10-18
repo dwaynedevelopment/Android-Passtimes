@@ -15,6 +15,7 @@
 
     <string name="number_picker_formatter">%02d</string>
     <string name="continue_btn_title">Continue</string>
+    <string name="select_your_favorite_sports">Select your favorite sports</string>
 
     <string-array name="number_picker_am_pm">
         <item>"AM"</item>

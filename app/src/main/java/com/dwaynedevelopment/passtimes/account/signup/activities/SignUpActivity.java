@@ -14,12 +14,11 @@ import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.account.FavoriteActivity;
+import com.dwaynedevelopment.passtimes.favorites.activities.FavoriteActivity;
 import com.dwaynedevelopment.passtimes.account.terms.activities.TermsActivity;
 import com.dwaynedevelopment.passtimes.account.login.activities.LoginActivity;
 import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 import com.dwaynedevelopment.passtimes.account.signup.fragments.SignUpFragment;
-import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.eyalbira.loadingdots.LoadingDots;
@@ -39,6 +38,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.dwaynedevelopment.passtimes.utils.ImageUtils.getRealFilePathFromURI;
 import static com.dwaynedevelopment.passtimes.utils.ImageUtils.getRealPathFromURI;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_REGISTRATION;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_GALLERY_IMAGE_SELECT;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_READ_EXTERNAL_STORAGE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ROOT_STORAGE_USER_PROFILES;
@@ -249,6 +249,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                     finish();
                     DatabaseUtils.getInstance().updateImage(mAuth.getCurrentSignedUser());
                     Intent intent = new Intent(SignUpActivity.this, FavoriteActivity.class);
+                    intent.putExtra(EXTRA_REGISTRATION, true);
                     startActivity(intent);
                 }
             }, 1500);

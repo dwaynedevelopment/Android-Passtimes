@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes.account;
+package com.dwaynedevelopment.passtimes.favorites.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.favorites.fragments.FavoriteFragment;
+import com.dwaynedevelopment.passtimes.favorites.interfaces.IFavoriteHandler;
 import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
+
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_REGISTRATION;
 
 public class FavoriteActivity extends AppCompatActivity implements IFavoriteHandler {
 
@@ -25,9 +29,15 @@ public class FavoriteActivity extends AppCompatActivity implements IFavoriteHand
     }
 
     @Override
-    public void invokeBaseActivity() {
-        finish();
-        Intent intent = new Intent(FavoriteActivity.this, BaseActivity.class);
-        startActivity(intent);
+    public void dismissActivity() {
+        if (getIntent() != null) {
+            if (getIntent().hasExtra(EXTRA_REGISTRATION)) {
+                finish();
+                Intent intent = new Intent(FavoriteActivity.this, BaseActivity.class);
+                startActivity(intent);
+            }
+        } else {
+            finish();
+        }
     }
 }
