@@ -107,7 +107,6 @@ public class FavoriteFragment extends Fragment {
                     final ProgressBar progress = getView().findViewById(R.id.pb_dots_fav);
                     progress.setVisibility(View.VISIBLE);
 
-                    Log.i(TAG, "onClick: " + player.getFavorites().size());
                     mDb.insertFavorites(player);
 
                     if (player.getFavorites().size() >= 1) {
@@ -162,7 +161,6 @@ public class FavoriteFragment extends Fragment {
     };
 
 
-    private static final String TAG = "FavoriteFragment";
     public class FavoritesReceiver extends BroadcastReceiver {
 
         @Override

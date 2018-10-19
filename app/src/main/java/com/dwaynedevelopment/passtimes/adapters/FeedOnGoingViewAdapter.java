@@ -18,7 +18,6 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 
-import java.util.ArrayList;
 
 public class FeedOnGoingViewAdapter  extends FirebaseRecyclerAdapter<Event, FeedOnGoingViewAdapter.OnGoingViewHolder> implements ChangeEventListener, LifecycleObserver {
 
@@ -66,9 +65,9 @@ public class FeedOnGoingViewAdapter  extends FirebaseRecyclerAdapter<Event, Feed
             case REMOVED:
                 notifyItemRemoved(oldIndex);
                 break;
-            case MOVED:
-                notifyItemMoved(oldIndex, newIndex);
-                break;
+//            case MOVED:
+//                notifyItemMoved(oldIndex, newIndex);
+//                break;
             default:
                 throw new IllegalStateException("Incomplete case statement");
         }

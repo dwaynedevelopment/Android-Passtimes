@@ -2,13 +2,19 @@ package com.dwaynedevelopment.passtimes.navigation.fragments.event;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,12 +27,16 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.adapters.FavoriteViewAdapter;
 import com.dwaynedevelopment.passtimes.adapters.PlacesApiAdapter;
+import com.dwaynedevelopment.passtimes.adapters.SelectedViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.PlaceData;
 import com.dwaynedevelopment.passtimes.models.Player;
+import com.dwaynedevelopment.passtimes.models.Sport;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
@@ -40,14 +50,22 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
 import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getApiClient;
 import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getPlacesAdapter;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_FAVORITE_SELECTED;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_SELECT_SELECTED;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_SPORTS;
 import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
 
 public class CreateEventDialogFragment extends DialogFragment {
@@ -60,14 +78,16 @@ public class CreateEventDialogFragment extends DialogFragment {
 
     private PlacesApiAdapter mPlacesApiAdapter;
     private GoogleApiClient mGoogleApiClient;
+    private SelectReceiver selectReceiver;
 
     private Calendar mStartCalendar;
     private Calendar mEndCalendar;
     private EditText etStartTime;
     private EditText etEndTime;
-    private Button btnSelectedSport;
     private AutoCompleteTextView etAddress;
     private PlaceData mPlaceData;
+
+    private Sport selectedSport;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,10 +99,10 @@ public class CreateEventDialogFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
         Dialog dialog = getDialog();
-        if(dialog != null) {
+        if (dialog != null) {
             int width = ViewGroup.LayoutParams.MATCH_PARENT;
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            dialog.getWindow().setLayout(width, height);
+            Objects.requireNonNull(dialog.getWindow()).setLayout(width, height);
         }
     }
 
@@ -107,54 +127,62 @@ public class CreateEventDialogFragment extends DialogFragment {
 
         mDb = DatabaseUtils.getInstance();
         mAuth = AuthUtils.getInstance();
+        mDb.reference(DATABASE_REFERENCE_SPORTS).addListenerForSingleValueEvent(valueEventListener);
+        if (getActivity() != null) {
 
-        if(getView() != null) {
-            Toolbar createEventToolbar = getView().findViewById(R.id.tb_create_event);
-            createEventToolbar.inflateMenu(R.menu.menu_create_event);
-            createEventToolbar.setOnMenuItemClickListener(menuItemClickListener);
+            if (getView() != null) {
+                Toolbar createEventToolbar = getView().findViewById(R.id.tb_create_event);
+                createEventToolbar.inflateMenu(R.menu.menu_create_event);
+                createEventToolbar.setOnMenuItemClickListener(menuItemClickListener);
 
-            mGoogleApiClient = getApiClient(
-                    (AppCompatActivity) getActivity(),
-                    onConnectionFailedListener);
+                mGoogleApiClient = getApiClient(
+                        (AppCompatActivity) getActivity(),
+                        onConnectionFailedListener);
 
-            mPlacesApiAdapter = getPlacesAdapter(
-                    (AppCompatActivity) getActivity(),
-                    mGoogleApiClient);
+                mPlacesApiAdapter = getPlacesAdapter(
+                        (AppCompatActivity) getActivity(),
+                        mGoogleApiClient);
 
-            // TODO: layout
-            mStartCalendar = Calendar.getInstance();
-            mEndCalendar = Calendar.getInstance();
+                selectReceiver = new SelectReceiver();
+                IntentFilter actionFilter = new IntentFilter();
+                actionFilter.addAction(ACTION_SELECT_SELECTED);
+                getActivity().registerReceiver(selectReceiver, actionFilter);
 
-            Calendar startDate = Calendar.getInstance();
-            startDate.add(Calendar.WEEK_OF_MONTH, 0);
+                // TODO: layout
+                mStartCalendar = Calendar.getInstance();
+                mEndCalendar = Calendar.getInstance();
 
-            Calendar endDate = Calendar.getInstance();
-            endDate.add(Calendar.WEEK_OF_MONTH, 1);
+                Calendar startDate = Calendar.getInstance();
+                startDate.add(Calendar.WEEK_OF_MONTH, 0);
 
-            int year = Calendar.getInstance().get(Calendar.YEAR);
-            int month = Calendar.getInstance().get(Calendar.YEAR);
-            int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+                Calendar endDate = Calendar.getInstance();
+                endDate.add(Calendar.WEEK_OF_MONTH, 1);
 
-            timeline = getView().findViewById(R.id.date_timeline);
-            timeline.setFirstVisibleDate(year, month, day);
-            timeline.setLastVisibleDate(year, month, day + 6);
-            timeline.setOnDateSelectedListener(dateSelectedListener);
+                int year = Calendar.getInstance().get(Calendar.YEAR);
+                int month = Calendar.getInstance().get(Calendar.YEAR);
+                int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 
-            etStartTime = getView().findViewById(R.id.et_start_time);
-            etStartTime.setShowSoftInputOnFocus(false);
-            etStartTime.setKeyListener(null);
-            etStartTime.setOnFocusChangeListener(focusChangeListener);
+                timeline = getView().findViewById(R.id.date_timeline);
+                timeline.setFirstVisibleDate(year, month, day);
+                timeline.setLastVisibleDate(year, month, day + 6);
+                timeline.setOnDateSelectedListener(dateSelectedListener);
 
-            etEndTime = getView().findViewById(R.id.et_end_time);
-            etEndTime.setShowSoftInputOnFocus(false);
-            etEndTime.setKeyListener(null);
-            etEndTime.setOnFocusChangeListener(focusChangeListener);
+                etStartTime = getView().findViewById(R.id.et_start_time);
+                etStartTime.setShowSoftInputOnFocus(false);
+                etStartTime.setKeyListener(null);
+                etStartTime.setOnFocusChangeListener(focusChangeListener);
 
-            etAddress = getView().findViewById(R.id.et_location);
-            etAddress.setAdapter(mPlacesApiAdapter);
-            etAddress.setOnFocusChangeListener(focusChangeListener);
-            etAddress.setOnItemClickListener(autoCompleteClickListener);
+                etEndTime = getView().findViewById(R.id.et_end_time);
+                etEndTime.setShowSoftInputOnFocus(false);
+                etEndTime.setKeyListener(null);
+                etEndTime.setOnFocusChangeListener(focusChangeListener);
 
+                etAddress = getView().findViewById(R.id.et_location);
+                etAddress.setAdapter(mPlacesApiAdapter);
+                etAddress.setOnFocusChangeListener(focusChangeListener);
+                etAddress.setOnItemClickListener(autoCompleteClickListener);
+
+            }
         }
     }
 
@@ -162,22 +190,22 @@ public class CreateEventDialogFragment extends DialogFragment {
     Toolbar.OnMenuItemClickListener menuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-            if(item.getItemId() == R.id.action_close) {
+            if (item.getItemId() == R.id.action_close) {
                 dismiss();
-            } else if(item.getItemId() == R.id.action_save) {
+            } else if (item.getItemId() == R.id.action_save) {
                 // TODO: Validate inputs
 
                 EditText title = getView().findViewById(R.id.et_title);
 
                 // Validate for empty EditTexts
-                if(validateTextField(title, "Please enter a Title for the event") &&
+                if (validateTextField(title, "Please enter a Title for the event") &&
                         validateTextField(etAddress, "Please enter a Location for the event") &&
                         validateTextField(etStartTime, "Please select a Start Time") &&
                         validateTextField(etEndTime, "Please select an End Time")) {
                     // Validate for Time
-                    if(validateTime()) {
+                    if (validateTime()) {
                         Player currentPlayer = mAuth.getCurrentSignedUser();
-                        Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), "Soccer", title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
+                        Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), selectedSport.getCategory(), title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
                         mDb.addEvent(event);
                         dismiss();
                     }
@@ -192,7 +220,7 @@ public class CreateEventDialogFragment extends DialogFragment {
             Snackbar sb = Snackbar.make(getView(), "Please select a valid Start Time", Snackbar.LENGTH_SHORT);
             sb.show();
             return false;
-        } else if( mStartCalendar.getTimeInMillis() == mEndCalendar.getTimeInMillis()) {
+        } else if (mStartCalendar.getTimeInMillis() == mEndCalendar.getTimeInMillis()) {
             Snackbar sb = Snackbar.make(getView(), "Please select a valid End Time", Snackbar.LENGTH_SHORT);
             sb.show();
             return false;
@@ -204,7 +232,7 @@ public class CreateEventDialogFragment extends DialogFragment {
     }
 
     private boolean validateTextField(EditText editText, String message) {
-        if(editText.getText().toString().isEmpty()) {
+        if (editText.getText().toString().isEmpty()) {
             Snackbar sb = Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT);
             sb.show();
             return false;
@@ -227,7 +255,7 @@ public class CreateEventDialogFragment extends DialogFragment {
             int id = v.getId();
             Context context = getContext();
 
-            if(!hasFocus) {
+            if (!hasFocus) {
 
             } else {
                 switch (id) {
@@ -311,7 +339,54 @@ public class CreateEventDialogFragment extends DialogFragment {
 
     private final GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
         @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) { } };
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        }
+    };
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(selectReceiver);
+        }
+    }
+
+    private final ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            ArrayList<Sport> sportsArray = new ArrayList<>();
+
+            for (DataSnapshot ds: dataSnapshot.getChildren()) {
+
+                if (ds != null) {
+                    Sport sport = ds.getValue(Sport.class);
+                    sportsArray.add(sport);
+                }
+            }
+            SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);
+            if (getActivity() != null) {
+                if (getView() != null) {
+                    RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+                    recyclerView.setAdapter(adapter);
+                }
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
+
+    public class SelectReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            selectedSport = intent.getParcelableExtra("SELECTED_SELECT");
+        }
+    }
 
 }
