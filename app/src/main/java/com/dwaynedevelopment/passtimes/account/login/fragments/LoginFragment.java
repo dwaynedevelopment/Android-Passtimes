@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -24,8 +25,8 @@ import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar
 public class LoginFragment extends Fragment {
 
     private ILoginHandler iLoginHandler;
-    private EditText emailEditText;
-    private EditText passwordEditText;
+    private TextInputEditText emailEditText;
+    private TextInputEditText passwordEditText;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -79,8 +80,8 @@ public class LoginFragment extends Fragment {
                         iLoginHandler.invokeSignUp();
                         break;
                     case login:
-                        String email = emailEditText.getText().toString();
-                        String password = passwordEditText.getText().toString();
+                        String email = Objects.requireNonNull(emailEditText.getText()).toString();
+                        String password = Objects.requireNonNull(passwordEditText.getText()).toString();
 
                         if (email.isEmpty() && password.isEmpty()){
                             invokeSnackBar((AppCompatActivity) Objects.requireNonNull(getContext()),

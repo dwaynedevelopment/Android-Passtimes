@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ProgressBar;
 
 import com.dwaynedevelopment.passtimes.R;
@@ -54,11 +56,19 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
         bottomNav.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 
         viewPager = findViewById(R.id.viewpager);
+        viewPager.setOnTouchListener(viewPagerOnTouchListener);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         NavigationUtils.viewPagerSetup(viewPager, adapter);
 
         viewPager.setCurrentItem(0);
     }
+
+    private final ViewPager.OnTouchListener viewPagerOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return true;
+        }
+    };
 
     private final BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override

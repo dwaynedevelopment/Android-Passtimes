@@ -43,7 +43,7 @@
             android:textColorHint="@color/colorThirdAccent"
             android:layout_marginTop="16dp">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/et_email_login"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -53,7 +53,7 @@
                 android:textColor="@color/colorDarkPrimary"
                 android:background="@drawable/et_dynamic_style"
                 android:drawablePadding="10dp"
-                android:drawableStart="@drawable/ic_email"/>
+                android:drawableStart="@drawable/ic_email" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -65,7 +65,7 @@
             android:textColorHint="@color/colorThirdAccent"
             android:layout_marginTop="16dp">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/et_password_login"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -75,7 +75,8 @@
                 android:textColor="@color/colorDarkPrimary"
                 android:background="@drawable/et_dynamic_style"
                 android:drawablePadding="10dp"
-                android:drawableStart="@drawable/ic_password"/>
+                android:drawableStart="@drawable/ic_password"
+                android:imeOptions="actionDone"/>
 
         </android.support.design.widget.TextInputLayout>
 
