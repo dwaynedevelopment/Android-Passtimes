@@ -1,5 +1,8 @@
 package com.dwaynedevelopment.passtimes.utils;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+
 public class KeyUtils {
     public static final int REQUEST_READ_EXTERNAL_STORAGE = 0x1004;
     public static final int REQUEST_GALLERY_IMAGE_SELECT = 0x1005;
@@ -11,4 +14,8 @@ public class KeyUtils {
     public static final String ACTION_FAVORITE_SELECTED = "com.dwaynedevelopment.passtimes.ACTION_FAVORITE_SELECTED";
     public static final String EXTRA_REGISTRATION  = "com.dwaynedevelopment.passtimes.EXTRA_REGISTRATION";
     public static final String PREFERENCE_SIGN_OUT = "com.dwaynedevelopment.passtimes.PREFERENCE_SIGN_OUT";
+
+    public static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
+            new LatLng(-40, -168),
+            new LatLng(71, 136));
 }

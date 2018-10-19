@@ -15,24 +15,39 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.adapters.PlacesApiAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
+import com.dwaynedevelopment.passtimes.models.PlaceData;
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.github.badoualy.datepicker.DatePickerTimeline;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getApiClient;
+import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getPlacesAdapter;
 import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
 
 public class CreateEventDialogFragment extends DialogFragment {
@@ -43,11 +58,16 @@ public class CreateEventDialogFragment extends DialogFragment {
     private DatabaseUtils mDb;
     private AuthUtils mAuth;
 
+    private PlacesApiAdapter mPlacesApiAdapter;
+    private GoogleApiClient mGoogleApiClient;
+
     private Calendar mStartCalendar;
     private Calendar mEndCalendar;
     private EditText etStartTime;
     private EditText etEndTime;
     private Button btnSelectedSport;
+    private AutoCompleteTextView etAddress;
+    private PlaceData mPlaceData;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,11 +86,19 @@ public class CreateEventDialogFragment extends DialogFragment {
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity() != null) {
+            mGoogleApiClient.stopAutoManage(getActivity());
+            mGoogleApiClient.disconnect();
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialogfragment_create_event, container, false);
-        return view;
+        return inflater.inflate(R.layout.dialog_event_create, container, false);
     }
 
     @Override
@@ -84,6 +112,14 @@ public class CreateEventDialogFragment extends DialogFragment {
             Toolbar createEventToolbar = getView().findViewById(R.id.tb_create_event);
             createEventToolbar.inflateMenu(R.menu.menu_create_event);
             createEventToolbar.setOnMenuItemClickListener(menuItemClickListener);
+
+            mGoogleApiClient = getApiClient(
+                    (AppCompatActivity) getActivity(),
+                    onConnectionFailedListener);
+
+            mPlacesApiAdapter = getPlacesAdapter(
+                    (AppCompatActivity) getActivity(),
+                    mGoogleApiClient);
 
             // TODO: layout
             mStartCalendar = Calendar.getInstance();
@@ -113,6 +149,12 @@ public class CreateEventDialogFragment extends DialogFragment {
             etEndTime.setShowSoftInputOnFocus(false);
             etEndTime.setKeyListener(null);
             etEndTime.setOnFocusChangeListener(focusChangeListener);
+
+            etAddress = getView().findViewById(R.id.et_location);
+            etAddress.setAdapter(mPlacesApiAdapter);
+            etAddress.setOnFocusChangeListener(focusChangeListener);
+            etAddress.setOnItemClickListener(autoCompleteClickListener);
+
         }
     }
 
@@ -126,16 +168,16 @@ public class CreateEventDialogFragment extends DialogFragment {
                 // TODO: Validate inputs
 
                 EditText title = getView().findViewById(R.id.et_title);
-                EditText location = getView().findViewById(R.id.et_location);
+
                 // Validate for empty EditTexts
                 if(validateTextField(title, "Please enter a Title for the event") &&
-                        validateTextField(location, "Please enter a Location for the event") &&
+                        validateTextField(etAddress, "Please enter a Location for the event") &&
                         validateTextField(etStartTime, "Please select a Start Time") &&
                         validateTextField(etEndTime, "Please select an End Time")) {
                     // Validate for Time
                     if(validateTime()) {
                         Player currentPlayer = mAuth.getCurrentSignedUser();
-                        Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), "Soccer", title.getText().toString(), 28.596285, -81.301245, location.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
+                        Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), "Soccer", title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
                         mDb.addEvent(event);
                         dismiss();
                     }
@@ -217,6 +259,59 @@ public class CreateEventDialogFragment extends DialogFragment {
             etEndTime.setText(new SimpleDateFormat("hh:mm aa", Locale.US).format(mEndCalendar.getTime()));
         }
     };
+
+    private final AdapterView.OnItemClickListener autoCompleteClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (getActivity() != null) {
+                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                etAddress.setText(" ");
+                final AutocompletePrediction item = mPlacesApiAdapter.getItem(position);
+                if (item != null) {
+                    final String placeId = item.getPlaceId();
+                    PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId);
+                    placeResult.setResultCallback(updatePlaceDetailsCallback);
+                }
+            }
+        }
+    };
+
+    private final ResultCallback<PlaceBuffer> updatePlaceDetailsCallback = new ResultCallback<PlaceBuffer>() {
+        @Override
+        public void onResult(@NonNull PlaceBuffer places) {
+            if (!places.getStatus().isSuccess()) {
+                Log.i(TAG, "onResult: Did not complete request" + places.getStatus().toString());
+                places.release();
+                return;
+            }
+
+            final Place place = places.get(0);
+            if (place != null) {
+                try {
+                    mPlaceData = new PlaceData(
+                            place.getId(),
+                            place.getName().toString(),
+                            Objects.requireNonNull(place.getAddress()).toString(),
+                            new LatLng(Objects.requireNonNull(
+                                    place.getViewport()).getCenter().latitude,
+                                    place.getViewport().getCenter().longitude));
+                    Log.i(TAG, "onResult: " + mPlaceData.toString());
+
+                    //mLatLng = mPlaceData.getLatLng();
+                    etAddress.setText(mPlaceData.getName());
+                    etAddress.clearFocus();
+                    etAddress.clearListSelection();
+                } catch (NullPointerException ne) {
+                    ne.printStackTrace();
+                }
+            }
+            places.release();
+        }
+    };
+
+    private final GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) { } };
 
 
 }

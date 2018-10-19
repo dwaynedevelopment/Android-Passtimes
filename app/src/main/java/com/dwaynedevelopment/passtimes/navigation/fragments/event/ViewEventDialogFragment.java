@@ -33,7 +33,7 @@ public class ViewEventDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialogfragment_create_event, container, false);
+        View view = inflater.inflate(R.layout.dialog_event_create, container, false);
         return view;
     }
 
