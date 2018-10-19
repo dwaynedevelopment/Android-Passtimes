@@ -72,7 +72,6 @@ public class CreateEventDialogFragment extends DialogFragment {
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             dialog.getWindow().setLayout(width, height);
         }
-
     }
 
     @Nullable
