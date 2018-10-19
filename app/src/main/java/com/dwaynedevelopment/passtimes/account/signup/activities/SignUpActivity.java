@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
@@ -21,7 +22,6 @@ import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 import com.dwaynedevelopment.passtimes.account.signup.fragments.SignUpFragment;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
-import com.eyalbira.loadingdots.LoadingDots;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -51,7 +51,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     private String username = null;
     private AuthUtils mAuth;
     private StorageReference userFilePath;
-    private LoadingDots progress;
+    private ProgressBar progress;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -157,7 +157,6 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
         if (userPhotoUri != null) {
             progress = findViewById(R.id.pb_dots);
             progress.setVisibility(View.VISIBLE);
-            progress.startAnimation();
             username = name;
             mAuth.getFireAuth().createUserWithEmailAndPassword(email, password)
                     .continueWithTask(signUpWithTaskListener)
@@ -237,7 +236,6 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    progress.stopAnimation();
                     progress.setVisibility(View.GONE);
                     DatabaseUtils database = DatabaseUtils.getInstance();
                     database.insertUser(mAuth.getCurrentSignedUser());
@@ -259,7 +257,6 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     private final OnFailureListener onFailureListener = new OnFailureListener() {
         @Override
         public void onFailure(@NonNull Exception e) {
-            progress.stopAnimation();
             progress.setVisibility(View.GONE);
             invokeSnackBar(SignUpActivity.this,
                     e.getMessage(),

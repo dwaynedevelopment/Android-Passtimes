@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.account.login.activities.LoginActivity;
@@ -16,7 +18,6 @@ import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
-import com.eyalbira.loadingdots.LoadingDots;
 
 import static com.dwaynedevelopment.passtimes.utils.OnboardingUtils.setupOnboardingViewPager;
 
@@ -31,45 +32,53 @@ public class OnboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_onboard);
 
         mAuth = AuthUtils.getInstance();
-        LinearLayout bottomLayout = findViewById(R.id.ll_onboarding_bottom);
-        final LoadingDots progress = findViewById(R.id.pb_dot_onboard);
-        if (mAuth.getCurrentSignedUser() != null) {
+        final LinearLayout bottomLayout = findViewById(R.id.ll_onboarding_bottom);
+        final ProgressBar progress = findViewById(R.id.pb_dot_onboard);
+        final TextView appTitle = findViewById(R.id.tv_app_name);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                progress.setVisibility(View.VISIBLE);
+                appTitle.setVisibility(View.VISIBLE);
+            }
+        }, 550);
+
+        if (mAuth.isCurrentUserAuthenticated()) {
             bottomLayout.setVisibility(View.GONE);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    progress.setVisibility(View.VISIBLE);
-                    progress.startAnimation();
-                }
-            }, 250);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    progress.stopAnimation();
                     progress.setVisibility(View.GONE);
+                    appTitle.setVisibility(View.GONE);
                     finish();
                     Intent intent = new Intent(OnboardActivity.this, BaseActivity.class);
                     startActivity(intent);
                 }
-            }, 1500);
+            }, 1750);
 
         } else {
-            bottomLayout.setVisibility(View.VISIBLE);
-            onboardingViewPager = findViewById(R.id.vp_onboarding);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    progress.setVisibility(View.GONE);
+                    appTitle.setVisibility(View.GONE);
+                    bottomLayout.setVisibility(View.VISIBLE);
+                    onboardingViewPager = findViewById(R.id.vp_onboarding);
 
-            TabLayout dotLayout = findViewById(R.id.tl_dots);
-            dotLayout.setupWithViewPager(onboardingViewPager, true);
+                    TabLayout dotLayout = findViewById(R.id.tl_dots);
+                    dotLayout.setupWithViewPager(onboardingViewPager, true);
 
-            setupOnboardingViewPager(new ViewPagerAdapter(getSupportFragmentManager()), onboardingViewPager);
+                    setupOnboardingViewPager(new ViewPagerAdapter(getSupportFragmentManager()), onboardingViewPager);
 
-            Button loginButton = findViewById(R.id.btn_login_onboard);
-            loginButton.setOnClickListener(bottomSignUpListener);
+                    Button loginButton = findViewById(R.id.btn_login_onboard);
+                    loginButton.setOnClickListener(bottomSignUpListener);
 
-            LinearLayout bottomLinearLayout = findViewById(R.id.ll_bottom_message);
-            bottomLinearLayout.setOnClickListener(bottomSignUpListener);
+                    LinearLayout bottomLinearLayout = findViewById(R.id.ll_bottom_message);
+                    bottomLinearLayout.setOnClickListener(bottomSignUpListener);
+                }
+            }, 1750);
         }
-
-
     }
 
     @Override

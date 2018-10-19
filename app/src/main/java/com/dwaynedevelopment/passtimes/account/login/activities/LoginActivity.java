@@ -7,27 +7,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.account.login.fragments.LoginFragment;
 import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.account.login.interfaces.ILoginHandler;
-import com.dwaynedevelopment.passtimes.favorites.activities.FavoriteActivity;
 import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
-import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
-import com.eyalbira.loadingdots.LoadingDots;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 
 import static com.dwaynedevelopment.passtimes.utils.AuthUtils.showTaskException;
-import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_REGISTRATION;
 
 public class LoginActivity extends AppCompatActivity implements ILoginHandler {
 
     private AuthUtils mAuth;
-    private LoadingDots progress;
+    private ProgressBar progress;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,7 +53,6 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
                 .addOnCompleteListener(authenticateEPSignInListener);
         progress = findViewById(R.id.pb_dot);
         progress.setVisibility(View.VISIBLE);
-        progress.startAnimation();
     }
 
     private final OnCompleteListener<AuthResult> authenticateEPSignInListener = new OnCompleteListener<AuthResult>() {
@@ -66,7 +62,6 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        progress.stopAnimation();
                         progress.setVisibility(View.GONE);
                     }
                 }, 250);
@@ -81,7 +76,6 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
             } else {
                 // If sign in fails, display a message to the user.
                 showTaskException(LoginActivity.this, task);
-                progress.stopAnimation();
                 progress.setVisibility(View.GONE);
             }
         }

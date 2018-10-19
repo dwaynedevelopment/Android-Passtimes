@@ -5,13 +5,14 @@ import android.os.Bundle;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.navigation.interfaces.IAccountHandler;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.PREFERENCE_SIGN_OUT;
 
 
 public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
 
-    //private INavigationHandler mListener;
+    private IAccountHandler iAccountHandler;
 
     public static SettingsPreferenceFragment newInstance() {
         return new SettingsPreferenceFragment();
@@ -21,9 +22,9 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-//        if(context instanceof INavigationHandler) {
-//            mListener = (INavigationHandler) context;
-//        }
+        if(context instanceof IAccountHandler) {
+            iAccountHandler = (IAccountHandler) context;
+        }
     }
 
     @Override
@@ -38,9 +39,9 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
         @Override
         public boolean onPreferenceClick(android.support.v7.preference.Preference preference) {
 
-//            if(mListener != null) {
-//                mListener.signOut();
-//            }
+            if(iAccountHandler != null) {
+                iAccountHandler.signOutOfAccount();
+            }
 
             return false;
         }

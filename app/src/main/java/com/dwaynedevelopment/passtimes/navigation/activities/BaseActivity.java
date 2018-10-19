@@ -1,5 +1,6 @@
 package com.dwaynedevelopment.passtimes.navigation.activities;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
@@ -7,25 +8,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
+import com.dwaynedevelopment.passtimes.navigation.interfaces.IAccountHandler;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.INavigationHandler;
+import com.dwaynedevelopment.passtimes.onboarding.activities.OnboardActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 
-public class BaseActivity extends AppCompatActivity implements INavigationHandler {
+public class BaseActivity extends AppCompatActivity implements INavigationHandler, IAccountHandler {
 
     private BottomNavigationViewEx bottomNav;
     private ViewPager viewPager;
+    private AuthUtils mAuth;
+//    private ProgressBar progress;
 
     private static final String TAG = "BaseActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
+        mAuth = AuthUtils.getInstance();
+//        progress = findViewById(R.id.pb_dot_base);
         bottomNavigationSetup();
     }
 
@@ -80,5 +88,15 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     @Override
     public void invokeSettings() {
         viewPager.setCurrentItem(2, true);
+    }
+
+    @Override
+    public void signOutOfAccount() {
+        if (mAuth.isCurrentUserAuthenticated()) {
+            mAuth.signOutFromHostAndSocial();
+            finish();
+            Intent intent = new Intent(BaseActivity.this, OnboardActivity.class);
+            startActivity(intent);
+        }
     }
 }

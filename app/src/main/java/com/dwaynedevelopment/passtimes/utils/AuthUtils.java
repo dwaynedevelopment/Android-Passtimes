@@ -24,7 +24,7 @@ import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar
 
 public class AuthUtils {
 
-    private FirebaseAuth mFireAuth;
+    private static FirebaseAuth mFireAuth;
     private StorageReference mStorage;
 
     //CONSTRUCTOR: private constructor will make sure that the singleton manages the object and does not need further instantiation.
@@ -49,7 +49,7 @@ public class AuthUtils {
 
     public StorageReference getStorage() { return mStorage; }
 
-    private boolean isCurrentUserAuthenticated() {
+    public boolean isCurrentUserAuthenticated() {
         return mFireAuth.getCurrentUser() != null;
     }
 

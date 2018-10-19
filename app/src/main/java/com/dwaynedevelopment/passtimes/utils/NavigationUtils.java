@@ -23,7 +23,7 @@ public class NavigationUtils {
     // Initialize custom bottom navigation
     public static void bottomNavigationSetup(BottomNavigationViewEx bottomNav) {
         bottomNav.enableAnimation(false);
-        bottomNav.setIconsMarginTop(60);
+        bottomNav.setIconsMarginTop(45);
         //bottomNav.enableShiftingMode(false);
         //bottomNav.enableItemShiftingMode(false);
     }

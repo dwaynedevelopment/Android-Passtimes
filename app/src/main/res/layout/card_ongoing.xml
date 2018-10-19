@@ -2,13 +2,14 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="120dp">
+    android:layout_height="130dp">
 
-    <android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.design.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/cv_ongoing"
         android:layout_width="match_parent"
-        android:layout_height="105dp"
+        android:layout_height="122dp"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
@@ -21,7 +22,7 @@
 
             <View
                 android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_height="55dp"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/cv_date" />
 
@@ -30,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="14dp"
+                android:layout_marginEnd="12dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -68,7 +69,8 @@
                 android:text="Paid"
                 android:textStyle="bold"
                 android:textColor="@color/colorSecondaryAccent"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tv_cat_two"
@@ -85,7 +87,8 @@
                 android:text="Charity"
                 android:textColor="@color/colorSecondaryAccent"
                 android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tv_cat_three"
@@ -102,7 +105,8 @@
                 android:text="Match"
                 android:textColor="@color/colorSecondaryAccent"
                 android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone"/>
 
         </RelativeLayout>
 

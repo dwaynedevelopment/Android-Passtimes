@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.FavoriteViewAdapter;
@@ -25,7 +26,6 @@ import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.models.Sport;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
-import com.eyalbira.loadingdots.LoadingDots;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -104,9 +104,8 @@ public class FavoriteFragment extends Fragment {
                 player.setFavorites(favoriteSports);
 
                 if (getView() != null) {
-                    final LoadingDots progress = getView().findViewById(R.id.pb_dots_fav);
+                    final ProgressBar progress = getView().findViewById(R.id.pb_dots_fav);
                     progress.setVisibility(View.VISIBLE);
-                    progress.startAnimation();
 
                     Log.i(TAG, "onClick: " + player.getFavorites().size());
                     mDb.insertFavorites(player);
@@ -116,14 +115,12 @@ public class FavoriteFragment extends Fragment {
                             @Override
                             public void run() {
                                 if (iFavoriteHandler != null) {
-                                    progress.stopAnimation();
                                     progress.setVisibility(View.GONE);
                                     iFavoriteHandler.dismissActivity();
                                 }
                             }
                         }, 1000);
                     } else {
-                        progress.stopAnimation();
                         progress.setVisibility(View.GONE);
                         invokeSnackBar((AppCompatActivity) Objects.requireNonNull(getContext()),
                                 "Please select a sport.",
