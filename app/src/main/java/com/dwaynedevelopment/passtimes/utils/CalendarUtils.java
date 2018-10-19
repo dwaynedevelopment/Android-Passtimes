@@ -27,6 +27,14 @@ public class CalendarUtils {
         return new SimpleDateFormat("hh:mm a", Locale.US).format(time);
     }
 
+    public static Calendar setDate(Calendar calendar, int year, int month, int day) {
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+
+        return calendar;
+    }
+
     public static Date setTime(Calendar calendar, int hours, int minutes) {
         calendar.set(Calendar.HOUR_OF_DAY, hours);
         calendar.set(Calendar.MINUTE, minutes);
