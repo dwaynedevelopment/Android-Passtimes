@@ -12,6 +12,7 @@ public class KeyUtils {
     public static final String DATABASE_REFERENCE_EVENTS = "events";
     public static final String DATABASE_REFERENCE_SPORTS = "sports";
     public static final String ACTION_FAVORITE_SELECTED = "com.dwaynedevelopment.passtimes.ACTION_FAVORITE_SELECTED";
+    public static final String ACTION_EVENT_SELECTED = "com.dwaynedevelopment.passtimes.ACTION_EVENT_SELECTED";
     public static final String ACTION_SELECT_SELECTED = "com.dwaynedevelopment.passtimes.ACTION_SELECT_SELECTED";
     public static final String EXTRA_REGISTRATION  = "com.dwaynedevelopment.passtimes.EXTRA_REGISTRATION";
     public static final String PREFERENCE_SIGN_OUT = "com.dwaynedevelopment.passtimes.PREFERENCE_SIGN_OUT";

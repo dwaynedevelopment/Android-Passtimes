@@ -16,7 +16,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -148,15 +147,8 @@ public class CreateEventDialogFragment extends DialogFragment {
                 actionFilter.addAction(ACTION_SELECT_SELECTED);
                 getActivity().registerReceiver(selectReceiver, actionFilter);
 
-                // TODO: layout
                 mStartCalendar = Calendar.getInstance();
                 mEndCalendar = Calendar.getInstance();
-
-                Calendar startDate = Calendar.getInstance();
-                startDate.add(Calendar.WEEK_OF_MONTH, 0);
-
-                Calendar endDate = Calendar.getInstance();
-                endDate.add(Calendar.WEEK_OF_MONTH, 1);
 
                 int year = Calendar.getInstance().get(Calendar.YEAR);
                 int month = Calendar.getInstance().get(Calendar.YEAR);
@@ -308,7 +300,6 @@ public class CreateEventDialogFragment extends DialogFragment {
         @Override
         public void onResult(@NonNull PlaceBuffer places) {
             if (!places.getStatus().isSuccess()) {
-                Log.i(TAG, "onResult: Did not complete request" + places.getStatus().toString());
                 places.release();
                 return;
             }
@@ -323,7 +314,6 @@ public class CreateEventDialogFragment extends DialogFragment {
                             new LatLng(Objects.requireNonNull(
                                     place.getViewport()).getCenter().latitude,
                                     place.getViewport().getCenter().longitude));
-                    Log.i(TAG, "onResult: " + mPlaceData.toString());
 
                     //mLatLng = mPlaceData.getLatLng();
                     etAddress.setText(mPlaceData.getName());

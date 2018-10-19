@@ -26,6 +26,7 @@
 
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/tv_attending"
             style="@style/Titles"
             android:layout_width="match_parent"
@@ -34,6 +35,7 @@
             android:layout_below="@id/ab_feed"/>
 
         <android.support.v7.widget.RecyclerView
+            android:visibility="gone"
             android:id="@+id/rv_attending"
             android:layout_width="match_parent"
             android:layout_height="100dp"
@@ -51,7 +53,7 @@
             android:layout_below="@id/rv_attending"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="0dp"
-            android:text="On going" />
+            android:text="On Going" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_ongoing"

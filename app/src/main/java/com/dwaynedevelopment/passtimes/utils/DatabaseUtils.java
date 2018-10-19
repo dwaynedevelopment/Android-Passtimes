@@ -5,6 +5,7 @@ import com.dwaynedevelopment.passtimes.models.Player;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 
 public class DatabaseUtils {
@@ -43,7 +44,19 @@ public class DatabaseUtils {
         mDatabase.getReference(DATABASE_REFERENCE_USERS).child(player.getId()).child("favorites").setValue(player.getFavorites());
     }
 
-    public void addEvent(Event event) {
-        mDatabase.getReference("events").child(event.getId()).setValue(event);
+    public void insertPlayerToEvent(Event event) {
+        mDatabase.getReference(DATABASE_REFERENCE_EVENTS).child(event.getId()).child("players").setValue(event.getPlayerList());
     }
+
+    public void addEvent(Event event) {
+        mDatabase.getReference(DATABASE_REFERENCE_EVENTS).child(event.getId()).setValue(event);
+    }
+
+    public void deleteEvent(Event event) {
+        mDatabase.getReference(DATABASE_REFERENCE_EVENTS).child(event.getId()).removeValue();
+    }
+
+//    public void viewEvent(Event event) {
+//        mDatabase.getReference(DATABASE_REFERENCE_EVENTS).child(event.getId()).child("players").setValue(event.getPlayerList());
+//    }
 }

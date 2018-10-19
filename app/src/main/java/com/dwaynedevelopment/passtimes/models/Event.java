@@ -1,10 +1,14 @@
 package com.dwaynedevelopment.passtimes.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Event {
+public class Event implements Parcelable{
 
     private String id;
     private String hostId;
@@ -17,12 +21,11 @@ public class Event {
     private long startDate;
     private long endDate;
     private int maxPlayers;
-    private Map<String, Map<String, String>> playerList;
+    private HashMap<String, HashMap<String, String>> playerList;
 
     public Event() {
 
     }
-
 
     public Event(String hostId, String hostThumbnail, String sport, String title, double latitude, double longitude, String location, long startDate, long endDate, int maxPlayers) {
         this.id = UUID.randomUUID().toString();
@@ -37,6 +40,32 @@ public class Event {
         this.endDate = endDate;
         this.maxPlayers = maxPlayers;
     }
+
+    protected Event(Parcel in) {
+        id = in.readString();
+        hostId = in.readString();
+        hostThumbnail = in.readString();
+        sport = in.readString();
+        title = in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        location = in.readString();
+        startDate = in.readLong();
+        endDate = in.readLong();
+        maxPlayers = in.readInt();
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -124,5 +153,34 @@ public class Event {
 
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
+    }
+
+    public HashMap<String, HashMap<String, String>> getPlayerList() {
+        return playerList;
+    }
+
+    public void setPlayerList(HashMap<String, HashMap<String, String>> playerList) {
+        this.playerList = playerList;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(hostId);
+        dest.writeString(hostThumbnail);
+        dest.writeString(sport);
+        dest.writeString(title);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+        dest.writeString(location);
+        dest.writeLong(startDate);
+        dest.writeLong(endDate);
+        dest.writeInt(maxPlayers);
+        dest.writeMap(playerList);
     }
 }
