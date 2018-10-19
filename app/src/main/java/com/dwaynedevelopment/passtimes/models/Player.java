@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Player {
 
@@ -67,25 +68,19 @@ public class Player {
 
     private static final String TAG = "Player";
     public ArrayList<String> getListOfFavoriteSports() {
+        ArrayList<String> sports = new ArrayList();
         if(favorites != null) {
-            Collection<HashMap<String, String>> collection = favorites.values();
-            Iterator<HashMap<String, String>> iterator = collection.iterator();
-
-            HashMap<String, String> c = new HashMap<>();
-//            for (int i = 0; i < favorites.size() ; i++) {
-//                //c.values()
-//            }
-
-            List<String> keys = new ArrayList<>(favorites.keySet());
-            for (int i = 0; i <keys.size() ; i++) {
-                Log.i(TAG, "getListOfFavoriteSports: " + keys.get(i));
+            for (Map.Entry<String, HashMap<String, String>> favoriteSports : favorites.entrySet()) {
+                String sportsKey = favoriteSports.getKey();
+                // ...
+                for (Map.Entry<String, String> favSport : favoriteSports.getValue().entrySet()) {
+                    String name = favSport.getKey();
+                    String sport = favSport.getValue();
+                    sports.add(sport);
+                    Log.i(TAG, "getListOfFavoriteSports: SPORT " + sport);
+                }
             }
-
-
-
-            //Collection<String> listCollection = map.values();
-            //return new ArrayList<String>(listCollection);
         }
-        return new ArrayList<>();
+        return sports;
     }
 }

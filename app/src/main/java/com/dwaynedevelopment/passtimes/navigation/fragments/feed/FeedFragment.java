@@ -1,13 +1,19 @@
 package com.dwaynedevelopment.passtimes.navigation.fragments.feed;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +24,7 @@ import com.dwaynedevelopment.passtimes.adapters.FeedOnGoingViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
+import com.dwaynedevelopment.passtimes.navigation.fragments.event.ViewEventDialogFragment;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -25,6 +32,7 @@ import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 
 public class FeedFragment extends Fragment {
@@ -32,6 +40,7 @@ public class FeedFragment extends Fragment {
     DatabaseUtils mDb;
     AuthUtils mAuth;
     FeedOnGoingViewAdapter mAdapter;
+    EventReceiver eventReceiver;
 
     public FeedFragment() {
     }
@@ -57,19 +66,23 @@ public class FeedFragment extends Fragment {
             feedToolbar.inflateMenu(R.menu.menu_feed);
             feedToolbar.setOnMenuItemClickListener(menuItemClickListener);
 
+            eventReceiver = new EventReceiver();
+            IntentFilter actionFilter = new IntentFilter();
+            actionFilter.addAction(ACTION_EVENT_SELECTED);
+            getActivity().registerReceiver(eventReceiver, actionFilter);
+
             mDb = DatabaseUtils.getInstance();
             mAuth = AuthUtils.getInstance();
 
             Player player = mAuth.getCurrentSignedUser();
-            //ArrayList<String> favorites = player.getListOfFavoriteSports();
+            ArrayList<String> favorites = player.getListOfFavoriteSports();
+            Log.i("TAG", "onActivityCreated: PLAYER FAVORITES SIZE " + favorites.size());
 
             Query query = mDb.reference(DATABASE_REFERENCE_EVENTS)
                     .orderByChild("startDate");
 //                    .equalTo(favorites.get(0), "sport")
 //                    .equalTo(favorites.get(1), "sport")
 //                    .equalTo(favorites.get(2), "sport");
-
-
 
             FirebaseRecyclerOptions<Event> options = new FirebaseRecyclerOptions.Builder<Event>()
                     .setQuery(query, Event.class).build();
@@ -109,6 +122,27 @@ public class FeedFragment extends Fragment {
         super.onStop();
         if(mAdapter != null) {
             mAdapter.stopListening();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(eventReceiver);
+        }
+    }
+
+    private static final String TAG = "FeedFragment";
+    public class EventReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Event event = intent.getParcelableExtra("SELECTED_EVENT");
+            
+            ViewEventDialogFragment viewEventDialogFragment = ViewEventDialogFragment.newInstance(event);
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            viewEventDialogFragment.show(fragmentTransaction, ViewEventDialogFragment.TAG);
         }
     }
 }

@@ -17,8 +17,12 @@ public class CalendarUtils {
         return new SimpleDateFormat("dd", Locale.US).format(new Date(date));
     }
 
-    public static String getTimeFromDate(long date) {
+    public static String getDateTimeFromDate(long date) {
         return new SimpleDateFormat("EEEE hh:mm aa", Locale.US).format(new Date(date));
+    }
+
+    public static String getTimeFromDate(long date) {
+        return new SimpleDateFormat("hh:mm aa", Locale.US).format(new Date(date));
     }
 
     public static String getCurrentTimeAsString(Calendar calendar) {
