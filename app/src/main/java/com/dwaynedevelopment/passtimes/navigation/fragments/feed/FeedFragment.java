@@ -5,37 +5,32 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.FeedOnGoingViewAdapter;
-import com.dwaynedevelopment.passtimes.adapters.SportsViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
+import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
+import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 
 public class FeedFragment extends Fragment {
 
     DatabaseUtils mDb;
+    AuthUtils mAuth;
     FeedOnGoingViewAdapter mAdapter;
 
     public FeedFragment() {
@@ -63,9 +58,21 @@ public class FeedFragment extends Fragment {
             feedToolbar.setOnMenuItemClickListener(menuItemClickListener);
 
             mDb = DatabaseUtils.getInstance();
+            mAuth = AuthUtils.getInstance();
+
+            Player player = mAuth.getCurrentSignedUser();
+            //ArrayList<String> favorites = player.getListOfFavoriteSports();
+
+            Query query = mDb.reference(DATABASE_REFERENCE_EVENTS)
+                    .orderByChild("startDate");
+//                    .equalTo(favorites.get(0), "sport")
+//                    .equalTo(favorites.get(1), "sport")
+//                    .equalTo(favorites.get(2), "sport");
+
+
 
             FirebaseRecyclerOptions<Event> options = new FirebaseRecyclerOptions.Builder<Event>()
-                    .setQuery(mDb.reference(DATABASE_REFERENCE_EVENTS), Event.class).build();
+                    .setQuery(query, Event.class).build();
 
 
             mAdapter = new FeedOnGoingViewAdapter(getContext(), options);
@@ -74,47 +81,6 @@ public class FeedFragment extends Fragment {
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
             recyclerView.setAdapter(mAdapter);
-
-//            mDb.reference(DATABASE_REFERENCE_EVENTS).addChildEventListener(new ChildEventListener() {
-//                ArrayList<Event> eventsArray = new ArrayList<>();
-//
-//                @Override
-//                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                    // Retrieve new events added to the database only
-//                    Event event = dataSnapshot.getValue(Event.class);
-//                    eventsArray.add(event);
-//
-//                    FeedOnGoingViewAdapter adapter = new FeedOnGoingViewAdapter(getContext(), eventsArray);
-//
-//                    RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
-//                    recyclerView.setHasFixedSize(true);
-//                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-//                    recyclerView.setAdapter(adapter);
-//                }
-//
-//                @Override
-//                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//                }
-//
-//                @Override
-//                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//                    Event event = dataSnapshot.getValue(Event.class);
-//                    if(eventsArray.contains(event)) {
-//                        eventsArray.remove(event);
-//                    }
-//                }
-//
-//                @Override
-//                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                }
-//            });
         }
     }
 
