@@ -1,8 +1,13 @@
 package com.dwaynedevelopment.passtimes.models;
 
+import android.util.Log;
+
 import com.google.firebase.database.Exclude;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,5 +63,29 @@ public class Player {
 
     public void setFavorites(HashMap<String, HashMap<String, String>> favorites) {
         this.favorites = favorites;
+    }
+
+    private static final String TAG = "Player";
+    public ArrayList<String> getListOfFavoriteSports() {
+        if(favorites != null) {
+            Collection<HashMap<String, String>> collection = favorites.values();
+            Iterator<HashMap<String, String>> iterator = collection.iterator();
+
+            HashMap<String, String> c = new HashMap<>();
+//            for (int i = 0; i < favorites.size() ; i++) {
+//                //c.values()
+//            }
+
+            List<String> keys = new ArrayList<>(favorites.keySet());
+            for (int i = 0; i <keys.size() ; i++) {
+                Log.i(TAG, "getListOfFavoriteSports: " + keys.get(i));
+            }
+
+
+
+            //Collection<String> listCollection = map.values();
+            //return new ArrayList<String>(listCollection);
+        }
+        return new ArrayList<>();
     }
 }

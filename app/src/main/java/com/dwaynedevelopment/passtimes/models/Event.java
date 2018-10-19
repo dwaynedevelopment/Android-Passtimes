@@ -14,7 +14,8 @@ public class Event {
     private double latitude;
     private double longitude;
     private String location;
-    private long date;
+    private long startDate;
+    private long endDate;
     private int maxPlayers;
     private Map<String, Map<String, String>> playerList;
 
@@ -23,7 +24,7 @@ public class Event {
     }
 
 
-    public Event(String hostId, String hostThumbnail, String sport, String title, double latitude, double longitude, String location, long date, int maxPlayers) {
+    public Event(String hostId, String hostThumbnail, String sport, String title, double latitude, double longitude, String location, long startDate, long endDate, int maxPlayers) {
         this.id = UUID.randomUUID().toString();
         this.hostId = hostId;
         this.hostThumbnail = hostThumbnail;
@@ -32,7 +33,8 @@ public class Event {
         this.latitude = latitude;
         this.longitude = longitude;
         this.location = location;
-        this.date = date;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.maxPlayers = maxPlayers;
     }
 
@@ -100,12 +102,20 @@ public class Event {
         this.location = location;
     }
 
-    public long getDate() {
-        return date;
+    public long getStartDate() {
+        return startDate;
     }
 
-    public void setDate(long date) {
-        this.date = date;
+    public void setStartDate(long startDate) {
+        this.startDate = startDate;
+    }
+
+    public long getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(long endDate) {
+        this.endDate = endDate;
     }
 
     public int getMaxPlayers() {

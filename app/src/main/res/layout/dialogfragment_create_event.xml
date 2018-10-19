@@ -110,9 +110,23 @@
                     android:inputType="text"
                     android:textColor="@color/colorDarkPrimary"
                     android:background="@drawable/et_dynamic_style"
-                    android:padding="10dp"/>
+                    android:padding="10dp"
+                    android:imeOptions="actionDone"/>
 
             </android.support.design.widget.TextInputLayout>
+
+            <com.github.badoualy.datepicker.DatePickerTimeline
+                android:id="@+id/date_timeline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="-32dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/transparent"
+                app:mti_bgLblDateSelectedColor="@color/colorSecondaryAccentActive"
+                app:mti_ringLblDateSelectedColor="@color/colorSecondaryAccent"
+                android:layout_below="@+id/tv_date_and_time"/>
 
             <TextView
                 style="@style/Titles"
@@ -122,24 +136,12 @@
                 android:text="Date And Time"
                 android:layout_below="@+id/ti_location"/>
 
-            <devs.mulham.horizontalcalendar.HorizontalCalendarView
-                android:id="@+id/horizontal_calendar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_below="@id/tv_date_and_time"
-                android:background="@android:color/transparent"
-                app:textColorSelected="@color/colorDarkPrimary"
-                app:textColorNormal="@color/colorDarkPrimary" />
-
             <include
                 android:id="@+id/ll_times"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 layout="@layout/time_selector"
-                android:layout_below="@+id/horizontal_calendar"
+                android:layout_below="@+id/date_timeline"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"

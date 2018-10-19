@@ -39,16 +39,16 @@ public class FeedOnGoingViewAdapter  extends FirebaseRecyclerAdapter<Event, Feed
     @Override
     protected void onBindViewHolder(@NonNull OnGoingViewHolder holder, int position, @NonNull Event event) {
 
-        String month = CalendarUtils.getMonthFromDate(event.getDate());
+        String month = CalendarUtils.getMonthFromDate(event.getStartDate());
         holder.tvMonth.setText(month);
-        String day = CalendarUtils.getDayFromDate(event.getDate());
+        String day = CalendarUtils.getDayFromDate(event.getStartDate());
         holder.tvDay.setText(day);
 
         holder.tvSport.setText(event.getSport());
         holder.tvTitle.setText(event.getTitle());
         holder.tvLocation.setText(event.getLocation());
 
-        String time = CalendarUtils.getTimeFromDate(event.getDate());
+        String time = CalendarUtils.getTimeFromDate(event.getStartDate());
         holder.tvTime.setText(time);
     }
 
