@@ -3,9 +3,12 @@ package com.dwaynedevelopment.passtimes.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.firestore.DocumentReference;
+
 import java.security.Timestamp;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,7 +25,8 @@ public class Event implements Parcelable{
     private long startDate;
     private long endDate;
     private int maxPlayers;
-    private HashMap<String, HashMap<String, String>> playerList;
+    private List<DocumentReference> attendingUsers;
+    //private HashMap<String, HashMap<String, String>> playerList;
 
     public Event() {
 
@@ -42,7 +46,7 @@ public class Event implements Parcelable{
         this.maxPlayers = maxPlayers;
     }
 
-    protected Event(Parcel in) {
+    private Event(Parcel in) {
         id = in.readString();
         hostId = in.readString();
         hostThumbnail = in.readString();
@@ -55,18 +59,6 @@ public class Event implements Parcelable{
         endDate = in.readLong();
         maxPlayers = in.readInt();
     }
-
-    public static final Creator<Event> CREATOR = new Creator<Event>() {
-        @Override
-        public Event createFromParcel(Parcel in) {
-            return new Event(in);
-        }
-
-        @Override
-        public Event[] newArray(int size) {
-            return new Event[size];
-        }
-    };
 
     public String getId() {
         return id;
@@ -156,13 +148,34 @@ public class Event implements Parcelable{
         this.maxPlayers = maxPlayers;
     }
 
-    public HashMap<String, HashMap<String, String>> getPlayerList() {
-        return playerList;
+//    public HashMap<String, HashMap<String, String>> getPlayerList() {
+//        return playerList;
+//    }
+//
+//    public void setPlayerList(HashMap<String, HashMap<String, String>> playerList) {
+//        this.playerList = playerList;
+//    }
+
+
+    public List<DocumentReference> getAttendingUsers() {
+        return attendingUsers;
     }
 
-    public void setPlayerList(HashMap<String, HashMap<String, String>> playerList) {
-        this.playerList = playerList;
+    public void setAttendingUsers(List<DocumentReference> attendingUsers) {
+        this.attendingUsers = attendingUsers;
     }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 
     @Override
     public int describeContents() {
@@ -182,6 +195,6 @@ public class Event implements Parcelable{
         dest.writeLong(startDate);
         dest.writeLong(endDate);
         dest.writeInt(maxPlayers);
-        dest.writeMap(playerList);
+        //dest.writeMap(attendingUsers);
     }
 }

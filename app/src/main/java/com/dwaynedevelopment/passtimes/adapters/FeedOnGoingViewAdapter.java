@@ -26,6 +26,7 @@ public class FeedOnGoingViewAdapter extends FirestoreRecyclerAdapter<Event, Feed
 
     public FeedOnGoingViewAdapter(@NonNull FirestoreRecyclerOptions<Event> options, Context context) {
         super(options);
+        setHasStableIds(true);
         this.context = context;
     }
 

@@ -1,10 +1,12 @@
 package com.dwaynedevelopment.passtimes.utils;
 
+import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 
 public class FirebaseFirestoreUtils {
@@ -44,8 +46,12 @@ public class FirebaseFirestoreUtils {
         mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId()).update("thumbnail", documentObject.getThumbnail());
     }
 
-    public void insertFavorites(Player player) {
-        mFirestore.collection(DATABASE_REFERENCE_USERS).document(player.getId()).update("favorites", player.getFavoriteReferences());
+    public void insertFavorites(Player documentObject) {
+        mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId()).update("favorites", documentObject.getFavoriteReferences());
+    }
+
+    public void addAttendess(Event eventDocument) {
+        mFirestore.collection(DATABASE_REFERENCE_EVENTS).document(eventDocument.getId()).update("attendees", eventDocument.getAttendingUsers());
     }
 
     public CollectionReference databaseCollection(String COLLECTION_REFERENCE) {

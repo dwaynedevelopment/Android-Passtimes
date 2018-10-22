@@ -91,8 +91,8 @@ public class FeedFragment extends Fragment {
             mAdapter = new FeedOnGoingViewAdapter(options, getContext());
 
             RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
-            recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+            recyclerView.setHasFixedSize(true);
             recyclerView.setItemAnimator(null);
             recyclerView.setAdapter(mAdapter);
         }

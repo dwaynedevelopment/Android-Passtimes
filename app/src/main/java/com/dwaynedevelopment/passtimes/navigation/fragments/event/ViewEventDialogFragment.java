@@ -19,15 +19,24 @@ import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
+import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
+import com.google.firebase.firestore.DocumentReference;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 
 public class ViewEventDialogFragment extends DialogFragment {
 
     public static final String TAG = "ViewEventDialogFragment";
     private static final String EVENT = "EVENT";
-    private DatabaseUtils mDb;
+    private FirebaseFirestoreUtils mDb;
+    private List<DocumentReference> attendingUsers = new ArrayList<>();
 
     private Event event;
 
@@ -82,7 +91,7 @@ public class ViewEventDialogFragment extends DialogFragment {
             //delete.setOnClickListener(clickListener);
         }
 
-        mDb = DatabaseUtils.getInstance();
+        mDb = FirebaseFirestoreUtils.getInstance();
 
         CircleImageView ciHost = getView().findViewById(R.id.ci_host);
         Glide.with(getContext()).load(event.getHostThumbnail()).into(ciHost);
@@ -105,8 +114,6 @@ public class ViewEventDialogFragment extends DialogFragment {
         ImageButton ibClose = getView().findViewById(R.id.ib_close);
         ibClose.setOnClickListener(clickListener);
 
-
-
     }
 
     private final View.OnClickListener clickListener = new View.OnClickListener() {
@@ -120,19 +127,11 @@ public class ViewEventDialogFragment extends DialogFragment {
                     AuthUtils auth = AuthUtils.getInstance();
                     Player player = auth.getCurrentSignedUser();
 
-                    HashMap<String, HashMap<String, String>> attendeesList = new HashMap<>();
-                    HashMap<String, String> attendees = new HashMap<>();
-                    attendees.put("id", player.getId());
-                    attendees.put("name", player.getName());
-                    attendees.put("thumbnail", player.getThumbnail());
-                    attendeesList.put(player.getId(), attendees);
+                    attendingUsers.add(mDb.getFirestore().document("/"+DATABASE_REFERENCE_USERS+"/"+player.getId()));
 
-                    event.setPlayerList(attendeesList);
+                    event.setAttendingUsers(attendingUsers);
 
-                    DatabaseUtils db = DatabaseUtils.getInstance();
-                    //FIXME
-                    //TODO
-                    //db.insertPlayerToEvent(event);
+                    mDb.addAttendess(event);
 
                     v.setVisibility(View.GONE);
                     break;

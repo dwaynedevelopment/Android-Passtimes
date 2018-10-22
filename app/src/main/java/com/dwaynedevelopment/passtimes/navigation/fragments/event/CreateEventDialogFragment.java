@@ -16,6 +16,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,10 +51,14 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -129,7 +134,36 @@ public class CreateEventDialogFragment extends DialogFragment {
 
         mDb = FirebaseFirestoreUtils.getInstance();
         mAuth = AuthUtils.getInstance();
-        //mDb.reference(DATABASE_REFERENCE_SPORTS).addListenerForSingleValueEvent(valueEventListener);
+
+        mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        ArrayList<Sport> sportsArray = new ArrayList<>();
+
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                sportsArray.add(document.toObject(Sport.class));
+
+                                SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);
+                                if (getActivity() != null) {
+                                    if (getView() != null) {
+                                        RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
+                                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+                                        recyclerView.setHasFixedSize(true);
+                                        recyclerView.setAdapter(adapter);
+                                    }
+                                }
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+
         if (getActivity() != null) {
 
             if (getView() != null) {
@@ -202,7 +236,6 @@ public class CreateEventDialogFragment extends DialogFragment {
                         Player currentPlayer = mAuth.getCurrentSignedUser();
                         Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), selectedSport.getCategory(), title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
 
-                        //mDb.databaseCollection(DATABASE_REFERENCE_EVENTS).document(event.getId()).set(event);
                         mDb.insertDocument(DATABASE_REFERENCE_EVENTS, event.getId(), event);
 
                         dismiss();
@@ -247,7 +280,7 @@ public class CreateEventDialogFragment extends DialogFragment {
         }
     };
 
-    View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
+    private final View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             int id = v.getId();
@@ -270,7 +303,7 @@ public class CreateEventDialogFragment extends DialogFragment {
         }
     };
 
-    TimePickerDialog.OnTimeSetListener startTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+    private final TimePickerDialog.OnTimeSetListener startTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             mStartCalendar.setTime(CalendarUtils.setTime(mStartCalendar, hourOfDay, minute));
@@ -278,7 +311,7 @@ public class CreateEventDialogFragment extends DialogFragment {
         }
     };
 
-    TimePickerDialog.OnTimeSetListener endTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+    private final TimePickerDialog.OnTimeSetListener endTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             mEndCalendar.setTime(CalendarUtils.setTime(mEndCalendar, hourOfDay, minute));
@@ -346,36 +379,6 @@ public class CreateEventDialogFragment extends DialogFragment {
             getActivity().unregisterReceiver(selectReceiver);
         }
     }
-
-    private final ValueEventListener valueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            ArrayList<Sport> sportsArray = new ArrayList<>();
-
-            for (DataSnapshot ds: dataSnapshot.getChildren()) {
-
-                if (ds != null) {
-                    Sport sport = ds.getValue(Sport.class);
-                    sportsArray.add(sport);
-                }
-            }
-            SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);
-            if (getActivity() != null) {
-                if (getView() != null) {
-                    RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
-                    recyclerView.setAdapter(adapter);
-                }
-            }
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    };
-
 
     public class SelectReceiver extends BroadcastReceiver {
 
