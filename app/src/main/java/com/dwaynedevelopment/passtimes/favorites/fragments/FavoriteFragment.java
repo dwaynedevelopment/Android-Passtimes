@@ -181,8 +181,7 @@ public class FavoriteFragment extends Fragment {
             //CLEAR LIST TO AVOID DUPLICATES ENTRIES.
             favoriteReferences.clear();
             for (int i = 0; i <selectedFavorites.size() ; i++) {
-                favoriteReferences.add(mDb.getFirestore()
-                        .document("/"+DATABASE_REFERENCE_SPORTS+"/"+selectedFavorites.get(i).getId()));
+                favoriteReferences.add(mDb.getFirestore().document("/"+DATABASE_REFERENCE_SPORTS+"/"+selectedFavorites.get(i).getId()));
             }
         }
     }
