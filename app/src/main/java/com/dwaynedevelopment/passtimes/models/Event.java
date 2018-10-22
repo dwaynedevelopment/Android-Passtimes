@@ -3,6 +3,7 @@ package com.dwaynedevelopment.passtimes.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.security.Timestamp;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;

@@ -26,12 +26,21 @@ import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.models.Sport;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
+import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -41,12 +50,13 @@ import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar
 
 public class FavoriteFragment extends Fragment {
 
-    private DatabaseUtils mDb;
+    private FirebaseFirestoreUtils mDb;
     private AuthUtils mAuth;
     private IFavoriteHandler iFavoriteHandler;
     private FavoritesReceiver favoritesReceiver;
     private ArrayList<Sport> selectedFavorites = new ArrayList<>();
     private HashMap<String, HashMap<String, String>> favoriteSports = new HashMap<>();
+    private List<DocumentReference> favoriteReferences = new ArrayList<>();
 
 
     public static FavoriteFragment newInstance() {
@@ -67,12 +77,42 @@ public class FavoriteFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_favorite, container, false);
     }
 
+    private static final String TAG = "FavoriteFragment";
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mDb = DatabaseUtils.getInstance();
+        mDb = FirebaseFirestoreUtils.getInstance();
         mAuth = AuthUtils.getInstance();
-        mDb.reference(DATABASE_REFERENCE_SPORTS).addListenerForSingleValueEvent(valueEventListener);
+
+
+        mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        ArrayList<Sport> sportsArray = new ArrayList<>();
+
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                sportsArray.add(document.toObject(Sport.class));
+
+                                FavoriteViewAdapter adapter = new FavoriteViewAdapter((AppCompatActivity) getActivity(), sportsArray);
+                                if (getActivity() != null) {
+                                    if (getView() != null) {
+                                        RecyclerView recyclerView = getView().findViewById(R.id.rv_favorite);
+                                        recyclerView.setHasFixedSize(true);
+                                        recyclerView.setLayoutManager(new GridLayoutManager(getActivity().getApplicationContext(), 3));
+                                        recyclerView.setAdapter(adapter);
+                                    }
+                                }
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
 
         if (getActivity() != null) {
             favoritesReceiver = new FavoritesReceiver();
@@ -101,7 +141,8 @@ public class FavoriteFragment extends Fragment {
         public void onClick(View v) {
             if (mAuth.getCurrentSignedUser() != null) {
                 Player player = mAuth.getCurrentSignedUser();
-                player.setFavorites(favoriteSports);
+                //player.setFavorites(favoriteSports);
+                player.setFavoriteReferences(favoriteReferences);
 
                 if (getView() != null) {
                     final ProgressBar progress = getView().findViewById(R.id.pb_dots_fav);
@@ -109,7 +150,7 @@ public class FavoriteFragment extends Fragment {
 
                     mDb.insertFavorites(player);
 
-                    if (player.getFavorites().size() >= 1) {
+                    if (player.getFavoriteReferences().size() >= 1) {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -131,35 +172,6 @@ public class FavoriteFragment extends Fragment {
         }
     };
 
-    private final ValueEventListener valueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            ArrayList<Sport> sportsArray = new ArrayList<>();
-
-            for (DataSnapshot ds: dataSnapshot.getChildren()) {
-
-                if (ds != null) {
-                    Sport sport = ds.getValue(Sport.class);
-                    sportsArray.add(sport);
-                }
-            }
-            FavoriteViewAdapter adapter = new FavoriteViewAdapter((AppCompatActivity) getActivity(), sportsArray);
-            if (getActivity() != null) {
-                if (getView() != null) {
-                    RecyclerView recyclerView = getView().findViewById(R.id.rv_favorite);
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(new GridLayoutManager(getActivity().getApplicationContext(), 3));
-                    recyclerView.setAdapter(adapter);
-                }
-            }
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    };
-
 
     public class FavoritesReceiver extends BroadcastReceiver {
 
@@ -169,13 +181,14 @@ public class FavoriteFragment extends Fragment {
             selectedFavorites = intent.getParcelableArrayListExtra("SELECTED_SPORTS");
 
             //CLEAR LIST TO AVOID DUPLICATES ENTRIES.
-            favoriteSports.clear();
-
+//            favoriteSports.clear();
+            favoriteReferences.clear();
             for (int i = 0; i <selectedFavorites.size() ; i++) {
-                HashMap<String, String> selected = new HashMap<>();
-                selected.put("id", selectedFavorites.get(i).getId());
-                selected.put("category", selectedFavorites.get(i).getCategory());
-                favoriteSports.put(selectedFavorites.get(i).getId(), selected);
+                favoriteReferences.add(mDb.getFirestore().document("/"+DATABASE_REFERENCE_SPORTS+"/"+selectedFavorites.get(i).getId()));
+//                HashMap<String, String> selected = new HashMap<>();
+//                selected.put("id", selectedFavorites.get(i).getId());
+//                selected.put("category", selectedFavorites.get(i).getCategory());
+//                favoriteSports.put(selectedFavorites.get(i).getId(), selected);
             }
 
         }

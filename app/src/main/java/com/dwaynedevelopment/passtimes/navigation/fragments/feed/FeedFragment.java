@@ -27,8 +27,13 @@ import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDia
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.ViewEventDialogFragment;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
+import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.database.Query;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.ArrayList;
 
@@ -37,7 +42,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_
 
 public class FeedFragment extends Fragment {
 
-    DatabaseUtils mDb;
+    FirebaseFirestoreUtils mDb;
     AuthUtils mAuth;
     FeedOnGoingViewAdapter mAdapter;
     EventReceiver eventReceiver;
@@ -58,7 +63,8 @@ public class FeedFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        mDb = FirebaseFirestoreUtils.getInstance();
+        mAuth = AuthUtils.getInstance();
         View view = getView();
 
         if(view != null) {
@@ -71,24 +77,18 @@ public class FeedFragment extends Fragment {
             actionFilter.addAction(ACTION_EVENT_SELECTED);
             getActivity().registerReceiver(eventReceiver, actionFilter);
 
-            mDb = DatabaseUtils.getInstance();
-            mAuth = AuthUtils.getInstance();
+
 
             Player player = mAuth.getCurrentSignedUser();
-            ArrayList<String> favorites = player.getListOfFavoriteSports();
-            Log.i("TAG", "onActivityCreated: PLAYER FAVORITES SIZE " + favorites.size());
+            //ArrayList<String> favorites = player.getListOfFavoriteSports();
+            //Log.i("TAG", "onActivityCreated: PLAYER FAVORITES SIZE " + favorites.size());
 
-            Query query = mDb.reference(DATABASE_REFERENCE_EVENTS);
-//                    .orderByChild("startDate");
-//                    .equalTo(favorites.get(0), "sport")
-//                    .equalTo(favorites.get(1), "sport")
-//                    .equalTo(favorites.get(2), "sport");
-
-            FirebaseRecyclerOptions<Event> options = new FirebaseRecyclerOptions.Builder<Event>()
-                    .setQuery(query, Event.class).build();
+            FirestoreRecyclerOptions<Event> options = new FirestoreRecyclerOptions.Builder<Event>()
+                    .setQuery(mDb.databaseCollection(DATABASE_REFERENCE_EVENTS), Event.class)
+                    .build();
 
 
-            mAdapter = new FeedOnGoingViewAdapter(getContext(), options);
+            mAdapter = new FeedOnGoingViewAdapter(options, getContext());
 
             RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
             recyclerView.setHasFixedSize(true);

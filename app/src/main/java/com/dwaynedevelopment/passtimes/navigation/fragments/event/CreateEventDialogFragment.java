@@ -39,6 +39,7 @@ import com.dwaynedevelopment.passtimes.models.Sport;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
+import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.github.badoualy.datepicker.DatePickerTimeline;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -52,6 +53,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,6 +66,7 @@ import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getApiC
 import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getPlacesAdapter;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_FAVORITE_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_SELECT_SELECTED;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_SPORTS;
 import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
 
@@ -72,7 +75,7 @@ public class CreateEventDialogFragment extends DialogFragment {
     public static final String TAG = "CreateEventDialogFragme";
 
     private DatePickerTimeline timeline;
-    private DatabaseUtils mDb;
+    private FirebaseFirestoreUtils mDb;
     private AuthUtils mAuth;
 
     private PlacesApiAdapter mPlacesApiAdapter;
@@ -124,9 +127,9 @@ public class CreateEventDialogFragment extends DialogFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mDb = DatabaseUtils.getInstance();
+        mDb = FirebaseFirestoreUtils.getInstance();
         mAuth = AuthUtils.getInstance();
-        mDb.reference(DATABASE_REFERENCE_SPORTS).addListenerForSingleValueEvent(valueEventListener);
+        //mDb.reference(DATABASE_REFERENCE_SPORTS).addListenerForSingleValueEvent(valueEventListener);
         if (getActivity() != null) {
 
             if (getView() != null) {
@@ -151,7 +154,7 @@ public class CreateEventDialogFragment extends DialogFragment {
                 mEndCalendar = Calendar.getInstance();
 
                 int year = Calendar.getInstance().get(Calendar.YEAR);
-                int month = Calendar.getInstance().get(Calendar.YEAR);
+                int month = Calendar.getInstance().get(Calendar.MONTH);
                 int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 
                 timeline = getView().findViewById(R.id.date_timeline);
@@ -179,7 +182,7 @@ public class CreateEventDialogFragment extends DialogFragment {
     }
 
     // Save and close event creator
-    Toolbar.OnMenuItemClickListener menuItemClickListener = new Toolbar.OnMenuItemClickListener() {
+    private final Toolbar.OnMenuItemClickListener menuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             if (item.getItemId() == R.id.action_close) {
@@ -198,7 +201,10 @@ public class CreateEventDialogFragment extends DialogFragment {
                     if (validateTime()) {
                         Player currentPlayer = mAuth.getCurrentSignedUser();
                         Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), selectedSport.getCategory(), title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
-                        mDb.addEvent(event);
+
+                        //mDb.databaseCollection(DATABASE_REFERENCE_EVENTS).document(event.getId()).set(event);
+                        mDb.insertDocument(DATABASE_REFERENCE_EVENTS, event.getId(), event);
+
                         dismiss();
                     }
                 }

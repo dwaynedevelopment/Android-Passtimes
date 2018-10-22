@@ -130,12 +130,16 @@ public class ViewEventDialogFragment extends DialogFragment {
                     event.setPlayerList(attendeesList);
 
                     DatabaseUtils db = DatabaseUtils.getInstance();
-                    db.insertPlayerToEvent(event);
+                    //FIXME
+                    //TODO
+                    //db.insertPlayerToEvent(event);
 
                     v.setVisibility(View.GONE);
                     break;
                 case R.id.ib_delete:
-                    mDb.deleteEvent(event);
+                    //FIXME
+                    //TODO
+                    //mDb.deleteEvent(event);
                     dismiss();
                     break;
             }

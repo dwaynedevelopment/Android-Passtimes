@@ -1,6 +1,5 @@
 package com.dwaynedevelopment.passtimes.adapters;
 
-import android.arch.lifecycle.LifecycleObserver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -15,19 +14,17 @@ import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.firebase.ui.common.ChangeEventType;
-import com.firebase.ui.database.ChangeEventListener;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DataSnapshot;
-
-
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
 
-public class FeedOnGoingViewAdapter extends FirebaseRecyclerAdapter<Event, FeedOnGoingViewAdapter.OnGoingViewHolder> implements ChangeEventListener, LifecycleObserver {
+
+public class FeedOnGoingViewAdapter extends FirestoreRecyclerAdapter<Event, FeedOnGoingViewAdapter.OnGoingViewHolder> {
 
     private Context context;
 
-    public FeedOnGoingViewAdapter(Context context, FirebaseRecyclerOptions<Event> options) {
+    public FeedOnGoingViewAdapter(@NonNull FirestoreRecyclerOptions<Event> options, Context context) {
         super(options);
         this.context = context;
     }
@@ -82,8 +79,9 @@ public class FeedOnGoingViewAdapter extends FirebaseRecyclerAdapter<Event, FeedO
         //holder.itemView.setTag(arrayListAllFeedsData.get(position));
     }
 
+
     @Override
-    public void onChildChanged(@NonNull ChangeEventType type, @NonNull DataSnapshot snapshot, int newIndex, int oldIndex) {
+    public void onChildChanged(@NonNull ChangeEventType type, @NonNull DocumentSnapshot snapshot, int newIndex, int oldIndex) {
         super.onChildChanged(type, snapshot, newIndex, oldIndex);
 
         switch (type) {

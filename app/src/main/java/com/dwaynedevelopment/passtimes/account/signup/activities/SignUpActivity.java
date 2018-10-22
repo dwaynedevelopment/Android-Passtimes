@@ -22,6 +22,7 @@ import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 import com.dwaynedevelopment.passtimes.account.signup.fragments.SignUpFragment;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
+import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,6 +39,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.dwaynedevelopment.passtimes.utils.ImageUtils.getRealFilePathFromURI;
 import static com.dwaynedevelopment.passtimes.utils.ImageUtils.getRealPathFromURI;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_REGISTRATION;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_GALLERY_IMAGE_SELECT;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_READ_EXTERNAL_STORAGE;
@@ -50,6 +52,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     private Uri userPhotoUri = null;
     private String username = null;
     private AuthUtils mAuth;
+    private FirebaseFirestoreUtils mDatabase;
     private StorageReference userFilePath;
     private ProgressBar progress;
 
@@ -60,6 +63,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
 
         invokeFragment();
         mAuth = AuthUtils.getInstance();
+        mDatabase = FirebaseFirestoreUtils.getInstance();
     }
 
     private void invokeFragment() {
@@ -237,15 +241,18 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                 @Override
                 public void run() {
                     progress.setVisibility(View.GONE);
-                    DatabaseUtils database = DatabaseUtils.getInstance();
-                    database.insertUser(mAuth.getCurrentSignedUser());
+                    //DatabaseUtils database = DatabaseUtils.getInstance();
+
+                    mDatabase.insertDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId(), mAuth.getCurrentSignedUser());
                 }
             }, 250);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     finish();
-                    DatabaseUtils.getInstance().updateImage(mAuth.getCurrentSignedUser());
+
+
+                    mDatabase.updateImage(mAuth.getCurrentSignedUser());
                     Intent intent = new Intent(SignUpActivity.this, FavoriteActivity.class);
                     intent.putExtra(EXTRA_REGISTRATION, true);
                     startActivity(intent);
