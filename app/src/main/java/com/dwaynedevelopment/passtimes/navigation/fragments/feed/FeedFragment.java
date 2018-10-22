@@ -93,6 +93,7 @@ public class FeedFragment extends Fragment {
             RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+            recyclerView.setItemAnimator(null);
             recyclerView.setAdapter(mAdapter);
         }
     }

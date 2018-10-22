@@ -3,13 +3,9 @@ package com.dwaynedevelopment.passtimes.adapters;
 import android.arch.lifecycle.LifecycleObserver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +13,6 @@ import android.widget.TextView;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.models.Event;
-import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.database.ChangeEventListener;
@@ -27,7 +22,6 @@ import com.google.firebase.database.DataSnapshot;
 
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
-import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_FAVORITE_SELECTED;
 
 public class FeedOnGoingViewAdapter extends FirebaseRecyclerAdapter<Event, FeedOnGoingViewAdapter.OnGoingViewHolder> implements ChangeEventListener, LifecycleObserver {
 
@@ -43,6 +37,22 @@ public class FeedOnGoingViewAdapter extends FirebaseRecyclerAdapter<Event, FeedO
     public FeedOnGoingViewAdapter.OnGoingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_ongoing, parent, false);
         return new OnGoingViewHolder(view);
+    }
+
+    @NonNull
+    @Override
+    public Event getItem(int position) {
+        return super.getItem(position);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
     }
 
     @Override
@@ -68,6 +78,8 @@ public class FeedOnGoingViewAdapter extends FirebaseRecyclerAdapter<Event, FeedO
                 context.sendBroadcast(selectIntent);
             }
         });
+
+        //holder.itemView.setTag(arrayListAllFeedsData.get(position));
     }
 
     @Override
@@ -92,7 +104,7 @@ public class FeedOnGoingViewAdapter extends FirebaseRecyclerAdapter<Event, FeedO
         }
     }
 
-    public class OnGoingViewHolder extends RecyclerView.ViewHolder {
+    class OnGoingViewHolder extends RecyclerView.ViewHolder {
 
         //private
         private CardView eventCard;
