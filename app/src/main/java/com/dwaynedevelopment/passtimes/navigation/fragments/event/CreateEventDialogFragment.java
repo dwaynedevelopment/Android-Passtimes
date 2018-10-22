@@ -252,11 +252,11 @@ public class CreateEventDialogFragment extends DialogFragment {
             } else {
                 switch (id) {
                     case R.id.et_start_time:
-                        TimePickerDialog timePickerDialog = new TimePickerDialog(context, android.R.style.Theme_Holo_Light_Dialog, startTimeSetListener, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE + 1), false);
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(context, android.R.style.Theme_Holo_Light_Dialog, startTimeSetListener, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), false);
                         timePickerDialog.show();
                         break;
                     case R.id.et_end_time:
-                        timePickerDialog = new TimePickerDialog(context, android.R.style.Theme_Holo_Light_Dialog, endTimeSetListener, mStartCalendar.get(Calendar.HOUR_OF_DAY + 1), mStartCalendar.get(Calendar.MINUTE), false);
+                        timePickerDialog = new TimePickerDialog(context, android.R.style.Theme_Holo_Light_Dialog, endTimeSetListener, mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE), false);
                         timePickerDialog.show();
                         break;
                 }

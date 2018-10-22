@@ -84,9 +84,9 @@ public class FeedOnGoingViewAdapter extends FirebaseRecyclerAdapter<Event, FeedO
             case REMOVED:
                 notifyItemRemoved(oldIndex);
                 break;
-//            case MOVED:
-//                notifyItemMoved(oldIndex, newIndex);
-//                break;
+            case MOVED:
+                notifyItemMoved(oldIndex, newIndex);
+                break;
             default:
                 throw new IllegalStateException("Incomplete case statement");
         }

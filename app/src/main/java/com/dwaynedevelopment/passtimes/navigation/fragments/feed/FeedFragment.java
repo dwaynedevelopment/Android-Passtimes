@@ -78,8 +78,8 @@ public class FeedFragment extends Fragment {
             ArrayList<String> favorites = player.getListOfFavoriteSports();
             Log.i("TAG", "onActivityCreated: PLAYER FAVORITES SIZE " + favorites.size());
 
-            Query query = mDb.reference(DATABASE_REFERENCE_EVENTS)
-                    .orderByChild("startDate");
+            Query query = mDb.reference(DATABASE_REFERENCE_EVENTS);
+//                    .orderByChild("startDate");
 //                    .equalTo(favorites.get(0), "sport")
 //                    .equalTo(favorites.get(1), "sport")
 //                    .equalTo(favorites.get(2), "sport");
