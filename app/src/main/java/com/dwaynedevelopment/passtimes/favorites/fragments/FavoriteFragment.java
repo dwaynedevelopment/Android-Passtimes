@@ -102,8 +102,8 @@ public class FavoriteFragment extends Fragment {
                                     if (getView() != null) {
                                         RecyclerView recyclerView = getView().findViewById(R.id.rv_favorite);
                                         recyclerView.setLayoutManager(new GridLayoutManager(getActivity().getApplicationContext(), 3));
-                                        recyclerView.setHasFixedSize(true);
                                         recyclerView.setAdapter(adapter);
+                                        recyclerView.setHasFixedSize(true);
                                     }
                                 }
                             }
@@ -141,7 +141,6 @@ public class FavoriteFragment extends Fragment {
         public void onClick(View v) {
             if (mAuth.getCurrentSignedUser() != null) {
                 Player player = mAuth.getCurrentSignedUser();
-                //player.setFavorites(favoriteSports);
                 player.setFavoriteReferences(favoriteReferences);
 
                 if (getView() != null) {
@@ -177,20 +176,14 @@ public class FavoriteFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
             selectedFavorites = intent.getParcelableArrayListExtra("SELECTED_SPORTS");
 
             //CLEAR LIST TO AVOID DUPLICATES ENTRIES.
-//            favoriteSports.clear();
             favoriteReferences.clear();
             for (int i = 0; i <selectedFavorites.size() ; i++) {
-                favoriteReferences.add(mDb.getFirestore().document("/"+DATABASE_REFERENCE_SPORTS+"/"+selectedFavorites.get(i).getId()));
-//                HashMap<String, String> selected = new HashMap<>();
-//                selected.put("id", selectedFavorites.get(i).getId());
-//                selected.put("category", selectedFavorites.get(i).getCategory());
-//                favoriteSports.put(selectedFavorites.get(i).getId(), selected);
+                favoriteReferences.add(mDb.getFirestore()
+                        .document("/"+DATABASE_REFERENCE_SPORTS+"/"+selectedFavorites.get(i).getId()));
             }
-
         }
     }
  }

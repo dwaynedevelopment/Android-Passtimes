@@ -47,8 +47,7 @@ public class FeedFragment extends Fragment {
     FeedOnGoingViewAdapter mAdapter;
     EventReceiver eventReceiver;
 
-    public FeedFragment() {
-    }
+    public FeedFragment() { }
 
     public static FeedFragment newInstance() {
         return new FeedFragment();
@@ -77,12 +76,6 @@ public class FeedFragment extends Fragment {
             actionFilter.addAction(ACTION_EVENT_SELECTED);
             getActivity().registerReceiver(eventReceiver, actionFilter);
 
-
-
-            Player player = mAuth.getCurrentSignedUser();
-            //ArrayList<String> favorites = player.getListOfFavoriteSports();
-            //Log.i("TAG", "onActivityCreated: PLAYER FAVORITES SIZE " + favorites.size());
-
             FirestoreRecyclerOptions<Event> options = new FirestoreRecyclerOptions.Builder<Event>()
                     .setQuery(mDb.databaseCollection(DATABASE_REFERENCE_EVENTS), Event.class)
                     .build();
@@ -92,9 +85,9 @@ public class FeedFragment extends Fragment {
 
             RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-            recyclerView.setHasFixedSize(true);
             recyclerView.setItemAnimator(null);
             recyclerView.setAdapter(mAdapter);
+            recyclerView.setHasFixedSize(true);
         }
     }
 

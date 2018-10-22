@@ -152,8 +152,8 @@ public class CreateEventDialogFragment extends DialogFragment {
                                     if (getView() != null) {
                                         RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
                                         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
-                                        recyclerView.setHasFixedSize(true);
                                         recyclerView.setAdapter(adapter);
+                                        recyclerView.setHasFixedSize(true);
                                     }
                                 }
                             }
