@@ -1,17 +1,8 @@
 package com.dwaynedevelopment.passtimes.models;
 
-import android.util.Log;
-
-import com.google.firebase.database.Exclude;
 import com.google.firebase.firestore.DocumentReference;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class Player {
 

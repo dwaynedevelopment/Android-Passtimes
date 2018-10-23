@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,15 +17,12 @@ import com.dwaynedevelopment.passtimes.models.Sport;
 
 import java.util.ArrayList;
 
-import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_FAVORITE_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_SELECT_SELECTED;
 
 public class SelectedViewAdapter extends RecyclerView.Adapter<SelectedViewAdapter.ViewHolder> {
 
-    private final ArrayList<Sport> selected = new ArrayList<>();
-
-    private ArrayList<Sport> favoriteSports;
-    private AppCompatActivity context;
+    private final ArrayList<Sport> favoriteSports;
+    private final AppCompatActivity context;
 
     private Sport oldFavoriteSport = null;
     private View oldSelectedView;
@@ -112,9 +108,9 @@ public class SelectedViewAdapter extends RecyclerView.Adapter<SelectedViewAdapte
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView ivIcon;
-        private TextView tvCategory;
-        private RelativeLayout button;
+        private final ImageView ivIcon;
+        private final TextView tvCategory;
+        private final RelativeLayout button;
 
         ViewHolder(View itemView) {
             super(itemView);

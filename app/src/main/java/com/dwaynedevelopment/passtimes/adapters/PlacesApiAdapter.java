@@ -17,7 +17,6 @@ package com.dwaynedevelopment.passtimes.adapters;
  */
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.text.style.CharacterStyle;
@@ -67,7 +66,7 @@ public class PlacesApiAdapter extends ArrayAdapter<AutocompletePrediction> imple
     /**
      * Handles autocomplete requests.
      */
-    private GoogleApiClient mGoogleApiClient;
+    private final GoogleApiClient mGoogleApiClient;
 
     /**
      * The bounds used for Places Geo Data autocomplete API requests.
@@ -77,7 +76,7 @@ public class PlacesApiAdapter extends ArrayAdapter<AutocompletePrediction> imple
     /**
      * The autocomplete filter used to restrict queries to a specific set of place types.
      */
-    private AutocompleteFilter mPlaceFilter;
+    private final AutocompleteFilter mPlaceFilter;
 
     /**
      * Initializes with a resource for text rows and autocomplete query bounds.

@@ -9,11 +9,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,30 +20,21 @@ import android.view.ViewGroup;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.FeedOnGoingViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
-import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.ViewEventDialogFragment;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
-import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.database.Query;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
-import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 
 public class FeedFragment extends Fragment {
 
-    FirebaseFirestoreUtils mDb;
-    AuthUtils mAuth;
-    FeedOnGoingViewAdapter mAdapter;
-    EventReceiver eventReceiver;
+    private FeedOnGoingViewAdapter mAdapter;
+    private EventReceiver eventReceiver;
 
     public FeedFragment() { }
 
@@ -62,8 +51,8 @@ public class FeedFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mDb = FirebaseFirestoreUtils.getInstance();
-        mAuth = AuthUtils.getInstance();
+        FirebaseFirestoreUtils mDb = FirebaseFirestoreUtils.getInstance();
+        AuthUtils mAuth = AuthUtils.getInstance();
         View view = getView();
 
         if(view != null) {
@@ -74,7 +63,7 @@ public class FeedFragment extends Fragment {
             eventReceiver = new EventReceiver();
             IntentFilter actionFilter = new IntentFilter();
             actionFilter.addAction(ACTION_EVENT_SELECTED);
-            getActivity().registerReceiver(eventReceiver, actionFilter);
+            Objects.requireNonNull(getActivity()).registerReceiver(eventReceiver, actionFilter);
 
             FirestoreRecyclerOptions<Event> options = new FirestoreRecyclerOptions.Builder<Event>()
                     .setQuery(mDb.databaseCollection(DATABASE_REFERENCE_EVENTS), Event.class)
@@ -91,12 +80,12 @@ public class FeedFragment extends Fragment {
         }
     }
 
-    Toolbar.OnMenuItemClickListener menuItemClickListener = new Toolbar.OnMenuItemClickListener() {
+    private final Toolbar.OnMenuItemClickListener menuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             if(item.getItemId() == R.id.action_add) {
                 CreateEventDialogFragment createEventDialog = new CreateEventDialogFragment();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                FragmentTransaction fragmentTransaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
                 createEventDialog.show(fragmentTransaction, CreateEventDialogFragment.TAG);
             }
             return false;
@@ -127,7 +116,6 @@ public class FeedFragment extends Fragment {
         }
     }
 
-    private static final String TAG = "FeedFragment";
     public class EventReceiver extends BroadcastReceiver {
 
         @Override
@@ -135,7 +123,7 @@ public class FeedFragment extends Fragment {
             Event event = intent.getParcelableExtra("SELECTED_EVENT");
             
             ViewEventDialogFragment viewEventDialogFragment = ViewEventDialogFragment.newInstance(event);
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
             viewEventDialogFragment.show(fragmentTransaction, ViewEventDialogFragment.TAG);
         }
     }

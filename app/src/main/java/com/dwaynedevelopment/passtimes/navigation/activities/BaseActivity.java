@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
@@ -24,12 +23,10 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class BaseActivity extends AppCompatActivity implements INavigationHandler, IAccountHandler {
 
-    private BottomNavigationViewEx bottomNav;
     private ViewPager viewPager;
     private AuthUtils mAuth;
 //    private ProgressBar progress;
 
-    private static final String TAG = "BaseActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +48,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
 
     // Setup bottom navigation with view pager
     private void bottomNavigationSetup() {
-        bottomNav = findViewById(R.id.bottom_navigation_controller);
+        BottomNavigationViewEx bottomNav = findViewById(R.id.bottom_navigation_controller);
         NavigationUtils.bottomNavigationSetup(bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 
@@ -79,7 +76,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     };
 
     // Notify view pager to change current Item selected
-    public void selectedFragment(MenuItem item) {
+    private void selectedFragment(MenuItem item) {
         item.setChecked(true);
         int navItem = item.getItemId();
 

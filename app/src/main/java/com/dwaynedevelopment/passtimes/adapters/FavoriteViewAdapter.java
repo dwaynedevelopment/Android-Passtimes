@@ -24,8 +24,8 @@ public class FavoriteViewAdapter extends RecyclerView.Adapter<FavoriteViewAdapte
 
     private final ArrayList<Sport> selected = new ArrayList<>();
 
-    private ArrayList<Sport> favoriteSports;
-    private AppCompatActivity context;
+    private final ArrayList<Sport> favoriteSports;
+    private final AppCompatActivity context;
 
 
     public FavoriteViewAdapter(AppCompatActivity context, ArrayList<Sport> favoriteSports) {
@@ -76,9 +76,9 @@ public class FavoriteViewAdapter extends RecyclerView.Adapter<FavoriteViewAdapte
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView ivIcon;
-        private TextView tvCategory;
-        private RelativeLayout button;
+        private final ImageView ivIcon;
+        private final TextView tvCategory;
+        private final RelativeLayout button;
 
         ViewHolder(View itemView) {
             super(itemView);

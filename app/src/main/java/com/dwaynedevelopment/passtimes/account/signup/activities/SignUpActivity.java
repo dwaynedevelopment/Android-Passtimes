@@ -21,7 +21,6 @@ import com.dwaynedevelopment.passtimes.account.login.activities.LoginActivity;
 import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 import com.dwaynedevelopment.passtimes.account.signup.fragments.SignUpFragment;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
-import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;

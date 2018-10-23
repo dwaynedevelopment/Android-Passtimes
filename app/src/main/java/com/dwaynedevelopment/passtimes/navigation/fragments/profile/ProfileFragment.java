@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 
@@ -24,7 +22,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
 
-    private AuthUtils mAuth;
     private INavigationHandler iNavigationHandler;
 
     public ProfileFragment() { }
@@ -52,7 +49,7 @@ public class ProfileFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if (getActivity() != null) {
-            mAuth = AuthUtils.getInstance();
+            AuthUtils mAuth = AuthUtils.getInstance();
             AppCompatActivity activity = (AppCompatActivity) getActivity();
 
 

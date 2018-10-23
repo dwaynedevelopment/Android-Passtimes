@@ -25,7 +25,7 @@ import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar
 public class AuthUtils {
 
     private static FirebaseAuth mFireAuth;
-    private StorageReference mStorage;
+    private final StorageReference mStorage;
 
     //CONSTRUCTOR: private constructor will make sure that the singleton manages the object and does not need further instantiation.
     private AuthUtils() {
@@ -131,7 +131,7 @@ public class AuthUtils {
     }
 
 
-    public static boolean isValidEmail(Context context, CharSequence email) {
+    private static boolean isValidEmail(Context context, CharSequence email) {
         if (TextUtils.isEmpty(email) && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             invokeSnackBar((AppCompatActivity) Objects.requireNonNull(context),
                     "Email format not valid.",
@@ -142,7 +142,7 @@ public class AuthUtils {
         return true;
     }
 
-    public static boolean isValidName(Context context, String txt){
+    private static boolean isValidName(Context context, String txt){
         String regx = "^[^\\s]+,?(\\s[^\\s]+)*$";
         Pattern pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(txt);
@@ -158,7 +158,7 @@ public class AuthUtils {
 
     }
 
-    public static boolean isValidPassword(Context context, String password) {
+    private static boolean isValidPassword(Context context, String password) {
         Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
 
         if (TextUtils.isEmpty(password) && !PASSWORD_PATTERN.matcher(password).matches()) {

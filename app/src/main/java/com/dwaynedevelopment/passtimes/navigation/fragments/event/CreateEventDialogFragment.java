@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -24,13 +23,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.adapters.FavoriteViewAdapter;
 import com.dwaynedevelopment.passtimes.adapters.PlacesApiAdapter;
 import com.dwaynedevelopment.passtimes.adapters.SelectedViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
@@ -39,7 +35,6 @@ import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.models.Sport;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
-import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.github.badoualy.datepicker.DatePickerTimeline;
 import com.google.android.gms.common.ConnectionResult;
@@ -53,33 +48,25 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
 import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getApiClient;
 import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getPlacesAdapter;
-import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_FAVORITE_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_SELECT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_SPORTS;
-import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
 
 public class CreateEventDialogFragment extends DialogFragment {
 
     public static final String TAG = "CreateEventDialogFragme";
 
-    private DatePickerTimeline timeline;
     private FirebaseFirestoreUtils mDb;
     private AuthUtils mAuth;
 
@@ -191,7 +178,7 @@ public class CreateEventDialogFragment extends DialogFragment {
                 int month = Calendar.getInstance().get(Calendar.MONTH);
                 int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 
-                timeline = getView().findViewById(R.id.date_timeline);
+                DatePickerTimeline timeline = getView().findViewById(R.id.date_timeline);
                 timeline.setFirstVisibleDate(year, month, day);
                 timeline.setLastVisibleDate(year, month, day + 6);
                 timeline.setOnDateSelectedListener(dateSelectedListener);
@@ -224,7 +211,7 @@ public class CreateEventDialogFragment extends DialogFragment {
             } else if (item.getItemId() == R.id.action_save) {
                 // TODO: Validate inputs
 
-                EditText title = getView().findViewById(R.id.et_title);
+                EditText title = Objects.requireNonNull(getView()).findViewById(R.id.et_title);
 
                 // Validate for empty EditTexts
                 if (validateTextField(title, "Please enter a Title for the event") &&
@@ -248,11 +235,11 @@ public class CreateEventDialogFragment extends DialogFragment {
 
     private boolean validateTime() {
         if (Calendar.getInstance().getTimeInMillis() >= mStartCalendar.getTimeInMillis()) {
-            Snackbar sb = Snackbar.make(getView(), "Please select a valid Start Time", Snackbar.LENGTH_SHORT);
+            Snackbar sb = Snackbar.make(Objects.requireNonNull(getView()), "Please select a valid Start Time", Snackbar.LENGTH_SHORT);
             sb.show();
             return false;
         } else if (mStartCalendar.getTimeInMillis() == mEndCalendar.getTimeInMillis()) {
-            Snackbar sb = Snackbar.make(getView(), "Please select a valid End Time", Snackbar.LENGTH_SHORT);
+            Snackbar sb = Snackbar.make(Objects.requireNonNull(getView()), "Please select a valid End Time", Snackbar.LENGTH_SHORT);
             sb.show();
             return false;
         } else if (mStartCalendar.getTimeInMillis() > mEndCalendar.getTimeInMillis()) {
@@ -264,7 +251,7 @@ public class CreateEventDialogFragment extends DialogFragment {
 
     private boolean validateTextField(EditText editText, String message) {
         if (editText.getText().toString().isEmpty()) {
-            Snackbar sb = Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT);
+            Snackbar sb = Snackbar.make(Objects.requireNonNull(getView()), message, Snackbar.LENGTH_SHORT);
             sb.show();
             return false;
         }
@@ -287,7 +274,7 @@ public class CreateEventDialogFragment extends DialogFragment {
             Context context = getContext();
 
             if (!hasFocus) {
-
+                Log.i(TAG, "onFocusChange: ");
             } else {
                 switch (id) {
                     case R.id.et_start_time:

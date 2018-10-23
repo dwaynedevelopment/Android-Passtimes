@@ -5,11 +5,7 @@ import android.os.Parcelable;
 
 import com.google.firebase.firestore.DocumentReference;
 
-import java.security.Timestamp;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class Event implements Parcelable{

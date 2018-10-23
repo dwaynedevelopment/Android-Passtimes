@@ -11,21 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 
 import java.util.Objects;
 
 import static com.dwaynedevelopment.passtimes.utils.AuthUtils.credentialValidation;
-import static com.dwaynedevelopment.passtimes.utils.AuthUtils.isValidEmail;
-import static com.dwaynedevelopment.passtimes.utils.AuthUtils.isValidName;
-import static com.dwaynedevelopment.passtimes.utils.AuthUtils.isValidPassword;
 import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
 
 public class SignUpFragment extends Fragment {
@@ -102,10 +96,10 @@ public class SignUpFragment extends Fragment {
                         iSignUpHandler.invokeGallery();
                         break;
                     case signUp:
-                        String fullName = fullNameEditText.getText().toString();
-                        String email = emailEditText.getText().toString();
-                        String password = passwordEditText.getText().toString();
-                        String rePassword = rePasswordEditText.getText().toString();
+                        String fullName = Objects.requireNonNull(fullNameEditText.getText()).toString();
+                        String email = Objects.requireNonNull(emailEditText.getText()).toString();
+                        String password = Objects.requireNonNull(passwordEditText.getText()).toString();
+                        String rePassword = Objects.requireNonNull(rePasswordEditText.getText()).toString();
 
                         if (email.isEmpty() && password.isEmpty() && fullName.isEmpty() && rePassword.isEmpty()){
                             invokeSnackBar((AppCompatActivity) Objects.requireNonNull(getContext()),

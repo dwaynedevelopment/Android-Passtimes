@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class NavigationUtils {
 
     // Pre-load fragments
-    public static ArrayList<Fragment> fragments = new ArrayList<Fragment>() {{
+    private static final ArrayList<Fragment> fragments = new ArrayList<Fragment>() {{
         add(FeedFragment.newInstance());
         add(ProfileFragment.newInstance());
         add(SettingsPreferenceFragment.newInstance());

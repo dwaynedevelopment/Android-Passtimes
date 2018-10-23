@@ -25,16 +25,10 @@ import com.dwaynedevelopment.passtimes.favorites.interfaces.IFavoriteHandler;
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.models.Sport;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
-import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -54,9 +48,8 @@ public class FavoriteFragment extends Fragment {
     private AuthUtils mAuth;
     private IFavoriteHandler iFavoriteHandler;
     private FavoritesReceiver favoritesReceiver;
-    private ArrayList<Sport> selectedFavorites = new ArrayList<>();
     private HashMap<String, HashMap<String, String>> favoriteSports = new HashMap<>();
-    private List<DocumentReference> favoriteReferences = new ArrayList<>();
+    private final List<DocumentReference> favoriteReferences = new ArrayList<>();
 
 
     public static FavoriteFragment newInstance() {
@@ -176,12 +169,12 @@ public class FavoriteFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            selectedFavorites = intent.getParcelableArrayListExtra("SELECTED_SPORTS");
+            ArrayList<Sport> selectedFavorites = intent.getParcelableArrayListExtra("SELECTED_SPORTS");
 
             //CLEAR LIST TO AVOID DUPLICATES ENTRIES.
             favoriteReferences.clear();
-            for (int i = 0; i <selectedFavorites.size() ; i++) {
-                favoriteReferences.add(mDb.getFirestore().document("/"+DATABASE_REFERENCE_SPORTS+"/"+selectedFavorites.get(i).getId()));
+            for (int i = 0; i < selectedFavorites.size() ; i++) {
+                favoriteReferences.add(mDb.getFirestore().document("/"+DATABASE_REFERENCE_SPORTS+"/"+ selectedFavorites.get(i).getId()));
             }
         }
     }

@@ -18,13 +18,12 @@ import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
-import com.dwaynedevelopment.passtimes.utils.DatabaseUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -35,7 +34,7 @@ public class ViewEventDialogFragment extends DialogFragment {
     public static final String TAG = "ViewEventDialogFragment";
     private static final String EVENT = "EVENT";
     private FirebaseFirestoreUtils mDb;
-    private List<DocumentReference> attendingUsers = new ArrayList<>();
+    private final List<DocumentReference> attendingUsers = new ArrayList<>();
 
     private Event event;
 
@@ -62,7 +61,7 @@ public class ViewEventDialogFragment extends DialogFragment {
         if(dialog != null) {
             int width = ViewGroup.LayoutParams.MATCH_PARENT;
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            dialog.getWindow().setLayout(width, height);
+            Objects.requireNonNull(dialog.getWindow()).setLayout(width, height);
         }
     }
 
@@ -76,9 +75,9 @@ public class ViewEventDialogFragment extends DialogFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        event = getArguments().getParcelable(EVENT);
+        event = Objects.requireNonNull(getArguments()).getParcelable(EVENT);
 
-        Button btnJoin = getView().findViewById(R.id.btn_event_join);
+        Button btnJoin = Objects.requireNonNull(getView()).findViewById(R.id.btn_event_join);
         btnJoin.setOnClickListener(clickListener);
 
         AuthUtils authUtils = AuthUtils.getInstance();
@@ -93,7 +92,7 @@ public class ViewEventDialogFragment extends DialogFragment {
         mDb = FirebaseFirestoreUtils.getInstance();
 
         CircleImageView ciHost = getView().findViewById(R.id.ci_host);
-        Glide.with(getContext()).load(event.getHostThumbnail()).into(ciHost);
+        Glide.with(Objects.requireNonNull(getContext())).load(event.getHostThumbnail()).into(ciHost);
 
         TextView tvMonth = getView().findViewById(R.id.tv_event_month);
         tvMonth.setText(CalendarUtils.getMonthFromDate(event.getStartDate()));

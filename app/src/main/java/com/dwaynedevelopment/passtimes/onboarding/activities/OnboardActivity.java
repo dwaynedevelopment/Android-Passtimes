@@ -24,14 +24,13 @@ import static com.dwaynedevelopment.passtimes.utils.OnboardingUtils.setupOnboard
 public class OnboardActivity extends AppCompatActivity {
 
     private ViewPager onboardingViewPager;
-    private AuthUtils mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboard);
 
-        mAuth = AuthUtils.getInstance();
+        AuthUtils mAuth = AuthUtils.getInstance();
         final LinearLayout bottomLayout = findViewById(R.id.ll_onboarding_bottom);
         final ProgressBar progress = findViewById(R.id.pb_dot_onboard);
         final TextView appTitle = findViewById(R.id.tv_app_name);

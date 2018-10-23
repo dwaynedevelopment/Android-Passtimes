@@ -3,8 +3,6 @@ package com.dwaynedevelopment.passtimes.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
 public class Sport implements Parcelable {
 
     private String id;

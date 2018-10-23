@@ -12,7 +12,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_
 public class FirebaseFirestoreUtils {
 
 
-    private FirebaseFirestore mFirestore;
+    private final FirebaseFirestore mFirestore;
 
     private FirebaseFirestoreUtils() {
         mFirestore = FirebaseFirestore.getInstance();

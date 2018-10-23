@@ -19,8 +19,4 @@ public class OnboardThreeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_onboard_three, container, false);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
 }

@@ -35,7 +35,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat {
 
     }
 
-    android.support.v7.preference.Preference.OnPreferenceClickListener signOutPreferenceListener = new android.support.v7.preference.Preference.OnPreferenceClickListener() {
+    private final android.support.v7.preference.Preference.OnPreferenceClickListener signOutPreferenceListener = new android.support.v7.preference.Preference.OnPreferenceClickListener() {
         @Override
         public boolean onPreferenceClick(android.support.v7.preference.Preference preference) {
 

@@ -22,7 +22,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECT
 
 public class FeedOnGoingViewAdapter extends FirestoreRecyclerAdapter<Event, FeedOnGoingViewAdapter.OnGoingViewHolder> {
 
-    private Context context;
+    private final Context context;
 
     public FeedOnGoingViewAdapter(@NonNull FirestoreRecyclerOptions<Event> options, Context context) {
         super(options);
@@ -35,22 +35,6 @@ public class FeedOnGoingViewAdapter extends FirestoreRecyclerAdapter<Event, Feed
     public FeedOnGoingViewAdapter.OnGoingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_ongoing, parent, false);
         return new OnGoingViewHolder(view);
-    }
-
-    @NonNull
-    @Override
-    public Event getItem(int position) {
-        return super.getItem(position);
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return super.getItemViewType(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
     }
 
     @Override
@@ -106,13 +90,13 @@ public class FeedOnGoingViewAdapter extends FirestoreRecyclerAdapter<Event, Feed
     class OnGoingViewHolder extends RecyclerView.ViewHolder {
 
         //private
-        private CardView eventCard;
-        private TextView tvMonth;
-        private TextView tvDay;
-        private TextView tvSport;
-        private TextView tvTitle;
-        private TextView tvLocation;
-        private TextView tvTime;
+        private final CardView eventCard;
+        private final TextView tvMonth;
+        private final TextView tvDay;
+        private final TextView tvSport;
+        private final TextView tvTitle;
+        private final TextView tvLocation;
+        private final TextView tvTime;
 
         OnGoingViewHolder(View itemView) {
             super(itemView);

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class OnboardingUtils {
 
-    private static ArrayList<Fragment> onboardingFragments = new ArrayList<Fragment>() {{
+    private static final ArrayList<Fragment> onboardingFragments = new ArrayList<Fragment>() {{
         add(new OnboardOneFragment());
         add(new OnboardTwoFragment());
         add(new OnboardThreeFragment());
