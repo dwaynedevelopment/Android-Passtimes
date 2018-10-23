@@ -240,8 +240,6 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                 @Override
                 public void run() {
                     progress.setVisibility(View.GONE);
-                    //DatabaseUtils database = DatabaseUtils.getInstance();
-
                     mDatabase.insertDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId(), mAuth.getCurrentSignedUser());
                 }
             }, 250);
@@ -249,8 +247,6 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                 @Override
                 public void run() {
                     finish();
-
-
                     mDatabase.updateImage(mAuth.getCurrentSignedUser());
                     Intent intent = new Intent(SignUpActivity.this, FavoriteActivity.class);
                     intent.putExtra(EXTRA_REGISTRATION, true);

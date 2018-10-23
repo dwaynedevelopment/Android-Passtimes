@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -224,8 +225,13 @@ public class CreateEventDialogFragment extends DialogFragment {
                         Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), selectedSport.getCategory(), title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
 
                         mDb.insertDocument(DATABASE_REFERENCE_EVENTS, event.getId(), event);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dismiss();
+                            }
+                        }, 500);
 
-                        dismiss();
                     }
                 }
             }
@@ -341,7 +347,6 @@ public class CreateEventDialogFragment extends DialogFragment {
                                     place.getViewport()).getCenter().latitude,
                                     place.getViewport().getCenter().longitude));
 
-                    //mLatLng = mPlaceData.getLatLng();
                     etAddress.setText(mPlaceData.getName());
                     etAddress.clearFocus();
                     etAddress.clearListSelection();
