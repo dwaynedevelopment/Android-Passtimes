@@ -49,6 +49,7 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -63,6 +64,7 @@ import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getPlac
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_SELECT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_SPORTS;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 
 public class CreateEventDialogFragment extends DialogFragment {
 
@@ -132,7 +134,7 @@ public class CreateEventDialogFragment extends DialogFragment {
 
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                //Log.d(TAG, document.getId() + " => " + document.getData());
                                 sportsArray.add(document.toObject(Sport.class));
 
                                 SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);
@@ -221,13 +223,15 @@ public class CreateEventDialogFragment extends DialogFragment {
                         validateTextField(etEndTime, "Please select an End Time")) {
                     // Validate for Time
                     if (validateTime()) {
-                        Player currentPlayer = mAuth.getCurrentSignedUser();
-                        Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), selectedSport.getCategory(), title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
+                        final Player currentPlayer = mAuth.getCurrentSignedUser();
+                        final Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), selectedSport.getCategory(), title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
 
                         mDb.insertDocument(DATABASE_REFERENCE_EVENTS, event.getId(), event);
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                DocumentReference documentReference = mDb.getFirestore().document("/"+DATABASE_REFERENCE_USERS+"/"+currentPlayer.getId());
+                                mDb.addAttendess(event, documentReference);
                                 dismiss();
                             }
                         }, 500);

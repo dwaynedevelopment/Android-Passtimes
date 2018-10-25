@@ -10,23 +10,15 @@ public class Player {
     private String name;
     private String thumbnail;
     //private HashMap<String, HashMap<String, String>> favorites;
-    private List<DocumentReference> favoriteReferences;
+    private List<DocumentReference> favorites;
 
     public Player() {}
 
-//    public Player(String id, String name, String thumbnail, HashMap<String, HashMap<String, String>> favorites) {
-//        this.id = id;
-//        this.name = name;
-//        this.thumbnail = thumbnail;
-//        this.favorites = favorites;
-//    }
-
-
-    public Player(String id, String name, String thumbnail, List<DocumentReference> favoriteReferences) {
+    public Player(String id, String name, String thumbnail, List<DocumentReference> favorites) {
         this.id = id;
         this.name = name;
         this.thumbnail = thumbnail;
-        this.favoriteReferences = favoriteReferences;
+        this.favorites = favorites;
     }
 
     public Player(String id, String name, String thumbnail) {
@@ -35,12 +27,12 @@ public class Player {
         this.thumbnail = thumbnail;
     }
 
-    public List<DocumentReference> getFavoriteReferences() {
-        return favoriteReferences;
+    public List<DocumentReference> getFavorites() {
+        return favorites;
     }
 
-    public void setFavoriteReferences(List<DocumentReference> favoriteReferences) {
-        this.favoriteReferences = favoriteReferences;
+    public void setFavorites(List<DocumentReference> favorites) {
+        this.favorites = favorites;
     }
 
     public String getId() {
@@ -67,11 +59,4 @@ public class Player {
         this.thumbnail = thumbnail;
     }
 
-//    public HashMap<String, HashMap<String, String>> getFavorites() {
-//        return favorites;
-//    }
-//
-//    public void setFavorites(HashMap<String, HashMap<String, String>> favorites) {
-//        this.favorites = favorites;
-//    }
 }

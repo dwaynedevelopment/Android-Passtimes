@@ -49,7 +49,7 @@ public class FirebaseFirestoreUtils {
     }
 
     public void insertFavorites(Player documentObject) {
-        mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId()).update("favorites", documentObject.getFavoriteReferences());
+        mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId()).update("favorites", documentObject.getFavorites());
     }
 
     public void addAttendess(Event eventDocument, DocumentReference playerReference) {

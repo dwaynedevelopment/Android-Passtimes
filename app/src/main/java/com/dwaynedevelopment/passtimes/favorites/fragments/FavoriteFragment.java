@@ -33,7 +33,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,7 +47,6 @@ public class FavoriteFragment extends Fragment {
     private AuthUtils mAuth;
     private IFavoriteHandler iFavoriteHandler;
     private FavoritesReceiver favoritesReceiver;
-    private HashMap<String, HashMap<String, String>> favoriteSports = new HashMap<>();
     private final List<DocumentReference> favoriteReferences = new ArrayList<>();
 
 
@@ -135,7 +133,7 @@ public class FavoriteFragment extends Fragment {
         public void onClick(View v) {
             if (mAuth.getCurrentSignedUser() != null) {
                 Player player = mAuth.getCurrentSignedUser();
-                player.setFavoriteReferences(favoriteReferences);
+                player.setFavorites(favoriteReferences);
 
                 if (getView() != null) {
                     final ProgressBar progress = getView().findViewById(R.id.pb_dots_fav);
@@ -143,7 +141,7 @@ public class FavoriteFragment extends Fragment {
 
                     mDb.insertFavorites(player);
 
-                    if (player.getFavoriteReferences().size() >= 1) {
+                    if (player.getFavorites().size() >= 1) {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {

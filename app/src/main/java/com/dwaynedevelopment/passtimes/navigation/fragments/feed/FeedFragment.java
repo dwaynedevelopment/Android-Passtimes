@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.adapters.EventFeedViewAdapter;
 import com.dwaynedevelopment.passtimes.adapters.FavoriteViewAdapter;
 import com.dwaynedevelopment.passtimes.adapters.FeedOnGoingViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
@@ -39,16 +40,23 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.w3c.dom.Document;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
@@ -58,9 +66,12 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_
 
 public class FeedFragment extends Fragment {
 
-    private FeedOnGoingViewAdapter mAdapter;
+    //private FeedOnGoingViewAdapter mAdapter;
+    private EventFeedViewAdapter eventFeedViewAdapter;
     private EventReceiver eventReceiver;
+    private PopupMenu popupMenu;
     private List<Sport> menuSports = new ArrayList<>();
+    private Map<String, Event> mainFeedEvents = new HashMap<>();
 
     public FeedFragment() {
     }
@@ -92,11 +103,63 @@ public class FeedFragment extends Fragment {
             actionFilter.addAction(ACTION_EVENT_SELECTED);
             Objects.requireNonNull(getActivity()).registerReceiver(eventReceiver, actionFilter);
 
-
             ImageButton filterImageButton = view.findViewById(R.id.iv_filter_btn);
             filterImageButton.setOnClickListener(filterListener);
 
-            CollectionReference eventSports = mDb.getFirestore().collection("events");
+            popupMenu = new PopupMenu(getActivity().getApplicationContext(), filterImageButton, Gravity.BOTTOM);
+
+            eventFeedViewAdapter = new EventFeedViewAdapter(mainFeedEvents, getActivity().getApplicationContext());
+
+            RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+
+            recyclerView.setAdapter(eventFeedViewAdapter);
+
+
+
+
+
+            mDb.databaseCollection(DATABASE_REFERENCE_EVENTS).orderBy("startDate").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots,
+                                    @javax.annotation.Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.i(TAG, "onEvent: " + e.getLocalizedMessage());
+                        return;
+                    }
+                    if (queryDocumentSnapshots != null) {
+                        for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
+
+                            if (documentChange != null) {
+                                switch (documentChange.getType()) {
+                                    case ADDED:
+                                        Event addedEvent = documentChange.getDocument().toObject(Event.class);
+                                        if (!mainFeedEvents.containsKey(addedEvent.getId())) {
+                                            mainFeedEvents.put(addedEvent.getId(), addedEvent);
+                                            Log.i(TAG, "onEvent: ADDED " + documentChange.getDocument().toObject(Event.class).toString());
+
+                                        } else {
+                                            Log.i(TAG, "onEvent: NOT ADDED " + documentChange.getDocument().toObject(Event.class).toString());
+                                        }
+                                        eventFeedViewAdapter.notifyDataSetChanged();
+                                        break;
+                                    case MODIFIED:
+                                        Log.i(TAG, "onEvent: MODIFIED " + documentChange.getDocument().toObject(Event.class).toString());
+                                        break;
+                                    case REMOVED:
+                                        Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());
+                                        break;
+
+                                }
+
+
+                            }
+                        }
+                    }
+
+                }
+            });
 
             // [START chain_filters]
             //Query q = eventSports.whereEqualTo("sport", "Soccer").orderBy("title");
@@ -107,18 +170,18 @@ public class FeedFragment extends Fragment {
 //                    .setQuery(mDb.databaseCollection(DATABASE_REFERENCE_EVENTS), Event.class)
 //                    .build();
 
-            FirestoreRecyclerOptions<Event> options = new FirestoreRecyclerOptions.Builder<Event>()
-                    .setQuery(eventSports, Event.class)
-                    .build();
+//            FirestoreRecyclerOptions<Event> options = new FirestoreRecyclerOptions.Builder<Event>()
+//                    .setQuery(eventSports, Event.class)
+//                    .build();
 
 
-            mAdapter = new FeedOnGoingViewAdapter(options, getContext());
-
-            RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-            recyclerView.setItemAnimator(null);
-            recyclerView.setAdapter(mAdapter);
-            recyclerView.setHasFixedSize(true);
+//            mAdapter = new FeedOnGoingViewAdapter(options, getContext());
+//
+//            RecyclerView recyclerView = getView().findViewById(R.id.rv_ongoing);
+//            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+//            recyclerView.setItemAnimator(null);
+//            recyclerView.setAdapter(mAdapter);
+//            recyclerView.setHasFixedSize(true);
 
 
             mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
@@ -127,46 +190,65 @@ public class FeedFragment extends Fragment {
         }
     }
 
-    private static final String TAG = "FeedFragment";
+
     private final OnCompleteListener<DocumentSnapshot> playerCompleteListener = new OnCompleteListener<DocumentSnapshot>() {
         @Override
         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
             if (task.isSuccessful()) {
-                List<DocumentReference> references = ((List<DocumentReference>) task.getResult().getData().get("favorites"));
+                List<DocumentReference> sportReferences = ((List<DocumentReference>) Objects.requireNonNull(task.getResult()).getData().get("favorites"));
 
-                for (int i = 0; i < references.size(); i++) {
+                popupMenu.getMenu().add("All");
+                for (int i = 0; i < sportReferences.size(); i++) {
 
-                    references.get(i).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    sportReferences.get(i).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            menuSports.add(Objects.requireNonNull(task.getResult()).toObject(Sport.class));
+
+                            Sport sport = Objects.requireNonNull(task.getResult()).toObject(Sport.class);
+                            popupMenu.getMenuInflater().inflate(R.menu.menu_filter, popupMenu.getMenu());
+                            if (sport != null) {
+                                popupMenu.getMenu().add(sport.getCategory());
+                                menuSports.add(sport);
+                            }
                         }
                     });
                 }
             }
-
         }
     };
 
+    private static final String TAG = "FeedFragment";
     private final View.OnClickListener filterListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (getActivity() != null) {
-                PopupMenu pop = new PopupMenu(getActivity().getApplicationContext(), v, Gravity.BOTTOM);
-                pop.getMenuInflater().inflate(R.menu.menu_filter, pop.getMenu());
 
-                for (int i = 0; i < menuSports.size(); i++) {
-                    pop.getMenu().add(menuSports.get(i).getCategory());
+                for (int i = 0; i < popupMenu.getMenu().size(); i++) {
+                    popupMenu.getMenu().getItem(i).setCheckable(true);
                 }
 
-                pop.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
+
+                        for (int i = 0; i < popupMenu.getMenu().size(); i++) {
+                            if (menuItem.getTitle().equals(menuSports.get(i).getCategory())) {
+
+                                if (!menuItem.isChecked()) {
+                                    menuItem.setChecked(true);
+                                    Log.i(TAG, "onMenuItemClick: " + menuSports.get(i).getCategory());
+                                } else {
+                                    menuItem.setChecked(false);
+
+                                }
+                            }
+                        }
+
                         return true;
                     }
                 });
-                pop.show();
+                popupMenu.show();
             }
         }
     };
@@ -183,21 +265,21 @@ public class FeedFragment extends Fragment {
         }
     };
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (mAdapter != null) {
-            mAdapter.startListening();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAdapter != null) {
-            mAdapter.stopListening();
-        }
-    }
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        if (mAdapter != null) {
+//            mAdapter.startListening();
+//        }
+//    }
+//
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        if (mAdapter != null) {
+//            mAdapter.stopListening();
+//        }
+//    }
 
     @Override
     public void onDestroy() {

@@ -55,6 +55,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     private StorageReference userFilePath;
     private ProgressBar progress;
 
+    private static final String TAG = "SignUpActivity";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,7 +221,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
         }
     };
 
-    private static final String TAG = "SignUpActivity";
+
 
     private final OnCompleteListener<Uri> uploadedWithCredentials = new OnCompleteListener<Uri>() {
         @Override
@@ -228,7 +229,6 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
             UserProfileChangeRequest updateProfile = new UserProfileChangeRequest.Builder()
                     .setPhotoUri(task.getResult())
                     .build();
-            Log.i(TAG, "onComplete: " + task.getResult());
             Objects.requireNonNull(mAuth.getFireAuth().getCurrentUser()).updateProfile(updateProfile);
         }
     };

@@ -149,6 +149,24 @@ public class Event implements Parcelable{
         this.attendees = attendees;
     }
 
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id='" + id + '\'' +
+                ", hostId='" + hostId + '\'' +
+                ", hostThumbnail='" + hostThumbnail + '\'' +
+                ", sport='" + sport + '\'' +
+                ", title='" + title + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", location='" + location + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", maxPlayers=" + maxPlayers +
+                ", attendees=" + attendees +
+                '}';
+    }
+
     public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
         public Event createFromParcel(Parcel in) {
