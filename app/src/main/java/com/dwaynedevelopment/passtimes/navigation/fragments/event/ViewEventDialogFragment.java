@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -125,11 +126,8 @@ public class ViewEventDialogFragment extends DialogFragment {
                     AuthUtils auth = AuthUtils.getInstance();
                     Player player = auth.getCurrentSignedUser();
 
-                    attendingUsers.add(mDb.getFirestore().document("/"+DATABASE_REFERENCE_USERS+"/"+player.getId()));
-
-                    event.setAttendingUsers(attendingUsers);
-
-                    mDb.addAttendess(event);
+                    DocumentReference documentReference = mDb.getFirestore().document("/"+DATABASE_REFERENCE_USERS+"/"+player.getId());
+                    mDb.addAttendess(event, documentReference);
 
                     v.setVisibility(View.GONE);
                     break;

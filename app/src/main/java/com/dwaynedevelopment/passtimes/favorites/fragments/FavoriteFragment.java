@@ -78,33 +78,8 @@ public class FavoriteFragment extends Fragment {
         mAuth = AuthUtils.getInstance();
 
 
-        mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                        ArrayList<Sport> sportsArray = new ArrayList<>();
-
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                sportsArray.add(document.toObject(Sport.class));
-
-                                FavoriteViewAdapter adapter = new FavoriteViewAdapter((AppCompatActivity) getActivity(), sportsArray);
-                                if (getActivity() != null) {
-                                    if (getView() != null) {
-                                        RecyclerView recyclerView = getView().findViewById(R.id.rv_favorite);
-                                        recyclerView.setLayoutManager(new GridLayoutManager(getActivity().getApplicationContext(), 3));
-                                        recyclerView.setAdapter(adapter);
-                                        recyclerView.setHasFixedSize(true);
-                                    }
-                                }
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+        mDb.databaseCollection(DATABASE_REFERENCE_SPORTS)
+                .get().addOnCompleteListener(favoriteCompleteListener);
 
 
         if (getActivity() != null) {
@@ -119,6 +94,32 @@ public class FavoriteFragment extends Fragment {
             }
         }
     }
+
+    private final OnCompleteListener<QuerySnapshot> favoriteCompleteListener = new OnCompleteListener<QuerySnapshot>() {
+        @Override
+        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+            ArrayList<Sport> sportsArray = new ArrayList<>();
+
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                    Log.d(TAG, document.getId() + " => " + document.getData());
+                    sportsArray.add(document.toObject(Sport.class));
+
+                    FavoriteViewAdapter adapter = new FavoriteViewAdapter((AppCompatActivity) getActivity(), sportsArray);
+                    if (getActivity() != null) {
+                        if (getView() != null) {
+                            RecyclerView recyclerView = getView().findViewById(R.id.rv_favorite);
+                            recyclerView.setLayoutManager(new GridLayoutManager(getActivity().getApplicationContext(), 3));
+                            recyclerView.setAdapter(adapter);
+                            recyclerView.setHasFixedSize(true);
+                        }
+                    }
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        }
+    };
 
     @Override
     public void onDestroy() {

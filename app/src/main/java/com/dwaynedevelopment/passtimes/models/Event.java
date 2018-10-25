@@ -21,12 +21,9 @@ public class Event implements Parcelable{
     private long startDate;
     private long endDate;
     private int maxPlayers;
-    private List<DocumentReference> attendingUsers;
-    //private HashMap<String, HashMap<String, String>> playerList;
+    private List<DocumentReference> attendees;
 
-    public Event() {
-
-    }
+    public Event() { }
 
     public Event(String hostId, String hostThumbnail, String sport, String title, double latitude, double longitude, String location, long startDate, long endDate, int maxPlayers) {
         this.id = UUID.randomUUID().toString();
@@ -144,21 +141,12 @@ public class Event implements Parcelable{
         this.maxPlayers = maxPlayers;
     }
 
-//    public HashMap<String, HashMap<String, String>> getPlayerList() {
-//        return playerList;
-//    }
-//
-//    public void setPlayerList(HashMap<String, HashMap<String, String>> playerList) {
-//        this.playerList = playerList;
-//    }
-
-
-    public List<DocumentReference> getAttendingUsers() {
-        return attendingUsers;
+    public List<DocumentReference> getAttendees() {
+        return attendees;
     }
 
-    public void setAttendingUsers(List<DocumentReference> attendingUsers) {
-        this.attendingUsers = attendingUsers;
+    public void setAttendees(List<DocumentReference> attendees) {
+        this.attendees = attendees;
     }
 
     public static final Creator<Event> CREATOR = new Creator<Event>() {
@@ -191,6 +179,6 @@ public class Event implements Parcelable{
         dest.writeLong(startDate);
         dest.writeLong(endDate);
         dest.writeInt(maxPlayers);
-        //dest.writeMap(attendingUsers);
+        //dest.writeMap(attendees);
     }
 }

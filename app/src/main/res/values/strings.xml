@@ -17,6 +17,7 @@
     <string name="continue_btn_title">Continue</string>
     <string name="select_your_favorite_sports">Select your favorite sports</string>
     <string name="players_attending">Players Attending</string>
+    <string name="on_going">On Going</string>
 
     <string-array name="number_picker_am_pm">
         <item>"AM"</item>

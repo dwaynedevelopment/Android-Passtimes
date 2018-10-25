@@ -51,6 +51,16 @@ public class Sport implements Parcelable {
         this.active = active;
     }
 
+    @Override
+    public String toString() {
+        return "Sport{" +
+                "id='" + id + '\'' +
+                ", category='" + category + '\'' +
+                ", idle='" + idle + '\'' +
+                ", active='" + active + '\'' +
+                '}';
+    }
+
     private Sport(Parcel in) {
         id = in.readString();
         category = in.readString();
