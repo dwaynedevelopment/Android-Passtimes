@@ -54,6 +54,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_
 public class FeedFragment extends Fragment {
 
     private FirebaseFirestoreUtils mDb;
+    private AuthUtils mAuth;
     private RecyclerView eventsRecyclerView;
     private EventFeedViewAdapter eventFeedViewAdapter;
 
@@ -65,6 +66,7 @@ public class FeedFragment extends Fragment {
     private Map<String, Event> mainFeedEvents = new HashMap<>();
     private Map<String, Event> filteredEventsByCategory = new HashMap<>();
     private List<String> selectedSports = new ArrayList<>();
+    private ImageButton filterImageButton;
 
     private static final String TAG = "FeedFragment";
 
@@ -85,7 +87,7 @@ public class FeedFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mDb = FirebaseFirestoreUtils.getInstance();
-        AuthUtils mAuth = AuthUtils.getInstance();
+        mAuth = AuthUtils.getInstance();
         View view = getView();
 
         if (view != null) {
@@ -101,7 +103,7 @@ public class FeedFragment extends Fragment {
             actionFilter.addAction(ACTION_EVENT_SELECTED);
             Objects.requireNonNull(getActivity()).registerReceiver(eventReceiver, actionFilter);
 
-            ImageButton filterImageButton = view.findViewById(R.id.iv_filter_btn);
+            filterImageButton = view.findViewById(R.id.iv_filter_btn);
             filterImageButton.setOnClickListener(filterListener);
 
             popupMenu = new PopupMenu(getActivity().getApplicationContext(), filterImageButton, Gravity.BOTTOM);
@@ -212,10 +214,28 @@ public class FeedFragment extends Fragment {
                 @Override
                 public void run() {
                     if (popupMenu.getMenu().getItem(0).isChecked()) {
-                        final String s1 = menuSports.get(0).getCategory();
-                        final String s2 = menuSports.get(1).getCategory();
-                        //final String s3 = menuSports.get(2).getCategory();
-                        filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, s1,s2);
+
+//                        String s1 = "";
+//                        String s2 = "";
+//                        String s3 = "";
+//
+//                        s1 = ;
+//                        s2 = ;
+//                        s3 = menuSports.get(2).getCategory();
+
+                        if (menuSports.size() == 1) {
+                            filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, menuSports.get(0).getCategory(),"", "");
+                        }
+
+                        if (menuSports.size() == 2) {
+                            filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, menuSports.get(0).getCategory(), menuSports.get(1).getCategory(),"");
+                        }
+
+                        if (menuSports.size() == 3) {
+                            filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, menuSports.get(0).getCategory(), menuSports.get(1).getCategory(), menuSports.get(2).getCategory());
+                        }
+
+
                         eventFeedViewAdapter = new EventFeedViewAdapter(filteredEventsByCategory, getActivity().getApplicationContext());
 
                         eventsRecyclerView.setAdapter(eventFeedViewAdapter);
@@ -227,6 +247,9 @@ public class FeedFragment extends Fragment {
 
 
     }
+
+
+
     private final View.OnClickListener filterListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -294,6 +317,13 @@ public class FeedFragment extends Fragment {
         }
     };
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        menuSports.clear();
+        selectedSports.clear();
+    }
 
     @Override
     public void onDestroy() {
