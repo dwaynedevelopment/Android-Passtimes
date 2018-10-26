@@ -1,12 +1,16 @@
 package com.dwaynedevelopment.passtimes.navigation.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,20 +24,24 @@ import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 public class BaseActivity extends AppCompatActivity implements INavigationHandler, IAccountHandler {
 
     private ViewPager viewPager;
     private AuthUtils mAuth;
-//    private ProgressBar progress;
 
+    private static final String TAG = "BaseActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
         mAuth = AuthUtils.getInstance();
-//        progress = findViewById(R.id.pb_dot_base);
         bottomNavigationSetup();
+
     }
 
 
@@ -60,12 +68,9 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
         viewPager.setCurrentItem(0);
     }
 
-    private final ViewPager.OnTouchListener viewPagerOnTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            return true;
-        }
-    };
+    @SuppressLint("ClickableViewAccessibility")
+    private final ViewPager.OnTouchListener viewPagerOnTouchListener = (v, event) -> true;
+
 
     private final BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
