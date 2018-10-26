@@ -16,12 +16,14 @@ import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVENT_ID;
 
 public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdapter.ViewHolder> {
 
@@ -62,7 +64,7 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
             @Override
             public void onClick(View v) {
                 Intent selectIntent = new Intent(ACTION_EVENT_SELECTED);
-                selectIntent.putExtra("SELECTED_EVENT",  event);
+                selectIntent.putExtra(EXTRA_SELECTED_EVENT_ID,  event.getId());
                 context.sendBroadcast(selectIntent);
             }
         });
@@ -73,9 +75,8 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
         return eventMap.size();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private static <K, V> List<V> createListFromMapEntries (Map<K, V> map){
-        return (List<V>) map.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(map.values());
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -88,7 +89,7 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
         private final TextView tvLocation;
         private final TextView tvTime;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             eventCard = itemView.findViewById(R.id.cv_ongoing);
             tvMonth = itemView.findViewById(R.id.tv_month);

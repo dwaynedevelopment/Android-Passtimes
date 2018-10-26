@@ -79,32 +79,29 @@ public class FirebaseFirestoreUtils {
         switch (selectedSports.size()) {
             case 1:
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    Map<String, Event> filtered = eventMap.entrySet()
+                    return eventMap.entrySet()
                             .stream()
                             .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    return filtered;
                 }
                 break;
             case 2:
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    Map<String, Event> filtered = eventMap.entrySet()
+                    return eventMap.entrySet()
                             .stream()
                             .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
                                     selectedSports.get(1).equals(map.getValue().getSport()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    return filtered;
                 }
                 break;
             case 3:
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    Map<String, Event> filtered = eventMap.entrySet()
+                    return eventMap.entrySet()
                             .stream()
                             .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
                                     selectedSports.get(1).equals(map.getValue().getSport())||
                                     selectedSports.get(2).equals(map.getValue().getSport()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    return filtered;
                 }
                 break;
         }

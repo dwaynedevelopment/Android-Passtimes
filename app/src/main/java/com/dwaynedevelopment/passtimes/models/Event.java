@@ -11,7 +11,6 @@ import java.util.UUID;
 public class Event implements Parcelable {
 
     private String id;
-
     private String sport;
     private String title;
     private String location;
@@ -26,7 +25,7 @@ public class Event implements Parcelable {
     public Event() { }
 
     public Event(DocumentReference eventHost, String sport, String title, double latitude, double longitude,
-                 String location, long startDate, long endDate, int maxAttendees, List<DocumentReference> attendees) {
+                 String location, long startDate, long endDate, int maxAttendees) {
         this.id = UUID.randomUUID().toString();
         this.eventHost = eventHost;
         this.sport = sport;
@@ -37,7 +36,6 @@ public class Event implements Parcelable {
         this.startDate = startDate;
         this.endDate = endDate;
         this.maxAttendees = maxAttendees;
-        this.attendees = attendees;
     }
 
     private Event(Parcel in) {

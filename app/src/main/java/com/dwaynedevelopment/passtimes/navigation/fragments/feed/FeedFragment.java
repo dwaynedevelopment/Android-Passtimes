@@ -50,6 +50,7 @@ import java.util.Objects;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVENT_ID;
 
 public class FeedFragment extends Fragment {
 
@@ -66,7 +67,7 @@ public class FeedFragment extends Fragment {
     private Map<String, Event> mainFeedEvents = new HashMap<>();
     private Map<String, Event> filteredEventsByCategory = new HashMap<>();
     private List<String> selectedSports = new ArrayList<>();
-    private ImageButton filterImageButton;
+    private List<String> initialSports = new ArrayList<>();
 
     private static final String TAG = "FeedFragment";
 
@@ -103,12 +104,10 @@ public class FeedFragment extends Fragment {
             actionFilter.addAction(ACTION_EVENT_SELECTED);
             Objects.requireNonNull(getActivity()).registerReceiver(eventReceiver, actionFilter);
 
-            filterImageButton = view.findViewById(R.id.iv_filter_btn);
+            ImageButton filterImageButton = view.findViewById(R.id.iv_filter_btn);
             filterImageButton.setOnClickListener(filterListener);
 
             popupMenu = new PopupMenu(getActivity().getApplicationContext(), filterImageButton, Gravity.BOTTOM);
-            popupMenu.getMenu().add("All");
-            popupMenu.getMenu().getItem(0).setChecked(true);
 
             mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
                     .get().addOnCompleteListener(playerCompleteListener);
@@ -182,9 +181,14 @@ public class FeedFragment extends Fragment {
                                 if (sport != null) {
                                     popupMenu.getMenu().add(sport.getCategory());
                                     menuSports.add(sport);
+                                    initialSports.add(sport.getCategory());
                                 }
                             }
                         });
+                    }
+
+                    for (int i = 0; i < popupMenu.getMenu().size(); i++) {
+                        popupMenu.getMenu().getItem(i).setChecked(true);
                     }
                 }
 
@@ -194,49 +198,36 @@ public class FeedFragment extends Fragment {
         }
     };
 
-
     private void setupInitialRecyclerView(boolean initialSetup) {
 
         if (initialSetup) {
-            if (popupMenu.getMenu().getItem(0).isChecked()) {
 
-                eventFeedViewAdapter = new EventFeedViewAdapter(mainFeedEvents, getActivity().getApplicationContext());
 
-                eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
-                eventsRecyclerView.setHasFixedSize(true);
-                eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+            eventFeedViewAdapter = new EventFeedViewAdapter(mainFeedEvents, getActivity().getApplicationContext());
 
-                eventsRecyclerView.setAdapter(eventFeedViewAdapter);
-                eventsRecyclerView.setVisibility(View.GONE);
-            }
+            eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
+            eventsRecyclerView.setHasFixedSize(true);
+            eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+
+            eventsRecyclerView.setAdapter(eventFeedViewAdapter);
+            eventsRecyclerView.setVisibility(View.GONE);
+
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (popupMenu.getMenu().getItem(0).isChecked()) {
 
-                        if (menuSports.size() == 1) {
-                            filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, menuSports.get(0).getCategory(),"", "");
-                        }
+                    filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, initialSports);
 
-                        if (menuSports.size() == 2) {
-                            filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, menuSports.get(0).getCategory(), menuSports.get(1).getCategory(),"");
-                        }
+                    eventFeedViewAdapter = new EventFeedViewAdapter(filteredEventsByCategory, getActivity().getApplicationContext());
+                    eventsRecyclerView.setAdapter(eventFeedViewAdapter);
+                    eventsRecyclerView.setVisibility(View.VISIBLE);
 
-                        if (menuSports.size() == 3) {
-                            filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, menuSports.get(0).getCategory(), menuSports.get(1).getCategory(), menuSports.get(2).getCategory());
-                        }
-
-                        eventFeedViewAdapter = new EventFeedViewAdapter(filteredEventsByCategory, getActivity().getApplicationContext());
-                        eventsRecyclerView.setAdapter(eventFeedViewAdapter);
-                        eventsRecyclerView.setVisibility(View.VISIBLE);
-                    }
                 }
             }, 350);
         }
 
     }
-
 
 
     private final View.OnClickListener filterListener = new View.OnClickListener() {
@@ -254,39 +245,40 @@ public class FeedFragment extends Fragment {
 
                         if (!menuItem.isChecked()) {
                             menuItem.setChecked(true);
-
                             if (!selectedSports.contains(menuItem.getTitle().toString())) {
                                 selectedSports.add(menuItem.getTitle().toString());
+                                filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, selectedSports);
+                            }
+                        } else {
+
+                            if (selectedSports.size() < 1) {
+                                menuItem.setChecked(true);
+                                return true;
+                            } else {
+                                menuItem.setChecked(false);
+                                selectedSports.remove(menuItem.getTitle().toString());
+                                filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, selectedSports);
                             }
 
+                        }
+
+                        if (filteredEventsByCategory != null) {
+                            eventFeedViewAdapter = new EventFeedViewAdapter(filteredEventsByCategory, getActivity().getApplicationContext());
+                            if (getView() != null) {
+                                eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
+                                eventsRecyclerView.setHasFixedSize(true);
+                                eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+                                eventsRecyclerView.setAdapter(eventFeedViewAdapter);
+                            }
                         } else {
-                            menuItem.setChecked(false);
-                            selectedSports.remove(menuItem.getTitle().toString());
+                            menuItem.setChecked(true);
+                            if (!selectedSports.contains(menuItem.getTitle().toString())) {
+                                selectedSports.add(menuItem.getTitle().toString());
+                                filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, selectedSports);
+                            }
                         }
-
-                        switch (selectedSports.size()) {
-                            case 1:
-                                filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, selectedSports.get(0));
-                                break;
-                            case 2:
-                                filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, selectedSports.get(0), selectedSports.get(1));
-                                break;
-                            case 3:
-                                filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, selectedSports.get(0), selectedSports.get(1), selectedSports.get(2));
-                                break;
-
-                        }
-
-                        eventFeedViewAdapter = new EventFeedViewAdapter(filteredEventsByCategory, getActivity().getApplicationContext());
-
-                        eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
-                        eventsRecyclerView.setHasFixedSize(true);
-                        eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-
-                        eventsRecyclerView.setAdapter(eventFeedViewAdapter);
 
                         return true;
-
                     }
                 });
                 popupMenu.show();
@@ -326,8 +318,8 @@ public class FeedFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Event event = intent.getParcelableExtra("SELECTED_EVENT");
-            ViewEventDialogFragment viewEventDialogFragment = ViewEventDialogFragment.newInstance(event);
+            String receivedEventId = intent.getStringExtra(EXTRA_SELECTED_EVENT_ID);
+            ViewEventDialogFragment viewEventDialogFragment = ViewEventDialogFragment.newInstance(receivedEventId);
             FragmentTransaction fragmentTransaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
             viewEventDialogFragment.show(fragmentTransaction, ViewEventDialogFragment.TAG);
         }

@@ -215,7 +215,9 @@ public class CreateEventDialogFragment extends DialogFragment {
                 // TODO: Validate inputs
 
                 EditText title = Objects.requireNonNull(getView()).findViewById(R.id.et_title);
-
+                final Player currentPlayer = mAuth.getCurrentSignedUser();
+                final DocumentReference documentReference = mDb.getFirestore()
+                        .document("/"+DATABASE_REFERENCE_USERS+"/"+currentPlayer.getId());
                 // Validate for empty EditTexts
                 if (validateTextField(title, "Please enter a Title for the event") &&
                         validateTextField(etAddress, "Please enter a Location for the event") &&
@@ -223,18 +225,15 @@ public class CreateEventDialogFragment extends DialogFragment {
                         validateTextField(etEndTime, "Please select an End Time")) {
                     // Validate for Time
                     if (validateTime()) {
-//                        final Player currentPlayer = mAuth.getCurrentSignedUser();
-//                        final Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), selectedSport.getCategory(), title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
-//
-//                        mDb.insertDocument(DATABASE_REFERENCE_EVENTS, event.getId(), event);
-//                        new Handler().postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                DocumentReference documentReference = mDb.getFirestore().document("/"+DATABASE_REFERENCE_USERS+"/"+currentPlayer.getId());
-//                                mDb.addAttendee(event, documentReference);
-//                                dismiss();
-//                            }
-//                        }, 500);
+                        final Event eventCreated = new Event(documentReference, selectedSport.getCategory(),title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude,etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
+                        mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDb.addAttendee(eventCreated, documentReference);
+                                dismiss();
+                            }
+                        }, 500);
 
                     }
                 }
