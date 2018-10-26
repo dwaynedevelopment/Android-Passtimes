@@ -116,7 +116,7 @@ public class FeedFragment extends Fragment {
             mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
                     .addSnapshotListener(eventSnapshotListener);
 
-            setupInitalRecyclerView(true);
+            setupInitialRecyclerView(true);
 
 
         }
@@ -188,18 +188,18 @@ public class FeedFragment extends Fragment {
                     }
                 }
 
-                setupInitalRecyclerView(false);
+                setupInitialRecyclerView(false);
                 progressBar.setVisibility(View.GONE);
             }
         }
     };
 
 
-    private void setupInitalRecyclerView(boolean initalSetup) {
+    private void setupInitialRecyclerView(boolean initialSetup) {
 
-        if (initalSetup) {
+        if (initialSetup) {
             if (popupMenu.getMenu().getItem(0).isChecked()) {
-                //filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, menuSports.get(0).getCategory(), menuSports.get(1).getCategory(), menuSports.get(2).getCategory());
+
                 eventFeedViewAdapter = new EventFeedViewAdapter(mainFeedEvents, getActivity().getApplicationContext());
 
                 eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
@@ -215,14 +215,6 @@ public class FeedFragment extends Fragment {
                 public void run() {
                     if (popupMenu.getMenu().getItem(0).isChecked()) {
 
-//                        String s1 = "";
-//                        String s2 = "";
-//                        String s3 = "";
-//
-//                        s1 = ;
-//                        s2 = ;
-//                        s3 = menuSports.get(2).getCategory();
-
                         if (menuSports.size() == 1) {
                             filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, menuSports.get(0).getCategory(),"", "");
                         }
@@ -235,16 +227,13 @@ public class FeedFragment extends Fragment {
                             filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, menuSports.get(0).getCategory(), menuSports.get(1).getCategory(), menuSports.get(2).getCategory());
                         }
 
-
                         eventFeedViewAdapter = new EventFeedViewAdapter(filteredEventsByCategory, getActivity().getApplicationContext());
-
                         eventsRecyclerView.setAdapter(eventFeedViewAdapter);
                         eventsRecyclerView.setVisibility(View.VISIBLE);
                     }
                 }
             }, 350);
         }
-
 
     }
 
@@ -338,7 +327,6 @@ public class FeedFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Event event = intent.getParcelableExtra("SELECTED_EVENT");
-
             ViewEventDialogFragment viewEventDialogFragment = ViewEventDialogFragment.newInstance(event);
             FragmentTransaction fragmentTransaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
             viewEventDialogFragment.show(fragmentTransaction, ViewEventDialogFragment.TAG);

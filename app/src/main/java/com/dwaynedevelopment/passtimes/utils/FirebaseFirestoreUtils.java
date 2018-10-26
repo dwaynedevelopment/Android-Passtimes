@@ -4,13 +4,16 @@ import android.util.Log;
 
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
+import com.dwaynedevelopment.passtimes.models.Sport;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -45,10 +48,17 @@ public class FirebaseFirestoreUtils {
         return mFirestore;
     }
 
+    public CollectionReference databaseCollection(String COLLECTION_REFERENCE) {
+        return mFirestore.collection(COLLECTION_REFERENCE);
+    }
+
+    public DocumentReference databaseDocument(String COLLECTION_REFERENCE, String DOCUMENT_REFERENCE) {
+        return mFirestore.collection(COLLECTION_REFERENCE).document(DOCUMENT_REFERENCE);
+    }
+
     public <T> void insertDocument(String COLLECTION_REFERENCE, String DOCUMENT_REFERENCE, T documentObject) {
         mFirestore.collection(COLLECTION_REFERENCE).document(DOCUMENT_REFERENCE).set(documentObject);
     }
-
 
     public void updateImage(Player documentObject) {
         mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId()).update("thumbnail", documentObject.getThumbnail());
@@ -58,19 +68,50 @@ public class FirebaseFirestoreUtils {
         mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId()).update("favorites", documentObject.getFavorites());
     }
 
-    public void addAttendess(Event eventDocument, DocumentReference playerReference) {
+    public void addAttendee(Event eventDocument, DocumentReference playerReference) {
         DocumentReference documentReference = mFirestore.collection(DATABASE_REFERENCE_EVENTS).document(eventDocument.getId());
         documentReference.update("attendees", FieldValue.arrayUnion(playerReference));
     }
 
-    public CollectionReference databaseCollection(String COLLECTION_REFERENCE) {
-        return mFirestore.collection(COLLECTION_REFERENCE);
-    }
 
-    public DocumentReference databaseDocument(String COLLECTION_REFERENCE, String DOCUMENT_REFERENCE) {
-        return mFirestore.collection(COLLECTION_REFERENCE).document(DOCUMENT_REFERENCE);
-    }
+    public Map<String, Event> filterEventByFavoriteSport(Map<String, Event> eventMap, final List<String> selectedSports) {
 
+        switch (selectedSports.size()) {
+            case 1:
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    Map<String, Event> filtered = eventMap.entrySet()
+                            .stream()
+                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    return filtered;
+                }
+                break;
+            case 2:
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    Map<String, Event> filtered = eventMap.entrySet()
+                            .stream()
+                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
+                                    selectedSports.get(1).equals(map.getValue().getSport()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    return filtered;
+                }
+                break;
+            case 3:
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    Map<String, Event> filtered = eventMap.entrySet()
+                            .stream()
+                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
+                                    selectedSports.get(1).equals(map.getValue().getSport())||
+                                    selectedSports.get(2).equals(map.getValue().getSport()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    return filtered;
+                }
+                break;
+        }
+
+
+        return null;
+    }
 
     public Map<String, Event> filterEventByFavoriteSport(Map<String, Event> eventMap, final String firstSportCategory) {
 
@@ -79,7 +120,6 @@ public class FirebaseFirestoreUtils {
                     .stream()
                     .filter(map -> firstSportCategory.equals(map.getValue().getSport()))
                     .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
-            //Log.i(TAG, "Result: " + mm);
             return filtered;
         }
 
@@ -93,7 +133,6 @@ public class FirebaseFirestoreUtils {
                     .stream()
                     .filter(map -> firstSportCategory.equals(map.getValue().getSport()) || secondSportCategory.equals(map.getValue().getSport()))
                     .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
-            //Log.i(TAG, "Result: " + mm);
             return filtered;
         }
 
@@ -107,7 +146,6 @@ public class FirebaseFirestoreUtils {
                     .stream()
                     .filter(map -> firstSportCategory.equals(map.getValue().getSport()) || secondSportCategory.equals(map.getValue().getSport())|| thirdSportCategory.equals(map.getValue().getSport()))
                     .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
-            //Log.i(TAG, "Result: " + mm);
             return filtered;
         }
 

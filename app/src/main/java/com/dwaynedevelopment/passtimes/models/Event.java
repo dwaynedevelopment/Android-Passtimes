@@ -8,27 +8,27 @@ import com.google.firebase.firestore.DocumentReference;
 import java.util.List;
 import java.util.UUID;
 
-public class Event implements Parcelable{
+public class Event implements Parcelable {
 
     private String id;
-    private String hostId;
-    private String hostThumbnail;
+
     private String sport;
     private String title;
+    private String location;
     private double latitude;
     private double longitude;
-    private String location;
     private long startDate;
     private long endDate;
-    private int maxPlayers;
+    private int maxAttendees;
+    private DocumentReference eventHost;
     private List<DocumentReference> attendees;
 
     public Event() { }
 
-    public Event(String hostId, String hostThumbnail, String sport, String title, double latitude, double longitude, String location, long startDate, long endDate, int maxPlayers) {
+    public Event(DocumentReference eventHost, String sport, String title, double latitude, double longitude,
+                 String location, long startDate, long endDate, int maxAttendees, List<DocumentReference> attendees) {
         this.id = UUID.randomUUID().toString();
-        this.hostId = hostId;
-        this.hostThumbnail = hostThumbnail;
+        this.eventHost = eventHost;
         this.sport = sport;
         this.title = title;
         this.latitude = latitude;
@@ -36,13 +36,12 @@ public class Event implements Parcelable{
         this.location = location;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.maxPlayers = maxPlayers;
+        this.maxAttendees = maxAttendees;
+        this.attendees = attendees;
     }
 
     private Event(Parcel in) {
         id = in.readString();
-        hostId = in.readString();
-        hostThumbnail = in.readString();
         sport = in.readString();
         title = in.readString();
         latitude = in.readDouble();
@@ -50,7 +49,54 @@ public class Event implements Parcelable{
         location = in.readString();
         startDate = in.readLong();
         endDate = in.readLong();
-        maxPlayers = in.readInt();
+        maxAttendees = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(sport);
+        dest.writeString(title);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+        dest.writeString(location);
+        dest.writeLong(startDate);
+        dest.writeLong(endDate);
+        dest.writeInt(maxAttendees);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
+
+    public DocumentReference getEventHost() {
+        return eventHost;
+    }
+
+    public void setEventHost(DocumentReference eventHost) {
+        this.eventHost = eventHost;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id='" + id + '\'' +
+                ", sport='" + sport + '\'' +
+                ", title='" + title + '\'' +
+                '}';
     }
 
     public String getId() {
@@ -61,21 +107,6 @@ public class Event implements Parcelable{
         this.id = id;
     }
 
-    public String getHostId() {
-        return hostId;
-    }
-
-    public void setHostId(String hostId) {
-        this.hostId = hostId;
-    }
-
-    public String getHostThumbnail() {
-        return hostThumbnail;
-    }
-
-    public void setHostThumbnail(String hostThumbnail) {
-        this.hostThumbnail = hostThumbnail;
-    }
 
     public String getSport() {
         return sport;
@@ -133,12 +164,12 @@ public class Event implements Parcelable{
         this.endDate = endDate;
     }
 
-    public int getMaxPlayers() {
-        return maxPlayers;
+    public int getMaxAttendees() {
+        return maxAttendees;
     }
 
-    public void setMaxPlayers(int maxPlayers) {
-        this.maxPlayers = maxPlayers;
+    public void setMaxAttendees(int maxAttendees) {
+        this.maxAttendees = maxAttendees;
     }
 
     public List<DocumentReference> getAttendees() {
@@ -149,54 +180,5 @@ public class Event implements Parcelable{
         this.attendees = attendees;
     }
 
-    @Override
-    public String toString() {
-        return "Event{" +
-                "id='" + id + '\'' +
-                ", hostId='" + hostId + '\'' +
-                ", hostThumbnail='" + hostThumbnail + '\'' +
-                ", sport='" + sport + '\'' +
-                ", title='" + title + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", location='" + location + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", maxPlayers=" + maxPlayers +
-                ", attendees=" + attendees +
-                '}';
-    }
 
-    public static final Creator<Event> CREATOR = new Creator<Event>() {
-        @Override
-        public Event createFromParcel(Parcel in) {
-            return new Event(in);
-        }
-
-        @Override
-        public Event[] newArray(int size) {
-            return new Event[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(hostId);
-        dest.writeString(hostThumbnail);
-        dest.writeString(sport);
-        dest.writeString(title);
-        dest.writeDouble(latitude);
-        dest.writeDouble(longitude);
-        dest.writeString(location);
-        dest.writeLong(startDate);
-        dest.writeLong(endDate);
-        dest.writeInt(maxPlayers);
-        //dest.writeMap(attendees);
-    }
 }

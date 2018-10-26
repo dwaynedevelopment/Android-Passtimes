@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -81,19 +80,19 @@ public class ViewEventDialogFragment extends DialogFragment {
         Button btnJoin = Objects.requireNonNull(getView()).findViewById(R.id.btn_event_join);
         btnJoin.setOnClickListener(clickListener);
 
-        AuthUtils authUtils = AuthUtils.getInstance();
-        if (event.getHostId().equals(authUtils.getCurrentSignedUser().getId())) {
-            btnJoin.setVisibility(View.GONE);
-
-            //ImageButton delete = getView().findViewById(R.id.ib_delete);
-            //delete.setVisibility(View.VISIBLE);
-            //delete.setOnClickListener(clickListener);
-        }
+//        AuthUtils authUtils = AuthUtils.getInstance();
+//        if (event.getHostId().equals(authUtils.getCurrentSignedUser().getId())) {
+//            btnJoin.setVisibility(View.GONE);
+//
+//            //ImageButton delete = getView().findViewById(R.id.ib_delete);
+//            //delete.setVisibility(View.VISIBLE);
+//            //delete.setOnClickListener(clickListener);
+//        }
 
         mDb = FirebaseFirestoreUtils.getInstance();
 
         CircleImageView ciHost = getView().findViewById(R.id.ci_host);
-        Glide.with(Objects.requireNonNull(getContext())).load(event.getHostThumbnail()).into(ciHost);
+        //Glide.with(Objects.requireNonNull(getContext())).load(event.getHostThumbnail()).into(ciHost);
 
         TextView tvMonth = getView().findViewById(R.id.tv_event_month);
         tvMonth.setText(CalendarUtils.getMonthFromDate(event.getStartDate()));
@@ -127,7 +126,7 @@ public class ViewEventDialogFragment extends DialogFragment {
                     Player player = auth.getCurrentSignedUser();
 
                     DocumentReference documentReference = mDb.getFirestore().document("/"+DATABASE_REFERENCE_USERS+"/"+player.getId());
-                    mDb.addAttendess(event, documentReference);
+                    mDb.addAttendee(event, documentReference);
 
                     v.setVisibility(View.GONE);
                     break;

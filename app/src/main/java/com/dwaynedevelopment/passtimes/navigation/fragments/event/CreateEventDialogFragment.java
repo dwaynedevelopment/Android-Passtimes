@@ -223,18 +223,18 @@ public class CreateEventDialogFragment extends DialogFragment {
                         validateTextField(etEndTime, "Please select an End Time")) {
                     // Validate for Time
                     if (validateTime()) {
-                        final Player currentPlayer = mAuth.getCurrentSignedUser();
-                        final Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), selectedSport.getCategory(), title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
-
-                        mDb.insertDocument(DATABASE_REFERENCE_EVENTS, event.getId(), event);
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                DocumentReference documentReference = mDb.getFirestore().document("/"+DATABASE_REFERENCE_USERS+"/"+currentPlayer.getId());
-                                mDb.addAttendess(event, documentReference);
-                                dismiss();
-                            }
-                        }, 500);
+//                        final Player currentPlayer = mAuth.getCurrentSignedUser();
+//                        final Event event = new Event(currentPlayer.getId(), currentPlayer.getThumbnail(), selectedSport.getCategory(), title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
+//
+//                        mDb.insertDocument(DATABASE_REFERENCE_EVENTS, event.getId(), event);
+//                        new Handler().postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                DocumentReference documentReference = mDb.getFirestore().document("/"+DATABASE_REFERENCE_USERS+"/"+currentPlayer.getId());
+//                                mDb.addAttendee(event, documentReference);
+//                                dismiss();
+//                            }
+//                        }, 500);
 
                     }
                 }
