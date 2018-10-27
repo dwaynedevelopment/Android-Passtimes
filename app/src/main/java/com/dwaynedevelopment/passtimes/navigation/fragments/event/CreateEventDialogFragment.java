@@ -225,16 +225,16 @@ public class CreateEventDialogFragment extends DialogFragment {
                         validateTextField(etEndTime, "Please select an End Time")) {
                     // Validate for Time
                     if (validateTime()) {
-                        final Event eventCreated = new Event(documentReference, selectedSport.getCategory(),title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude,etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
-                        mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
+                        if (mPlaceData != null) {
+                            final Event eventCreated = new Event(documentReference, selectedSport.getCategory(),title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude,etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
+                            mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
+                            new Handler().postDelayed(() -> {
                                 mDb.addAttendee(eventCreated, documentReference);
                                 dismiss();
-                            }
-                        }, 500);
-
+                            }, 500);
+                        } else {
+                            Log.i(TAG, "onMenuItemClick: PLEASE SELECT A VALID ADDRESS");
+                        }
                     }
                 }
             }

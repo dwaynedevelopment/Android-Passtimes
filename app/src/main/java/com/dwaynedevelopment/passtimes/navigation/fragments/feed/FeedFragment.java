@@ -91,35 +91,37 @@ public class FeedFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mDb = FirebaseFirestoreUtils.getInstance();
         mAuth = AuthUtils.getInstance();
-        View view = getView();
 
-        if (view != null) {
-            Toolbar feedToolbar = view.findViewById(R.id.tb_feed);
-            feedToolbar.inflateMenu(R.menu.menu_feed);
-            feedToolbar.setOnMenuItemClickListener(menuItemClickListener);
+        if (getActivity() != null) {
+            if (getView() != null) {
+                View view = getView();
+                if (view != null) {
+                    Toolbar feedToolbar = view.findViewById(R.id.tb_feed);
+                    feedToolbar.inflateMenu(R.menu.menu_feed);
+                    feedToolbar.setOnMenuItemClickListener(menuItemClickListener);
 
-            progressBar = view.findViewById(R.id.pb_feed);
-            progressBar.setVisibility(View.VISIBLE);
+                    progressBar = view.findViewById(R.id.pb_feed);
+                    progressBar.setVisibility(View.VISIBLE);
 
-            eventReceiver = new EventReceiver();
-            IntentFilter actionFilter = new IntentFilter();
-            actionFilter.addAction(ACTION_EVENT_SELECTED);
-            Objects.requireNonNull(getActivity()).registerReceiver(eventReceiver, actionFilter);
+                    filterImageButton = view.findViewById(R.id.iv_filter_btn);
+                    filterImageButton.setOnClickListener(filterListener);
 
-            filterImageButton = view.findViewById(R.id.iv_filter_btn);
-            filterImageButton.setOnClickListener(filterListener);
+                    popupMenu = new PopupMenu(getActivity().getApplicationContext(), filterImageButton, Gravity.BOTTOM);
 
-            popupMenu = new PopupMenu(getActivity().getApplicationContext(), filterImageButton, Gravity.BOTTOM);
+                    mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
+                            .get().addOnCompleteListener(playerCompleteListener);
 
-            mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
-                    .get().addOnCompleteListener(playerCompleteListener);
+                    mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
+                            .addSnapshotListener(eventSnapshotListener);
 
-            mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
-                    .addSnapshotListener(eventSnapshotListener);
+                    setupInitialRecyclerView(true);
 
-            setupInitialRecyclerView(true);
-
-
+                    eventReceiver = new EventReceiver();
+                    IntentFilter actionFilter = new IntentFilter();
+                    actionFilter.addAction(ACTION_EVENT_SELECTED);
+                    getActivity().registerReceiver(eventReceiver, actionFilter);
+                }
+            }
         }
     }
 
@@ -133,7 +135,8 @@ public class FeedFragment extends Fragment {
                 return;
             }
             if (queryDocumentSnapshots != null) {
-                for (DocumentChange documentChange : queryDocumentSnapshots.getDocumentChanges()) {
+                for (int i = 0; i <queryDocumentSnapshots.getDocumentChanges().size() ; i++) {
+                    final DocumentChange documentChange = queryDocumentSnapshots.getDocumentChanges().get(i);
 
                     if (documentChange != null) {
                         switch (documentChange.getType()) {
@@ -142,16 +145,33 @@ public class FeedFragment extends Fragment {
                                 if (!mainFeedEvents.containsKey(addedEvent.getId())) {
                                     mainFeedEvents.put(addedEvent.getId(), addedEvent);
                                     Log.i(TAG, "onEvent: ADDED " + documentChange.getDocument().toObject(Event.class).toString());
-
                                 } else {
                                     Log.i(TAG, "onEvent: NOT ADDED " + documentChange.getDocument().toObject(Event.class).toString());
                                 }
+                                eventFeedViewAdapter.notifyItemInserted(i);
                                 eventFeedViewAdapter.notifyDataSetChanged();
                                 break;
                             case MODIFIED:
-                                Log.i(TAG, "onEvent: MODIFIED " + documentChange.getDocument().toObject(Event.class).toString());
+                                final Event editEvent = documentChange.getDocument().toObject(Event.class);
+                                if (mainFeedEvents.containsKey(editEvent.getId()) && filteredEventsByCategory.containsKey(editEvent.getId())) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                        mainFeedEvents.replace(editEvent.getId(), editEvent);
+                                        filteredEventsByCategory.replace(editEvent.getId(), editEvent);
+                                        Log.i(TAG, "onEvent: MODIFIED " + documentChange.getDocument().toObject(Event.class).toString());
+                                        eventFeedViewAdapter.notifyItemChanged(i);
+                                    }
+                                }
                                 break;
                             case REMOVED:
+                                Event removedEvent = documentChange.getDocument().toObject(Event.class);
+                                if (mainFeedEvents.containsKey(removedEvent.getId()) && filteredEventsByCategory.containsKey(removedEvent.getId())) {
+                                    mainFeedEvents.remove(removedEvent.getId());
+                                    filteredEventsByCategory.remove(removedEvent.getId());
+                                    Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());
+
+                                }
+                                eventFeedViewAdapter.notifyItemRemoved(i);
+                                eventFeedViewAdapter.notifyDataSetChanged();
                                 Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());
                                 break;
 
@@ -195,27 +215,30 @@ public class FeedFragment extends Fragment {
 
     private void setupInitialRecyclerView(boolean initialSetup) {
 
-        if (initialSetup) {
-                eventFeedViewAdapter = new EventFeedViewAdapter(mainFeedEvents, getActivity().getApplicationContext());
+        if (getActivity() != null) {
+            if (getView() != null) {
+                if (initialSetup) {
+                    eventFeedViewAdapter = new EventFeedViewAdapter(mainFeedEvents, getActivity().getApplicationContext());
 
-                eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
-                eventsRecyclerView.setHasFixedSize(true);
-                eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+                    eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
+                    eventsRecyclerView.setHasFixedSize(true);
+                    eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
 
-                eventsRecyclerView.setAdapter(eventFeedViewAdapter);
-                eventsRecyclerView.setVisibility(View.GONE);
+                    eventsRecyclerView.setAdapter(eventFeedViewAdapter);
+                    eventsRecyclerView.setVisibility(View.GONE);
 
-        } else {
-            new Handler().postDelayed(() -> {
-                filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, initialSports);
+                } else {
+                    new Handler().postDelayed(() -> {
+                        filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, initialSports);
 
-                eventFeedViewAdapter = new EventFeedViewAdapter(filteredEventsByCategory, getActivity().getApplicationContext());
-                eventsRecyclerView.setAdapter(eventFeedViewAdapter);
-                eventsRecyclerView.setVisibility(View.VISIBLE);
+                        eventFeedViewAdapter = new EventFeedViewAdapter(filteredEventsByCategory, getActivity().getApplicationContext());
+                        eventsRecyclerView.setAdapter(eventFeedViewAdapter);
+                        eventsRecyclerView.setVisibility(View.VISIBLE);
 
-            }, 350);
+                    }, 350);
+                }
+            }
         }
-
     }
 
 
@@ -234,9 +257,7 @@ public class FeedFragment extends Fragment {
                         menuItem.setChecked(true);
                         if (!selectedSports.contains(menuItem.getTitle().toString())) {
                             selectedSports.add(menuItem.getTitle().toString());
-
                             filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, selectedSports);
-
                         }
                     } else {
 
@@ -246,9 +267,7 @@ public class FeedFragment extends Fragment {
                         } else {
                             menuItem.setChecked(false);
                             selectedSports.remove(menuItem.getTitle().toString());
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, selectedSports);
-                            }
+                            filteredEventsByCategory = mDb.filterEventByFavoriteSport(mainFeedEvents, selectedSports);
                         }
 
                     }

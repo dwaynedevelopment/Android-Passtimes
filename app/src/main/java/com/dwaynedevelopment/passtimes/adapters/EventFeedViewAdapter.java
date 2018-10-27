@@ -70,7 +70,7 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
         return eventMap.size();
     }
 
-    private static <K, V> List<V> createListFromMapEntries(Map<K, V> map) {
+    private <K, V> List<V> createListFromMapEntries(Map<K, V> map) {
         return new ArrayList<>(map.values());
     }
 
