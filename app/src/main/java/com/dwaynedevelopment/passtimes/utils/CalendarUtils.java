@@ -1,5 +1,7 @@
 package com.dwaynedevelopment.passtimes.utils;
 
+import com.dwaynedevelopment.passtimes.models.Event;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,5 +46,12 @@ public class CalendarUtils {
         calendar.set(Calendar.MINUTE, minutes);
 
         return calendar.getTime();
+    }
+
+    public static String timeRangeString(Event event) {
+        String startTime = CalendarUtils.getTimeFromDate(event.getStartDate());
+        String endTime = CalendarUtils.getTimeFromDate(event.getEndDate());
+
+        return startTime + " - " + endTime;
     }
 }

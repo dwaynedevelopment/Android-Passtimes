@@ -1,5 +1,7 @@
 package com.dwaynedevelopment.passtimes.utils;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.dwaynedevelopment.passtimes.models.Event;
@@ -37,7 +39,7 @@ public class FirebaseFirestoreUtils {
     private static FirebaseFirestoreUtils instance = null;
 
     public static FirebaseFirestoreUtils getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new FirebaseFirestoreUtils();
         }
 
@@ -75,89 +77,34 @@ public class FirebaseFirestoreUtils {
 
 
     public Map<String, Event> filterEventByFavoriteSport(Map<String, Event> eventMap, final List<String> selectedSports) {
-
-        switch (selectedSports.size()) {
-            case 1:
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            switch (selectedSports.size()) {
+                case 1:
                     return eventMap.entrySet()
                             .stream()
                             .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                }
-                break;
-            case 2:
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+
+
+                case 2:
                     return eventMap.entrySet()
                             .stream()
                             .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
                                     selectedSports.get(1).equals(map.getValue().getSport()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                }
-                break;
-            case 3:
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+
+
+                case 3:
                     return eventMap.entrySet()
                             .stream()
                             .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(1).equals(map.getValue().getSport())||
+                                    selectedSports.get(1).equals(map.getValue().getSport()) ||
                                     selectedSports.get(2).equals(map.getValue().getSport()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                }
-                break;
+            }
         }
-
-
         return null;
     }
-
-    public Map<String, Event> filterEventByFavoriteSport(Map<String, Event> eventMap, final String firstSportCategory) {
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            Map<String, Event> filtered = eventMap.entrySet()
-                    .stream()
-                    .filter(map -> firstSportCategory.equals(map.getValue().getSport()))
-                    .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
-            return filtered;
-        }
-
-        return null;
-    }
-
-    public Map<String, Event> filterEventByFavoriteSport(Map<String, Event> eventMap, final String firstSportCategory, String secondSportCategory) {
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            Map<String, Event> filtered = eventMap.entrySet()
-                    .stream()
-                    .filter(map -> firstSportCategory.equals(map.getValue().getSport()) || secondSportCategory.equals(map.getValue().getSport()))
-                    .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
-            return filtered;
-        }
-
-        return null;
-    }
-
-    public Map<String, Event> filterEventByFavoriteSport(Map<String, Event> eventMap, final String firstSportCategory, String secondSportCategory, String thirdSportCategory) {
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            Map<String, Event> filtered = eventMap.entrySet()
-                    .stream()
-                    .filter(map -> firstSportCategory.equals(map.getValue().getSport()) || secondSportCategory.equals(map.getValue().getSport())|| thirdSportCategory.equals(map.getValue().getSport()))
-                    .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
-            return filtered;
-        }
-
-        return null;
-    }
-
-
-
-
-
-
-
-
-
-
 
 
     public void f() {

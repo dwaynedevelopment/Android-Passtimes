@@ -17,10 +17,8 @@ import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVENT_ID;
@@ -60,13 +58,10 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
         String time = CalendarUtils.getDateTimeFromDate(event.getStartDate());
         holder.tvTime.setText(time);
 
-        holder.eventCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent selectIntent = new Intent(ACTION_EVENT_SELECTED);
-                selectIntent.putExtra(EXTRA_SELECTED_EVENT_ID,  event.getId());
-                context.sendBroadcast(selectIntent);
-            }
+        holder.eventCard.setOnClickListener(v -> {
+            Intent selectIntent = new Intent(ACTION_EVENT_SELECTED);
+            selectIntent.putExtra(EXTRA_SELECTED_EVENT_ID,  event.getId());
+            context.sendBroadcast(selectIntent);
         });
     }
 
@@ -75,7 +70,7 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
         return eventMap.size();
     }
 
-    private static <K, V> List<V> createListFromMapEntries (Map<K, V> map){
+    private static <K, V> List<V> createListFromMapEntries(Map<K, V> map) {
         return new ArrayList<>(map.values());
     }
 
