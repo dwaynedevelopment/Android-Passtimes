@@ -28,7 +28,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -44,7 +43,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_GALLERY_IMA
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_READ_EXTERNAL_STORAGE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ROOT_STORAGE_USER_PROFILES;
 import static com.dwaynedevelopment.passtimes.utils.PermissionUtils.permissionReadExternalStorage;
-import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
+import static com.dwaynedevelopment.passtimes.utils.AlertUtils.invokeSnackBar;
 
 public class SignUpActivity extends AppCompatActivity implements ISignUpHandler {
 

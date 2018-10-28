@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.SOCIAL_PROFILE_DIMEN;
-import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
+import static com.dwaynedevelopment.passtimes.utils.AlertUtils.invokeSnackBar;
 
 public class AuthUtils {
 

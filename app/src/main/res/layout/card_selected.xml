@@ -6,7 +6,9 @@
     android:background="@drawable/cv_fav_selector"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:elevation="2dp"
-    android:layout_marginStart="16dp">
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp">
 
     <ImageView
         android:id="@+id/ic_fav"

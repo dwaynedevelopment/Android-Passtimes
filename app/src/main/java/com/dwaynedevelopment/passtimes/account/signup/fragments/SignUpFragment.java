@@ -20,7 +20,7 @@ import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 import java.util.Objects;
 
 import static com.dwaynedevelopment.passtimes.utils.AuthUtils.credentialValidation;
-import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
+import static com.dwaynedevelopment.passtimes.utils.AlertUtils.invokeSnackBar;
 
 public class SignUpFragment extends Fragment {
 

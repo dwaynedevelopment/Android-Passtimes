@@ -39,7 +39,7 @@ import java.util.Objects;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_FAVORITE_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_SPORTS;
-import static com.dwaynedevelopment.passtimes.utils.SnackbarUtils.invokeSnackBar;
+import static com.dwaynedevelopment.passtimes.utils.AlertUtils.invokeSnackBar;
 
 public class FavoriteFragment extends Fragment {
 

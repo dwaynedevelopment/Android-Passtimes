@@ -1,10 +1,12 @@
 package com.dwaynedevelopment.passtimes.navigation.fragments.event;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,7 @@ public class ViewEventDialogFragment extends DialogFragment {
     private ImageButton deleteImageButton;
     private ImageButton editImageButton;
 
+    private Event eventSelected;
     private String eventIdExtra;
 
 
@@ -124,7 +127,7 @@ public class ViewEventDialogFragment extends DialogFragment {
 
     private final EventListener<DocumentSnapshot> eventSnapshotListener = (documentParentSnapshot, e) -> {
 
-        Event eventSelected = Objects.requireNonNull(documentParentSnapshot).toObject(Event.class);
+        eventSelected = Objects.requireNonNull(documentParentSnapshot).toObject(Event.class);
 
         if (eventSelected != null) {
             if (getView() != null) {
@@ -192,13 +195,22 @@ public class ViewEventDialogFragment extends DialogFragment {
                     v.setVisibility(View.GONE);
                     break;
                 case R.id.ib_delete:
+                    if (getActivity() != null) {
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog.setTitle(eventSelected.getTitle());
+                        alertDialog.setMessage("Are you sure you want delete this event?");
+                        alertDialog.setPositiveButton("Sure", (dialog, which) -> {
+                             mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
+                                     .document(eventIdExtra)
+                                     .delete()
+                                     .addOnSuccessListener(deleteEventListener);
 
-                    //TODO: Fix Prompt but for now testing delete.
-
-                    mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
-                            .document(eventIdExtra)
-                            .delete()
-                            .addOnSuccessListener(deleteEventListener);
+                        });
+                        alertDialog.setNegativeButton("Cancel", (dialog, which) -> {
+                            dialog.cancel();
+                        });
+                        alertDialog.show();
+                    }
                     break;
             }
         }
