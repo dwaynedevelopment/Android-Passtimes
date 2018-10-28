@@ -17,7 +17,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -71,6 +70,7 @@ public class FeedFragment extends Fragment {
     private List<String> initialSports = new ArrayList<>();
 
 
+
     private static final String TAG = "FeedFragment";
 
     public FeedFragment() {
@@ -108,8 +108,12 @@ public class FeedFragment extends Fragment {
 
                     popupMenu = new PopupMenu(getActivity().getApplicationContext(), filterImageButton, Gravity.BOTTOM);
 
+//                    mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
+//                            .addSnapshotListener(playerFavoritesListener);
+
+
                     mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
-                            .get().addOnCompleteListener(playerCompleteListener);
+                            .get().addOnCompleteListener(playerFavoritesListener);
 
                     mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
                             .addSnapshotListener(eventSnapshotListener);
@@ -142,14 +146,18 @@ public class FeedFragment extends Fragment {
                         switch (documentChange.getType()) {
                             case ADDED:
                                 Event addedEvent = documentChange.getDocument().toObject(Event.class);
-                                if (!mainFeedEvents.containsKey(addedEvent.getId())) {
+                                if (!mainFeedEvents.containsKey(addedEvent.getId()) && !filteredEventsByCategory.containsKey(addedEvent.getId())) {
                                     mainFeedEvents.put(addedEvent.getId(), addedEvent);
+                                    filteredEventsByCategory.put(addedEvent.getId(), addedEvent);
+                                    if (!initialSports.contains(addedEvent.getSport())) {
+                                        filteredEventsByCategory.remove(addedEvent.getId());
+                                    }
+                                    eventFeedViewAdapter.notifyItemInserted(i);
+                                    eventFeedViewAdapter.notifyDataSetChanged();
                                     Log.i(TAG, "onEvent: ADDED " + documentChange.getDocument().toObject(Event.class).toString());
                                 } else {
                                     Log.i(TAG, "onEvent: NOT ADDED " + documentChange.getDocument().toObject(Event.class).toString());
                                 }
-                                eventFeedViewAdapter.notifyItemInserted(i);
-                                eventFeedViewAdapter.notifyDataSetChanged();
                                 break;
                             case MODIFIED:
                                 final Event editEvent = documentChange.getDocument().toObject(Event.class);
@@ -159,6 +167,7 @@ public class FeedFragment extends Fragment {
                                         filteredEventsByCategory.replace(editEvent.getId(), editEvent);
                                         Log.i(TAG, "onEvent: MODIFIED " + documentChange.getDocument().toObject(Event.class).toString());
                                         eventFeedViewAdapter.notifyItemChanged(i);
+                                        eventFeedViewAdapter.notifyDataSetChanged();
                                     }
                                 }
                                 break;
@@ -167,11 +176,11 @@ public class FeedFragment extends Fragment {
                                 if (mainFeedEvents.containsKey(removedEvent.getId()) && filteredEventsByCategory.containsKey(removedEvent.getId())) {
                                     mainFeedEvents.remove(removedEvent.getId());
                                     filteredEventsByCategory.remove(removedEvent.getId());
-                                    Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());
 
+                                    eventFeedViewAdapter.notifyItemRemoved(i);
+                                    eventFeedViewAdapter.notifyDataSetChanged();
+                                    Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());
                                 }
-                                eventFeedViewAdapter.notifyItemRemoved(i);
-                                eventFeedViewAdapter.notifyDataSetChanged();
                                 Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());
                                 break;
 
@@ -184,7 +193,37 @@ public class FeedFragment extends Fragment {
     };
 
 
-    private final OnCompleteListener<DocumentSnapshot> playerCompleteListener = new OnCompleteListener<DocumentSnapshot>() {
+//    private final EventListener<DocumentSnapshot> playerFavoritesListener = new EventListener<DocumentSnapshot>() {
+//        @Override
+//        public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,
+//                            @javax.annotation.Nullable FirebaseFirestoreException e) {
+//            if (documentSnapshot != null && !Objects.requireNonNull(documentSnapshot.getData()).isEmpty()) {
+//                List<DocumentReference> sportReferences = ((List<DocumentReference>) Objects.requireNonNull(documentSnapshot.getData().get("favorites")));
+//
+//                if (sportReferences != null) {
+//                    for (int i = 0; i < sportReferences.size(); i++) {
+//
+//                        sportReferences.get(i).get().addOnCompleteListener(favoriteSportTask -> {
+//
+//                            Sport sport = Objects.requireNonNull(favoriteSportTask.getResult()).toObject(Sport.class);
+//                            popupMenu.getMenuInflater().inflate(R.menu.menu_filter, popupMenu.getMenu());
+//                            if (sport != null) {
+//                                popupMenu.getMenu().add(sport.getCategory());
+//                                initialSports.add(sport.getCategory());
+//                            }
+//                        });
+//                    }
+//                }
+//
+//
+//            }
+//            setupInitialRecyclerView(false);
+//            progressBar.setVisibility(View.GONE);
+//
+//        }
+//    };
+
+    private final OnCompleteListener<DocumentSnapshot> playerFavoritesListener = new OnCompleteListener<DocumentSnapshot>() {
         @Override
         public void onComplete(@NonNull Task<DocumentSnapshot> sportsTask) {
 
@@ -214,7 +253,7 @@ public class FeedFragment extends Fragment {
 
 
     private void setupInitialRecyclerView(boolean initialSetup) {
-
+        filteredEventsByCategory.clear();
         if (getActivity() != null) {
             if (getView() != null) {
                 if (initialSetup) {

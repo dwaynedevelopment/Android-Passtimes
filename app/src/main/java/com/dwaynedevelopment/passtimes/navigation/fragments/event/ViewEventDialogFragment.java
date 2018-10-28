@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,27 +89,30 @@ public class ViewEventDialogFragment extends DialogFragment {
                 final String eventIdExtra = getArguments().getString(ARGS_SELECTED_EVENT_ID);
                 if (eventIdExtra != null) {
 
-                    mDb.databaseCollection(DATABASE_REFERENCE_EVENTS).document(eventIdExtra)
-                            .addSnapshotListener(eventSnapshotListener);
+                    if (!eventIdExtra.isEmpty()) {
+                        mDb.databaseCollection(DATABASE_REFERENCE_EVENTS).document(eventIdExtra)
+                                .addSnapshotListener(eventSnapshotListener);
 
-                    if (getView() != null) {
+                        if (getView() != null) {
 
-                        ImageButton closeImageButton = getView().findViewById(R.id.ib_close);
-                        closeImageButton.setOnClickListener(eventOnClickListener);
+                            ImageButton closeImageButton = getView().findViewById(R.id.ib_close);
+                            closeImageButton.setOnClickListener(eventOnClickListener);
 
-                        joinEventButton = getView().findViewById(R.id.btn_event_join);
-                        joinEventButton.setOnClickListener(eventOnClickListener);
-                        joinEventButton.setVisibility(View.GONE);
+                            joinEventButton = getView().findViewById(R.id.btn_event_join);
+                            joinEventButton.setOnClickListener(eventOnClickListener);
+                            joinEventButton.setVisibility(View.GONE);
 
-                        deleteImageButton = getView().findViewById(R.id.ib_delete);
-                        deleteImageButton.setOnClickListener(eventOnClickListener);
-                        deleteImageButton.setVisibility(View.GONE);
+                            deleteImageButton = getView().findViewById(R.id.ib_delete);
+                            deleteImageButton.setOnClickListener(eventOnClickListener);
+                            deleteImageButton.setVisibility(View.GONE);
 
-                        editImageButton = getView().findViewById(R.id.ib_edit_event);
-                        editImageButton.setOnClickListener(eventOnClickListener);
-                        editImageButton.setVisibility(View.GONE);
+                            editImageButton = getView().findViewById(R.id.ib_edit_event);
+                            editImageButton.setOnClickListener(eventOnClickListener);
+                            editImageButton.setVisibility(View.GONE);
+                        }
+                    } else {
+                        Log.i(TAG, "onActivityCreated: NOTHING HERE");
                     }
-
                 }
 
             }
