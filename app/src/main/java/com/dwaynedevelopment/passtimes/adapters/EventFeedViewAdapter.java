@@ -17,6 +17,7 @@ import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,10 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
 
     @Override
     public int getItemCount() {
-        return eventMap.size();
+        if (eventMap != null) {
+            return eventMap.size();
+        }
+        return 0;
     }
 
     private <K, V> List<V> createListFromMapEntries(Map<K, V> map) {

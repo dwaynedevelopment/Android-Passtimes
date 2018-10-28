@@ -207,6 +207,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/btn_selector_action"
             android:text="Join Event"
+            android:visibility="gone"
             android:layout_alignParentBottom="true" />
 
     </RelativeLayout>

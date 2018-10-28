@@ -47,57 +47,27 @@ public class SelectedViewAdapter extends RecyclerView.Adapter<SelectedViewAdapte
         Glide.with(context).load(favoriteSport.getIdle()).into(holder.ivIcon);
         holder.tvCategory.setText(favoriteSport.getCategory());
 
-        holder.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.button.setOnClickListener(v -> {
 
-                if (oldSelectedView != null) {
-                    Glide.with(context).load(oldFavoriteSport.getIdle()).into(oldImageViewSelected);
-                    oldSelectedView.setSelected(false);
-                    oldTextViewSelected.setTextColor(context.getResources().getColor(R.color.colorDarkPrimary));
-                }
-
-                Glide.with(context).load(favoriteSport.getActive()).into(holder.ivIcon);
-                v.setSelected(true);
-                holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorSecondaryAccent));
-
-//                if (oldSelectedView != null) {
-//                    if (oldSelectedView.isSelected()) {
-//                        oldSelectedView.setSelected(false);
-//                        Glide.with(context).load(favoriteSport.getIdle()).into(holder.ivIcon);
-//                        holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorDarkPrimary));
-//                        //selected.remove(favoriteSport);
-//
-//                    } else {
-//                        Glide.with(context).load(favoriteSport.getActive()).into(holder.ivIcon);
-//                        oldSelectedView.setSelected(true);
-//                        holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorSecondaryAccent));
-//                        //selected.add(favoriteSport);
-//                        oldSelectedView = null;
-//                    }
-//                }
-
-                oldSelectedView = v;
-                oldImageViewSelected = holder.ivIcon;
-                oldTextViewSelected = holder.tvCategory;
-                oldFavoriteSport = favoriteSport;
-//                if (v.isSelected()) {
-//                    Glide.with(context).load(favoriteSport.getIdle()).into(holder.ivIcon);
-//                    v.setSelected(false);
-//                    holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorDarkPrimary));
-//                    //selected.remove(favoriteSport);
-//
-//                } else {
-//                    Glide.with(context).load(favoriteSport.getActive()).into(holder.ivIcon);
-//                    v.setSelected(true);
-//                    holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorSecondaryAccent));
-//                    //selected.add(favoriteSport);
-//                }
-
-                Intent selectIntent = new Intent(ACTION_SELECT_SELECTED);
-                selectIntent.putExtra("SELECTED_SELECT", favoriteSport);
-                context.sendBroadcast(selectIntent);
+            if (oldSelectedView != null) {
+                Glide.with(context).load(oldFavoriteSport.getIdle()).into(oldImageViewSelected);
+                oldSelectedView.setSelected(false);
+                oldTextViewSelected.setTextColor(context.getResources().getColor(R.color.colorDarkPrimary));
             }
+
+            Glide.with(context).load(favoriteSport.getActive()).into(holder.ivIcon);
+            v.setSelected(true);
+            holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorSecondaryAccent));
+
+            oldSelectedView = v;
+            oldImageViewSelected = holder.ivIcon;
+            oldTextViewSelected = holder.tvCategory;
+            oldFavoriteSport = favoriteSport;
+
+            Intent selectIntent = new Intent(ACTION_SELECT_SELECTED);
+            selectIntent.putExtra("SELECTED_SELECT", favoriteSport);
+            context.sendBroadcast(selectIntent);
+
         });
     }
 

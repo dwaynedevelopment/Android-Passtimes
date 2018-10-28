@@ -75,4 +75,11 @@ public class Player {
         this.thumbnail = thumbnail;
     }
 
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

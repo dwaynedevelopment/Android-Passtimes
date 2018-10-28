@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +36,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.dwaynedevelopment.passtimes.utils.CalendarUtils.timeRangeString;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ARGS_SELECTED_EVENT_ID;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 
 public class ViewEventDialogFragment extends DialogFragment {
 
@@ -125,7 +127,7 @@ public class ViewEventDialogFragment extends DialogFragment {
         }
     }
 
-    private final EventListener<DocumentSnapshot> eventSnapshotListener = (documentParentSnapshot, e) -> {
+    private final EventListener<DocumentSnapshot> eventSnapshotListener = (documentParentSnapshot, eventException) -> {
 
         eventSelected = Objects.requireNonNull(documentParentSnapshot).toObject(Event.class);
 
@@ -147,31 +149,54 @@ public class ViewEventDialogFragment extends DialogFragment {
                 TextView tvLocation = getView().findViewById(R.id.tv_event_location);
                 tvLocation.setText(eventSelected.getLocation());
 
-                DocumentReference hostReference = eventSelected.getEventHost();
-
                 CircleImageView ciHost = getView().findViewById(R.id.ci_host);
 
-                if (hostReference != null) {
-                    hostReference.addSnapshotListener((documentChildSnapshot, e1) -> {
-                        final Player eventHost = Objects.requireNonNull(documentChildSnapshot).toObject(Player.class);
-                        if (eventHost != null) {
-                            if (getActivity() != null) {
-                                Glide.with(getActivity().getApplicationContext()).load(eventHost.getThumbnail()).into(ciHost);
+                DocumentReference hostReference = eventSelected.getEventHost();
 
-                                if (eventHost.getId().equals(mAuth.getCurrentSignedUser().getId())) {
-                                    deleteImageButton.setVisibility(View.VISIBLE);
-                                    editImageButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    joinEventButton.setVisibility(View.VISIBLE);
+                if (hostReference != null) {
+                    hostReference.addSnapshotListener((documentChildSnapshot, playerException) -> {
+                        final Player eventHost;
+                        if (documentChildSnapshot != null) {
+                            eventHost = documentChildSnapshot.toObject(Player.class);
+
+                            if (eventHost != null) {
+                                if (getActivity() != null) {
+                                    Glide.with(getActivity().getApplicationContext()).load(eventHost.getThumbnail()).into(ciHost);
+
+                                    if (eventHost.getId().equals(mAuth.getCurrentSignedUser().getId())) {
+                                        deleteImageButton.setVisibility(View.VISIBLE);
+                                        editImageButton.setVisibility(View.VISIBLE);
+                                        joinEventButton.setVisibility(View.GONE);
+                                    } else {
+                                        joinEventButton.setVisibility(View.VISIBLE);
+                                    }
                                 }
                             }
                         }
+
                     });
 
                 }
 
-
                 List<DocumentReference> attendeesReference = eventSelected.getAttendees();
+
+                if (attendeesReference != null) {
+                    for (int i = 0; i <attendeesReference.size() ; i++) {
+                        attendeesReference.get(i).addSnapshotListener((documentSnapshot, attendeeException) -> {
+                            if (documentSnapshot != null) {
+                                final Player attendeeReference = documentSnapshot.toObject(Player.class);
+                                if (attendeeReference != null) {
+                                    Log.i(TAG, "onEvent: ATTENDEES LIST: " + attendeeReference.toString());
+                                    if (!attendeesReference.contains(mAuth.getCurrentSignedUser())) {
+                                        joinEventButton.setVisibility(View.VISIBLE);
+                                    } else {
+                                        joinEventButton.setVisibility(View.GONE);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
 
             }
         }
@@ -186,12 +211,8 @@ public class ViewEventDialogFragment extends DialogFragment {
                     dismiss();
                     break;
                 case R.id.btn_event_join:
-//                    AuthUtils auth = AuthUtils.getInstance();
-//                    Player player = auth.getCurrentSignedUser();
-//
-//                    DocumentReference documentReference = mDb.getFirestore().document("/" + DATABASE_REFERENCE_USERS + "/" + player.getId());
-//                    //mDb.addAttendee(event, documentReference);
-
+                    DocumentReference documentReference = mDb.getFirestore().document("/" + DATABASE_REFERENCE_USERS + "/" + mAuth.getCurrentSignedUser().getId());
+                    mDb.addAttendee(eventSelected, documentReference);
                     v.setVisibility(View.GONE);
                     break;
                 case R.id.ib_delete:
