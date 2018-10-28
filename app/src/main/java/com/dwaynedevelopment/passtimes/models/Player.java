@@ -9,10 +9,16 @@ public class Player {
     private String id;
     private String name;
     private String thumbnail;
-    //private HashMap<String, HashMap<String, String>> favorites;
     private List<DocumentReference> favorites;
+    private List<DocumentReference> attending;
 
     public Player() {}
+
+    public Player(String id, String name, String thumbnail) {
+        this.id = id;
+        this.name = name;
+        this.thumbnail = thumbnail;
+    }
 
     public Player(String id, String name, String thumbnail, List<DocumentReference> favorites) {
         this.id = id;
@@ -21,10 +27,20 @@ public class Player {
         this.favorites = favorites;
     }
 
-    public Player(String id, String name, String thumbnail) {
+    public Player(String id, String name, String thumbnail, List<DocumentReference> favorites, List<DocumentReference> attending) {
         this.id = id;
         this.name = name;
         this.thumbnail = thumbnail;
+        this.favorites = favorites;
+        this.attending = attending;
+    }
+
+    public List<DocumentReference> getAttending() {
+        return attending;
+    }
+
+    public void setAttending(List<DocumentReference> attending) {
+        this.attending = attending;
     }
 
     public List<DocumentReference> getFavorites() {

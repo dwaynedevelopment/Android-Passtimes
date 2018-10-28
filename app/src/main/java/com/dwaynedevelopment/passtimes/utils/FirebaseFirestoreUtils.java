@@ -75,6 +75,11 @@ public class FirebaseFirestoreUtils {
         documentReference.update("attendees", FieldValue.arrayUnion(playerReference));
     }
 
+    public void addAttendings(Player documentObject, DocumentReference eventReference) {
+        DocumentReference documentReference = mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId());
+        documentReference.update("attending", FieldValue.arrayUnion(eventReference));
+    }
+
 
     public Map<String, Event> filterEventByFavoriteSport(Map<String, Event> eventMap, final List<String> selectedSports) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {

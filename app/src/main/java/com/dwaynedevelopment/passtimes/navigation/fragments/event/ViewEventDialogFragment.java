@@ -20,6 +20,7 @@ import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -42,6 +43,8 @@ public class ViewEventDialogFragment extends DialogFragment {
     private Button joinEventButton;
     private ImageButton deleteImageButton;
     private ImageButton editImageButton;
+
+    private String eventIdExtra;
 
 
     public static ViewEventDialogFragment newInstance(String eventId) {
@@ -86,7 +89,7 @@ public class ViewEventDialogFragment extends DialogFragment {
             mAuth = AuthUtils.getInstance();
             if (getArguments() != null) {
 
-                final String eventIdExtra = getArguments().getString(ARGS_SELECTED_EVENT_ID);
+                eventIdExtra = getArguments().getString(ARGS_SELECTED_EVENT_ID);
                 if (eventIdExtra != null) {
 
                     if (!eventIdExtra.isEmpty()) {
@@ -187,13 +190,18 @@ public class ViewEventDialogFragment extends DialogFragment {
                     v.setVisibility(View.GONE);
                     break;
                 case R.id.ib_delete:
-                    //FIXME
-                    //TODO
-                    //mDb.deleteEvent(event);
-                    dismiss();
+
+                    //TODO: Fix Prompt but for now testing delete.
+
+                    mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
+                            .document(eventIdExtra)
+                            .delete()
+                            .addOnSuccessListener(deleteEventListener);
                     break;
             }
         }
     };
+
+    private final OnSuccessListener<Void> deleteEventListener = aVoid -> dismiss();
 
 }

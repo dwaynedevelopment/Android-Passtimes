@@ -213,11 +213,9 @@ public class CreateEventDialogFragment extends DialogFragment {
                 dismiss();
             } else if (item.getItemId() == R.id.action_save) {
                 // TODO: Validate inputs
-
                 EditText title = Objects.requireNonNull(getView()).findViewById(R.id.et_title);
                 final Player currentPlayer = mAuth.getCurrentSignedUser();
-                final DocumentReference documentReference = mDb.getFirestore()
-                        .document("/"+DATABASE_REFERENCE_USERS+"/"+currentPlayer.getId());
+
                 // Validate for empty EditTexts
                 if (validateTextField(title, "Please enter a Title for the event") &&
                         validateTextField(etAddress, "Please enter a Location for the event") &&
@@ -226,12 +224,22 @@ public class CreateEventDialogFragment extends DialogFragment {
                     // Validate for Time
                     if (validateTime()) {
                         if (mPlaceData != null) {
-                            final Event eventCreated = new Event(documentReference, selectedSport.getCategory(),title.getText().toString(), mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude,etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
+                            final DocumentReference playerDocumentReference = mDb.getFirestore()
+                                    .document("/"+DATABASE_REFERENCE_USERS+"/"+currentPlayer.getId());
+
+                            final Event eventCreated = new Event(playerDocumentReference, selectedSport.getCategory(),title.getText().toString(), mPlaceData.getLatLng().latitude,
+                                    mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
+
+                            final DocumentReference eventDocumentReference = mDb.getFirestore()
+                                    .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventCreated.getId());
+
                             mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
+
                             new Handler().postDelayed(() -> {
-                                mDb.addAttendee(eventCreated, documentReference);
+                                mDb.addAttendee(eventCreated, playerDocumentReference);
+                                mDb.addAttendings(currentPlayer, eventDocumentReference);
                                 dismiss();
-                            }, 500);
+                            }, 350);
                         } else {
                             Log.i(TAG, "onMenuItemClick: PLEASE SELECT A VALID ADDRESS");
                         }
