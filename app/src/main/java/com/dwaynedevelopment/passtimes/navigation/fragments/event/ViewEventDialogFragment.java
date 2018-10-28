@@ -152,13 +152,15 @@ public class ViewEventDialogFragment extends DialogFragment {
                     hostReference.addSnapshotListener((documentChildSnapshot, e1) -> {
                         final Player eventHost = Objects.requireNonNull(documentChildSnapshot).toObject(Player.class);
                         if (eventHost != null) {
-                            Glide.with(Objects.requireNonNull(getContext())).load(eventHost.getThumbnail()).into(ciHost);
+                            if (getActivity() != null) {
+                                Glide.with(getActivity().getApplicationContext()).load(eventHost.getThumbnail()).into(ciHost);
 
-                            if (eventHost.getId().equals(mAuth.getCurrentSignedUser().getId())) {
-                                deleteImageButton.setVisibility(View.VISIBLE);
-                                editImageButton.setVisibility(View.VISIBLE);
-                            } else {
-                                joinEventButton.setVisibility(View.VISIBLE);
+                                if (eventHost.getId().equals(mAuth.getCurrentSignedUser().getId())) {
+                                    deleteImageButton.setVisibility(View.VISIBLE);
+                                    editImageButton.setVisibility(View.VISIBLE);
+                                } else {
+                                    joinEventButton.setVisibility(View.VISIBLE);
+                                }
                             }
                         }
                     });

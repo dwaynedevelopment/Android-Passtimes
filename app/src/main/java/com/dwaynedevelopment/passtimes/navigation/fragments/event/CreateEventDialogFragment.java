@@ -135,6 +135,7 @@ public class CreateEventDialogFragment extends DialogFragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                 //Log.d(TAG, document.getId() + " => " + document.getData());
+
                                 sportsArray.add(document.toObject(Sport.class));
 
                                 SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);

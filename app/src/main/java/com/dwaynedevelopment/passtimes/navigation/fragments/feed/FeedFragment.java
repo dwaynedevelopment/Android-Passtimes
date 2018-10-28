@@ -108,10 +108,6 @@ public class FeedFragment extends Fragment {
 
                     popupMenu = new PopupMenu(getActivity().getApplicationContext(), filterImageButton, Gravity.BOTTOM);
 
-//                    mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
-//                            .addSnapshotListener(playerFavoritesListener);
-
-
                     mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
                             .get().addOnCompleteListener(playerFavoritesListener);
 
@@ -192,36 +188,6 @@ public class FeedFragment extends Fragment {
         }
     };
 
-
-//    private final EventListener<DocumentSnapshot> playerFavoritesListener = new EventListener<DocumentSnapshot>() {
-//        @Override
-//        public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,
-//                            @javax.annotation.Nullable FirebaseFirestoreException e) {
-//            if (documentSnapshot != null && !Objects.requireNonNull(documentSnapshot.getData()).isEmpty()) {
-//                List<DocumentReference> sportReferences = ((List<DocumentReference>) Objects.requireNonNull(documentSnapshot.getData().get("favorites")));
-//
-//                if (sportReferences != null) {
-//                    for (int i = 0; i < sportReferences.size(); i++) {
-//
-//                        sportReferences.get(i).get().addOnCompleteListener(favoriteSportTask -> {
-//
-//                            Sport sport = Objects.requireNonNull(favoriteSportTask.getResult()).toObject(Sport.class);
-//                            popupMenu.getMenuInflater().inflate(R.menu.menu_filter, popupMenu.getMenu());
-//                            if (sport != null) {
-//                                popupMenu.getMenu().add(sport.getCategory());
-//                                initialSports.add(sport.getCategory());
-//                            }
-//                        });
-//                    }
-//                }
-//
-//
-//            }
-//            setupInitialRecyclerView(false);
-//            progressBar.setVisibility(View.GONE);
-//
-//        }
-//    };
 
     private final OnCompleteListener<DocumentSnapshot> playerFavoritesListener = new OnCompleteListener<DocumentSnapshot>() {
         @Override
