@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.EventFeedViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
+import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.models.Sport;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.ViewEventDialogFragment;
@@ -38,6 +39,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
@@ -69,7 +71,8 @@ public class FeedFragment extends Fragment {
     private List<String> selectedSports = new ArrayList<>();
     private List<String> initialSports = new ArrayList<>();
 
-
+    private ListenerRegistration eventListenerRegister;
+    private ListenerRegistration attendingListenerRegister;
 
     private static final String TAG = "FeedFragment";
 
@@ -111,8 +114,11 @@ public class FeedFragment extends Fragment {
                     mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
                             .get().addOnCompleteListener(playerFavoritesListener);
 
-                    mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
+                    eventListenerRegister =  mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
                             .addSnapshotListener(eventSnapshotListener);
+
+                    attendingListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_USERS).document(mAuth.getCurrentSignedUser().getId())
+                            .addSnapshotListener(attendingSnapshotListener);
 
                     setupInitialRecyclerView(true);
 
@@ -124,6 +130,41 @@ public class FeedFragment extends Fragment {
             }
         }
     }
+
+
+
+    private final EventListener<DocumentSnapshot> attendingSnapshotListener = new EventListener<DocumentSnapshot>() {
+        @Override
+        public void onEvent(@javax.annotation.Nullable DocumentSnapshot playerDocumentSnapshot,
+                            @javax.annotation.Nullable FirebaseFirestoreException playerException) {
+
+            if (playerDocumentSnapshot != null) {
+                final Player attendedPlayer = playerDocumentSnapshot.toObject(Player.class);
+
+                if (attendedPlayer != null) {
+                    List<DocumentReference> attendingEventsReference = attendedPlayer.getAttending();
+                    if (attendingEventsReference != null) {
+                        for (int i = 0; i < attendingEventsReference.size(); i++) {
+                            attendingEventsReference.get(i).addSnapshotListener((attendedDocumentSnapshot, attendedException) -> {
+                                if (attendedDocumentSnapshot != null) {
+                                    final Event attendedEvents = attendedDocumentSnapshot.toObject(Event.class);
+
+                                    if (attendedEvents != null) {
+                                        Log.i(TAG, "onEvent: ATTENDING" + attendedEvents.toString());
+                                    }
+
+
+                                }
+                            });
+                        }
+                    }
+                }
+
+            }
+
+
+        }
+    };
 
     private final EventListener<QuerySnapshot> eventSnapshotListener = new EventListener<QuerySnapshot>() {
         @Override
@@ -308,6 +349,16 @@ public class FeedFragment extends Fragment {
         return false;
     };
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (eventListenerRegister != null && attendingListenerRegister != null) {
+            eventListenerRegister.remove();
+            eventListenerRegister = null;
+            attendingListenerRegister.remove();
+            attendingListenerRegister = null;
+        }
+    }
 
     @Override
     public void onDestroyView() {

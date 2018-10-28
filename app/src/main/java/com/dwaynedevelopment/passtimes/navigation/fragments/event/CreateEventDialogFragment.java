@@ -126,31 +126,26 @@ public class CreateEventDialogFragment extends DialogFragment {
         mAuth = AuthUtils.getInstance();
 
         mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                .addOnCompleteListener(task -> {
 
-                        ArrayList<Sport> sportsArray = new ArrayList<>();
+                    ArrayList<Sport> sportsArray = new ArrayList<>();
 
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                //Log.d(TAG, document.getId() + " => " + document.getData());
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                            sportsArray.add(document.toObject(Sport.class));
 
-                                sportsArray.add(document.toObject(Sport.class));
-
-                                SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);
-                                if (getActivity() != null) {
-                                    if (getView() != null) {
-                                        RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
-                                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
-                                        recyclerView.setAdapter(adapter);
-                                        recyclerView.setHasFixedSize(true);
-                                    }
+                            SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);
+                            if (getActivity() != null) {
+                                if (getView() != null) {
+                                    RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
+                                    recyclerView.setHasFixedSize(true);
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+                                    recyclerView.setAdapter(adapter);
                                 }
                             }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
                     }
                 });
 

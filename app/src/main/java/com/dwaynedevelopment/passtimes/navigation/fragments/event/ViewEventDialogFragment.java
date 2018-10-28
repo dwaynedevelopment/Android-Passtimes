@@ -1,7 +1,6 @@
 package com.dwaynedevelopment.passtimes.navigation.fragments.event;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,9 +25,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -50,6 +50,7 @@ public class ViewEventDialogFragment extends DialogFragment {
 
     private Event eventSelected;
     private String eventIdExtra;
+    private Map<String, Player> attendeesList = new HashMap<>();
 
 
     public static ViewEventDialogFragment newInstance(String eventId) {
@@ -162,13 +163,10 @@ public class ViewEventDialogFragment extends DialogFragment {
                             if (eventHost != null) {
                                 if (getActivity() != null) {
                                     Glide.with(getActivity().getApplicationContext()).load(eventHost.getThumbnail()).into(ciHost);
-
                                     if (eventHost.getId().equals(mAuth.getCurrentSignedUser().getId())) {
                                         deleteImageButton.setVisibility(View.VISIBLE);
                                         editImageButton.setVisibility(View.VISIBLE);
                                         joinEventButton.setVisibility(View.GONE);
-                                    } else {
-                                        joinEventButton.setVisibility(View.VISIBLE);
                                     }
                                 }
                             }
@@ -186,9 +184,13 @@ public class ViewEventDialogFragment extends DialogFragment {
                             if (documentSnapshot != null) {
                                 final Player attendeeReference = documentSnapshot.toObject(Player.class);
                                 if (attendeeReference != null) {
-                                    Log.i(TAG, "onEvent: ATTENDEES LIST: " + attendeeReference.toString());
-                                    if (!attendeesReference.contains(mAuth.getCurrentSignedUser())) {
-                                        joinEventButton.setVisibility(View.VISIBLE);
+                                    if (!attendeesList.containsKey(mAuth.getCurrentSignedUser().getId())) {
+                                        attendeesList.put(attendeeReference.getId(), attendeeReference);
+                                        if(!attendeesList.containsKey(mAuth.getCurrentSignedUser().getId())) {
+                                            joinEventButton.setVisibility(View.VISIBLE);
+                                        } else {
+                                            joinEventButton.setVisibility(View.GONE);
+                                        }
                                     } else {
                                         joinEventButton.setVisibility(View.GONE);
                                     }
@@ -197,10 +199,8 @@ public class ViewEventDialogFragment extends DialogFragment {
                         });
                     }
                 }
-
             }
         }
-
     };
 
     private final View.OnClickListener eventOnClickListener = new View.OnClickListener() {
