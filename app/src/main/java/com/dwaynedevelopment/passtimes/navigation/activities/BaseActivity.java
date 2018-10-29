@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +18,8 @@ import android.view.View;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
+import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
+import com.dwaynedevelopment.passtimes.navigation.fragments.event.ViewEventDialogFragment;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.IAccountHandler;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.onboarding.activities.OnboardActivity;
@@ -26,7 +29,10 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVENT_ID;
 
 
 public class BaseActivity extends AppCompatActivity implements INavigationHandler, IAccountHandler {
@@ -43,7 +49,6 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
         bottomNavigationSetup();
 
     }
-
 
     @Override
     public void onBackPressed() {
@@ -100,6 +105,12 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     @Override
     public void invokeSettings() {
         viewPager.setCurrentItem(2, true);
+    }
+
+    @Override
+    public void invokeEditEvent(String stringDocumentReference) {
+        CreateEventDialogFragment viewEventDialogFragment = CreateEventDialogFragment.newInstance(stringDocumentReference);
+        viewEventDialogFragment.show(getSupportFragmentManager(), CreateEventDialogFragment.TAG);
     }
 
     @Override

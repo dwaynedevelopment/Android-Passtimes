@@ -1,6 +1,7 @@
 package com.dwaynedevelopment.passtimes.navigation.fragments.event;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
+import com.dwaynedevelopment.passtimes.navigation.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
@@ -43,6 +45,7 @@ public class ViewEventDialogFragment extends DialogFragment {
     public static final String TAG = "ViewEventDialogFragment";
     private FirebaseFirestoreUtils mDb;
     private AuthUtils mAuth;
+    private INavigationHandler iNavigationHandler;
 
     private Button joinEventButton;
     private ImageButton deleteImageButton;
@@ -61,6 +64,14 @@ public class ViewEventDialogFragment extends DialogFragment {
         ViewEventDialogFragment fragment = new ViewEventDialogFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof INavigationHandler) {
+            iNavigationHandler = (INavigationHandler) context;
+        }
     }
 
     @Override
@@ -209,6 +220,12 @@ public class ViewEventDialogFragment extends DialogFragment {
             switch (v.getId()) {
                 case R.id.ib_close:
                     dismiss();
+                    break;
+                case R.id.ib_edit_event:
+                    if (iNavigationHandler != null) {
+                        iNavigationHandler.invokeEditEvent("/"+DATABASE_REFERENCE_EVENTS+"/"+eventSelected.getId());
+//                        dismiss();
+                    }
                     break;
                 case R.id.btn_event_join:
                     final DocumentReference playerDocumentReference = mDb.getFirestore()

@@ -50,6 +50,6 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/btn_selector_action"
-        android:text="@string/continue_btn_title"/>
+        android:text="@string/submit"/>
 
 </RelativeLayout>

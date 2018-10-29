@@ -48,8 +48,10 @@ import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -59,6 +61,10 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.dwaynedevelopment.passtimes.utils.CalendarUtils.convertTimeWithTimeZome;
+import static com.dwaynedevelopment.passtimes.utils.CalendarUtils.getDayFromDate;
+import static com.dwaynedevelopment.passtimes.utils.CalendarUtils.getMonthFromDate;
+import static com.dwaynedevelopment.passtimes.utils.CalendarUtils.getTimeFromDate;
 import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getApiClient;
 import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getPlacesAdapter;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_SELECT_SELECTED;
@@ -79,12 +85,23 @@ public class CreateEventDialogFragment extends DialogFragment {
 
     private Calendar mStartCalendar;
     private Calendar mEndCalendar;
+    private EditText etTitle;
     private EditText etStartTime;
     private EditText etEndTime;
     private AutoCompleteTextView etAddress;
     private PlaceData mPlaceData;
 
     private Sport selectedSport;
+    private Event eventToModify;
+
+    public static CreateEventDialogFragment newInstance(String editEventDocumentReference) {
+        
+        Bundle args = new Bundle();
+        args.putString("ARGS_EDIT_SELECTED_EVENT", editEventDocumentReference);
+        CreateEventDialogFragment fragment = new CreateEventDialogFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,37 +139,15 @@ public class CreateEventDialogFragment extends DialogFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mDb = FirebaseFirestoreUtils.getInstance();
-        mAuth = AuthUtils.getInstance();
-
-        mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
-                .addOnCompleteListener(task -> {
-
-                    ArrayList<Sport> sportsArray = new ArrayList<>();
-
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                            sportsArray.add(document.toObject(Sport.class));
-
-                            SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);
-                            if (getActivity() != null) {
-                                if (getView() != null) {
-                                    RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
-                                    recyclerView.setHasFixedSize(true);
-                                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
-                                    recyclerView.setAdapter(adapter);
-                                }
-                            }
-                        }
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
-                    }
-                });
-
-
         if (getActivity() != null) {
 
+            mDb = FirebaseFirestoreUtils.getInstance();
+            mAuth = AuthUtils.getInstance();
+
             if (getView() != null) {
+                mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
+                        .addOnCompleteListener(selectEventSportListener);
+
                 Toolbar createEventToolbar = getView().findViewById(R.id.tb_create_event);
                 createEventToolbar.inflateMenu(R.menu.menu_create_event);
                 createEventToolbar.setOnMenuItemClickListener(menuItemClickListener);
@@ -182,6 +177,8 @@ public class CreateEventDialogFragment extends DialogFragment {
                 timeline.setLastVisibleDate(year, month, day + 6);
                 timeline.setOnDateSelectedListener(dateSelectedListener);
 
+                etTitle = getView().findViewById(R.id.et_title);
+
                 etStartTime = getView().findViewById(R.id.et_start_time);
                 etStartTime.setShowSoftInputOnFocus(false);
                 etStartTime.setKeyListener(null);
@@ -197,9 +194,61 @@ public class CreateEventDialogFragment extends DialogFragment {
                 etAddress.setOnFocusChangeListener(focusChangeListener);
                 etAddress.setOnItemClickListener(autoCompleteClickListener);
 
+                if (getArguments() != null) {
+                    String stringReference = getArguments().getString("ARGS_EDIT_SELECTED_EVENT");
+                    if (stringReference != null && !stringReference.isEmpty()) {
+                        final DocumentReference editEventDocumentReference = mDb.getFirestore().document(stringReference);
+                        editEventDocumentReference.get().addOnCompleteListener(task -> {
+                            if (task.getResult() != null) {
+                                eventToModify = task.getResult().toObject(Event.class);
+                                if (eventToModify != null) {
+
+                                    etTitle.setText(eventToModify.getTitle());
+
+                                    etAddress.setText(eventToModify.getLocation());
+                                    etAddress.setFocusable(true);
+                                    etAddress.setFocusableInTouchMode(true);
+                                    etAddress.requestFocus();
+
+                                    etStartTime.setText(getTimeFromDate(eventToModify.getStartDate()));
+                                    etEndTime.setText(getTimeFromDate(eventToModify.getEndDate()));
+
+                                }
+                            }
+                        });
+                    }
+                }
+
             }
+
+
         }
     }
+
+    private final OnCompleteListener<QuerySnapshot> selectEventSportListener = new OnCompleteListener<QuerySnapshot>() {
+        @Override
+        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+            ArrayList<Sport> sportsArray = new ArrayList<>();
+
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                    sportsArray.add(document.toObject(Sport.class));
+
+                    SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);
+                    if (getActivity() != null) {
+                        if (getView() != null) {
+                            RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
+                            recyclerView.setHasFixedSize(true);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+                            recyclerView.setAdapter(adapter);
+                        }
+                    }
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        }
+    };
 
     // Save and close event creator
     private final Toolbar.OnMenuItemClickListener menuItemClickListener = new Toolbar.OnMenuItemClickListener() {
@@ -209,35 +258,46 @@ public class CreateEventDialogFragment extends DialogFragment {
                 dismiss();
             } else if (item.getItemId() == R.id.action_save) {
                 // TODO: Validate inputs
-                EditText title = Objects.requireNonNull(getView()).findViewById(R.id.et_title);
-                final Player currentPlayer = mAuth.getCurrentSignedUser();
 
                 // Validate for empty EditTexts
-                if (validateTextField(title, "Please enter a Title for the event") &&
+                if (validateTextField(etTitle, "Please enter a Title for the event") &&
                         validateTextField(etAddress, "Please enter a Location for the event") &&
                         validateTextField(etStartTime, "Please select a Start Time") &&
                         validateTextField(etEndTime, "Please select an End Time")) {
                     // Validate for Time
                     if (validateTime()) {
                         if (mPlaceData != null) {
-                            final DocumentReference playerDocumentReference = mDb.getFirestore()
-                                    .document("/"+DATABASE_REFERENCE_USERS+"/"+currentPlayer.getId());
+                            if (eventToModify != null) {
+                                final DocumentReference eventDocumentReference = mDb.getFirestore()
+                                        .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventToModify.getId());
+                                eventDocumentReference.update("enDate", mEndCalendar.getTimeInMillis());
+                                eventDocumentReference.update("startDate", mStartCalendar.getTimeInMillis());
+                                eventDocumentReference.update("latitude", mPlaceData.getLatLng().latitude);
+                                eventDocumentReference.update("location", etAddress.getText().toString());
+                                eventDocumentReference.update("longitude", mPlaceData.getLatLng().longitude);
+                                eventDocumentReference.update("maxAttendees", 5);
+                                eventDocumentReference.update("sport", selectedSport.getCategory());
+                                eventDocumentReference.update("sportThumbnail", selectedSport.getActive());
+                                eventDocumentReference.update("title", etTitle.getText().toString())
+                                        .addOnSuccessListener(aVoid -> {
+                                            dismiss();
+                                        });
 
-                            final Event eventCreated = new Event(selectedSport.getCategory(), selectedSport.getActive(), title.getText().toString(), etAddress.getText().toString(),
-                                    mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5, playerDocumentReference);
+                            } else {
+                                final DocumentReference playerDocumentReference = mDb.getFirestore()
+                                        .document("/"+DATABASE_REFERENCE_USERS+"/"+mAuth.getCurrentSignedUser().getId());
 
-                            final DocumentReference eventDocumentReference = mDb.getFirestore()
-                                    .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventCreated.getId());
+                                final Event eventCreated = new Event(selectedSport.getCategory(), selectedSport.getActive(), etTitle.getText().toString(), etAddress.getText().toString(),
+                                        mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5, playerDocumentReference);
 
-                            mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
-                            mDb.addAttendee(eventCreated, playerDocumentReference);
-                            mDb.addAttendings(currentPlayer, eventDocumentReference);
-                            dismiss();
+                                final DocumentReference eventDocumentReference = mDb.getFirestore()
+                                        .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventCreated.getId());
 
-
-//                            new Handler().postDelayed(() -> {
-//
-//                            }, 1150);
+                                mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
+                                mDb.addAttendee(eventCreated, playerDocumentReference);
+                                mDb.addAttendings(mAuth.getCurrentSignedUser(), eventDocumentReference);
+                                dismiss();
+                            }
 
                         } else {
                             Log.i(TAG, "onMenuItemClick: PLEASE SELECT A VALID ADDRESS");

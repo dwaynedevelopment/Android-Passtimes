@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class CalendarUtils {
 
@@ -31,6 +32,13 @@ public class CalendarUtils {
         Date time = calendar.getTime();
 
         return new SimpleDateFormat("hh:mm a", Locale.US).format(time);
+    }
+
+    public static Calendar convertTimeWithTimeZome(long time){
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        cal.setTimeInMillis(time);
+        return cal;
     }
 
     public static Calendar setDate(Calendar calendar, int year, int month, int day) {
