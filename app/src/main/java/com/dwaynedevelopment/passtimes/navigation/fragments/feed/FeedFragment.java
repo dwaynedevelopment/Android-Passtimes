@@ -168,10 +168,8 @@ public class FeedFragment extends Fragment {
                                     } else {
                                         DocumentReference documentReference = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
                                                             .document(mAuth.getCurrentSignedUser().getId());
-
                                         final DocumentReference eventRemoveDocument = mDb.getFirestore()
                                                 .document("/" + DATABASE_REFERENCE_EVENTS + "/" + attendedDocumentSnapshot.getId());
-
                                         documentReference.update("attending", FieldValue.arrayRemove(eventRemoveDocument));
                                     }
                                 }
