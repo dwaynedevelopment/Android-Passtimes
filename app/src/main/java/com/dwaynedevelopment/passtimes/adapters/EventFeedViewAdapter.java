@@ -68,45 +68,22 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
 
         if (event != null) {
 
-            if (event.getEventHost().equals(playerDocumentReference)) {
-                holder.statusView.setBackgroundResource(R.drawable.cv_active);
-            } else {
-                holder.statusView.setBackgroundResource(R.drawable.cv_idle);
-            }
+//            if (event.getEventHost().equals(playerDocumentReference)) {
+//                holder.statusView.setBackgroundResource(R.drawable.cv_active);
+//            } else {
+//                holder.statusView.setBackgroundResource(R.drawable.cv_idle);
+//            }
 
-            if (event.getAttendees() != null &&  event.getAttendees().size() < 1) {
-                if (event.getAttendees().contains(playerDocumentReference)) {
-                    holder.statusView.setBackgroundResource(R.drawable.cv_active);
-                } else {
-                    holder.statusView.setBackgroundResource(R.drawable.cv_idle);
+            if (event.getAttendees() != null &&  event.getAttendees().size() > 1) {
+                for (int j = 0; j <event.getAttendees().size() ; j++) {
+                    if (event.getAttendees().get(j).equals(playerDocumentReference)) {
+                        holder.statusView.setBackgroundResource(R.drawable.cv_active);
+                    } else {
+                        holder.statusView.setBackgroundResource(R.drawable.cv_idle);
+                    }
                 }
             }
         }
-
-
-
-//        if (event.getAttendees() != null) {
-//        for (int j = 0; j <event.getAttendees().size() ; j++) {
-//                event.getAttendees().get(i).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
-//                                        @Nullable FirebaseFirestoreException e) {
-//                        final Player p;
-//                        if (documentSnapshot != null) {
-//                            p = documentSnapshot.toObject(Player.class);
-//                            if (p != null) {
-//                                if (p.getId().equals(mAuth.getCurrentSignedUser().getId())) {
-//                                    holder.statusView.setBackgroundResource(R.drawable.cv_active);
-//                                } else {
-//                                    holder.statusView.setBackgroundResource(R.drawable.cv_idle);
-//                                }
-//                            }
-//                        }
-//                    }
-//                });
-//            }
-//
-//        }
 
         String month = CalendarUtils.getMonthFromDate(event.getStartDate());
         holder.tvMonth.setText(month);

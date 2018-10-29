@@ -220,6 +220,7 @@ public class ViewEventDialogFragment extends DialogFragment {
                     mDb.addAttendings(mAuth.getCurrentSignedUser(), eventDocumentReference);
 
                     joinEventButton.setVisibility(View.GONE);
+                    dismiss();
                     break;
                 case R.id.ib_delete:
                     if (getActivity() != null) {
