@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--<item android:id="@+id/action_favorite"-->
-        <!--android:title="Favorite"-->
-        <!--android:icon="@drawable/ic_heart_light"-->
-        <!--app:showAsAction="ifRoom" />-->
+    <item android:id="@+id/action_favorite"
+        android:title="Favorite"
+        android:icon="@drawable/ic_heart_light"
+        app:showAsAction="ifRoom" />
 
-    <!--<item android:id="@+id/action_edit"-->
-        <!--android:title="Edit"-->
-        <!--android:icon="@drawable/ic_edit"-->
-        <!--app:showAsAction="ifRoom"/>-->
+    <item android:id="@+id/action_edit"
+        android:title="Edit"
+        android:icon="@drawable/ic_edit"
+        app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/action_settings"
         android:title="Settings"

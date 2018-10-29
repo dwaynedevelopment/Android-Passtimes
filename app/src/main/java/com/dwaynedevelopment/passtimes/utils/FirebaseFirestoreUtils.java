@@ -94,22 +94,35 @@ public class FirebaseFirestoreUtils {
                             .stream()
                             .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-
                 case 2:
                     return eventMap.entrySet()
                             .stream()
                             .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
                                     selectedSports.get(1).equals(map.getValue().getSport()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-
                 case 3:
                     return eventMap.entrySet()
                             .stream()
                             .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
                                     selectedSports.get(1).equals(map.getValue().getSport()) ||
                                     selectedSports.get(2).equals(map.getValue().getSport()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                case 4:
+                    return eventMap.entrySet()
+                            .stream()
+                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
+                                    selectedSports.get(1).equals(map.getValue().getSport()) ||
+                                    selectedSports.get(2).equals(map.getValue().getSport()) ||
+                                    selectedSports.get(3).equals(map.getValue().getSport()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                case 5:
+                    return eventMap.entrySet()
+                            .stream()
+                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
+                                    selectedSports.get(1).equals(map.getValue().getSport()) ||
+                                    selectedSports.get(2).equals(map.getValue().getSport()) ||
+                                    selectedSports.get(3).equals(map.getValue().getSport()) ||
+                                    selectedSports.get(4).equals(map.getValue().getSport()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             }
         }

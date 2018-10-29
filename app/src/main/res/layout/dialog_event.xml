@@ -186,7 +186,7 @@
             android:layout_height="wrap_content"
             android:text="@string/players_attending"
             android:layout_below="@id/mp_event"
-            android:visibility="gone"/>
+            android:visibility="visible"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_attending_list"
@@ -196,7 +196,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
         </android.support.v7.widget.RecyclerView>
 

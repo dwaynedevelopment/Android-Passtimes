@@ -29,6 +29,9 @@ import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -48,10 +51,17 @@ public class FavoriteFragment extends Fragment {
     private IFavoriteHandler iFavoriteHandler;
     private FavoritesReceiver favoritesReceiver;
     private final List<DocumentReference> favoriteReferences = new ArrayList<>();
+    private final ArrayList<DocumentReference> receivedFavorites = new ArrayList<>();
+    private ArrayList<String> receivedStringFavorites = new ArrayList<>();
 
 
-    public static FavoriteFragment newInstance() {
-        return new FavoriteFragment();
+    public static FavoriteFragment newInstance(boolean editFavorites) {
+
+        Bundle args = new Bundle();
+        args.putBoolean("ARGS_EDIT_FAVORITES", editFavorites);
+        FavoriteFragment fragment = new FavoriteFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -85,6 +95,29 @@ public class FavoriteFragment extends Fragment {
             IntentFilter actionFilter = new IntentFilter();
             actionFilter.addAction(ACTION_FAVORITE_SELECTED);
             getActivity().registerReceiver(favoritesReceiver, actionFilter);
+
+            if (getArguments() != null) {
+                boolean editSelectedFavorites = getArguments().getBoolean("ARGS_EDIT_FAVORITES", false);
+                if (editSelectedFavorites) {
+                    if (mAuth.getCurrentSignedUser().getFavorites() != null) {
+
+                        for (int i = 0; i <mAuth.getCurrentSignedUser().getFavorites().size() ; i++) {
+                            mAuth.getCurrentSignedUser().getFavorites().get(i).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,
+                                                    @javax.annotation.Nullable FirebaseFirestoreException e) {
+                                    if (documentSnapshot != null) {
+                                        final Sport favoritesFromEdit  = documentSnapshot.toObject(Sport.class);
+                                        if (favoritesFromEdit != null) {
+                                            Log.i(TAG, "onEvent: FAVORITES" + favoritesFromEdit.toString());
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            }
 
             if (getView() != null) {
                 Button continueButton = getView().findViewById(R.id.btn_continue);
@@ -124,6 +157,7 @@ public class FavoriteFragment extends Fragment {
         super.onDestroy();
         if (getActivity() != null) {
             getActivity().unregisterReceiver(favoritesReceiver);
+            mAuth = null;
         }
     }
 

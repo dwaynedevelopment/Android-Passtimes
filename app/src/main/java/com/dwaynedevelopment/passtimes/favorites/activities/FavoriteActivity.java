@@ -9,6 +9,10 @@ import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.favorites.fragments.FavoriteFragment;
 import com.dwaynedevelopment.passtimes.favorites.interfaces.IFavoriteHandler;
 import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
+import com.dwaynedevelopment.passtimes.utils.AuthUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_REGISTRATION;
 
@@ -22,16 +26,27 @@ public class FavoriteActivity extends AppCompatActivity implements IFavoriteHand
     }
 
     private void invokeFragment() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container_favorite, FavoriteFragment.newInstance())
-                .commit();
+
+        if (getIntent() != null) {
+            final boolean editFavorites = getIntent().getBooleanExtra("EXTRA_EDIT_FAVORITES", false);
+            if (editFavorites) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container_favorite, FavoriteFragment.newInstance(true))
+                        .commit();
+            }
+        } else {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container_favorite, FavoriteFragment.newInstance(false))
+                    .commit();
+        }
     }
 
     @Override
     public void dismissActivity() {
         if (getIntent() != null) {
-            if (getIntent().hasExtra(EXTRA_REGISTRATION)) {
+            if (getIntent().hasExtra(EXTRA_REGISTRATION) || getIntent().hasExtra("EXTRA_EDIT_FAVORITES")) {
                 finish();
                 Intent intent = new Intent(FavoriteActivity.this, BaseActivity.class);
                 startActivity(intent);

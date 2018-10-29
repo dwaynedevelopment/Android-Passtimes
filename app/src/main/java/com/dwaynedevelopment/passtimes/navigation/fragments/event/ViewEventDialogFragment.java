@@ -182,9 +182,7 @@ public class ViewEventDialogFragment extends DialogFragment {
                                 }
                             }
                         }
-
                     });
-
                 }
 
                 List<DocumentReference> attendeesReference = eventSelected.getAttendees();
@@ -223,8 +221,16 @@ public class ViewEventDialogFragment extends DialogFragment {
                     break;
                 case R.id.ib_edit_event:
                     if (iNavigationHandler != null) {
-                        iNavigationHandler.invokeEditEvent("/"+DATABASE_REFERENCE_EVENTS+"/"+eventSelected.getId());
-//                        dismiss();
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog.setTitle(eventSelected.getTitle());
+                        alertDialog.setMessage("Want to edit this event?");
+                        alertDialog.setPositiveButton("Edit", (dialog, which) -> {
+                            iNavigationHandler.invokeEditEvent("/"+DATABASE_REFERENCE_EVENTS+"/"+eventSelected.getId());
+                        });
+                        alertDialog.setNegativeButton("Cancel", (dialog, which) -> {
+                            dialog.cancel();
+                        });
+                        alertDialog.show();
                     }
                     break;
                 case R.id.btn_event_join:

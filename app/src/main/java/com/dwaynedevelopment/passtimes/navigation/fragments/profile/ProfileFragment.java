@@ -75,10 +75,22 @@ public class ProfileFragment extends Fragment {
         public boolean onMenuItemClick(MenuItem item) {
             int itemId = item.getItemId();
             final int settings = R.id.action_settings;
+            final int edit = R.id.action_edit;
+            final int favorites = R.id.action_favorite;
             switch (itemId) {
                 case settings:
                     if (iNavigationHandler != null) {
                         iNavigationHandler.invokeSettings();
+                    }
+                    break;
+                case edit:
+//                    if (iNavigationHandler != null) {
+//                        iNavigationHandler.invokeSettings();
+//                    }
+                    break;
+                case favorites:
+                    if (iNavigationHandler != null) {
+                        iNavigationHandler.invokeFavorites();
                     }
                     break;
             }

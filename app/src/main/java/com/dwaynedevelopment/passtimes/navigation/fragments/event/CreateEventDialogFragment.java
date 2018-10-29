@@ -276,8 +276,6 @@ public class CreateEventDialogFragment extends DialogFragment {
                                 eventDocumentReference.update("location", etAddress.getText().toString());
                                 eventDocumentReference.update("longitude", mPlaceData.getLatLng().longitude);
                                 eventDocumentReference.update("maxAttendees", 5);
-                                eventDocumentReference.update("sport", selectedSport.getCategory());
-                                eventDocumentReference.update("sportThumbnail", selectedSport.getActive());
                                 eventDocumentReference.update("title", etTitle.getText().toString())
                                         .addOnSuccessListener(aVoid -> {
                                             dismiss();
@@ -300,7 +298,8 @@ public class CreateEventDialogFragment extends DialogFragment {
                             }
 
                         } else {
-                            Log.i(TAG, "onMenuItemClick: PLEASE SELECT A VALID ADDRESS");
+                            Snackbar sb = Snackbar.make(Objects.requireNonNull(getView()), "Please Confirm Address By Re-Selecting.", Snackbar.LENGTH_SHORT);
+                            sb.show();
                         }
                     }
                 }

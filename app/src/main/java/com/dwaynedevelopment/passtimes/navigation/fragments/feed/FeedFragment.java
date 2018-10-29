@@ -269,7 +269,6 @@ public class FeedFragment extends Fragment {
                         for (int i = 0; i < sportReferences.size(); i++) {
 
                             sportReferences.get(i).get().addOnCompleteListener(favoriteSportTask -> {
-
                                 Sport sport = Objects.requireNonNull(favoriteSportTask.getResult()).toObject(Sport.class);
                                 popupMenu.getMenuInflater().inflate(R.menu.menu_filter, popupMenu.getMenu());
                                 if (sport != null) {

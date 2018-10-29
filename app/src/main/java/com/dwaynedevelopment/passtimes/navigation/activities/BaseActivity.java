@@ -18,6 +18,7 @@ import android.view.View;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
+import com.dwaynedevelopment.passtimes.favorites.activities.FavoriteActivity;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.ViewEventDialogFragment;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.IAccountHandler;
@@ -111,6 +112,14 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     public void invokeEditEvent(String stringDocumentReference) {
         CreateEventDialogFragment viewEventDialogFragment = CreateEventDialogFragment.newInstance(stringDocumentReference);
         viewEventDialogFragment.show(getSupportFragmentManager(), CreateEventDialogFragment.TAG);
+    }
+
+    @Override
+    public void invokeFavorites() {
+        finish();
+        Intent intent = new Intent(BaseActivity.this, FavoriteActivity.class);
+        intent.putExtra("EXTRA_EDIT_FAVORITES", true);
+        startActivity(intent);
     }
 
     @Override
