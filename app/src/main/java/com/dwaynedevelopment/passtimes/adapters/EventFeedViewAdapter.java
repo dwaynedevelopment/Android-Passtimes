@@ -7,31 +7,48 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.models.Event;
+import com.dwaynedevelopment.passtimes.models.Player;
+import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
+import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVENT_ID;
 
 public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdapter.ViewHolder> {
 
+    private static final String TAG = "EventFeedViewAdapter";
     private Map<String, Event> eventMap;
     private Context context;
+    private AuthUtils mAuth;
+    private FirebaseFirestoreUtils mDb;
 
     public EventFeedViewAdapter(Map<String, Event> eventMap, Context context) {
         this.eventMap = eventMap;
         this.context = context;
+        this.mAuth = AuthUtils.getInstance();
+        this.mDb = FirebaseFirestoreUtils.getInstance();
     }
 
     @NonNull
@@ -40,12 +57,56 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
         return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_ongoing, viewGroup, false));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
 
         List<Event> result = createListFromMapEntries(eventMap);
         final Event event = result.get(i);
+
+        final DocumentReference playerDocumentReference = mDb.getFirestore()
+                .document("/"+DATABASE_REFERENCE_USERS+"/"+mAuth.getCurrentSignedUser().getId());
+
+        if (event != null) {
+
+            if (event.getEventHost().equals(playerDocumentReference)) {
+                holder.statusView.setBackgroundResource(R.drawable.cv_active);
+            } else {
+                holder.statusView.setBackgroundResource(R.drawable.cv_idle);
+            }
+
+            if (event.getAttendees() != null &&  event.getAttendees().size() < 1) {
+                if (event.getAttendees().contains(playerDocumentReference)) {
+                    holder.statusView.setBackgroundResource(R.drawable.cv_active);
+                } else {
+                    holder.statusView.setBackgroundResource(R.drawable.cv_idle);
+                }
+            }
+        }
+
+
+
+//        if (event.getAttendees() != null) {
+//        for (int j = 0; j <event.getAttendees().size() ; j++) {
+//                event.getAttendees().get(i).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
+//                                        @Nullable FirebaseFirestoreException e) {
+//                        final Player p;
+//                        if (documentSnapshot != null) {
+//                            p = documentSnapshot.toObject(Player.class);
+//                            if (p != null) {
+//                                if (p.getId().equals(mAuth.getCurrentSignedUser().getId())) {
+//                                    holder.statusView.setBackgroundResource(R.drawable.cv_active);
+//                                } else {
+//                                    holder.statusView.setBackgroundResource(R.drawable.cv_idle);
+//                                }
+//                            }
+//                        }
+//                    }
+//                });
+//            }
+//
+//        }
 
         String month = CalendarUtils.getMonthFromDate(event.getStartDate());
         holder.tvMonth.setText(month);
@@ -80,6 +141,7 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        private final View statusView;
         private final CardView eventCard;
         private final TextView tvMonth;
         private final TextView tvDay;
@@ -90,6 +152,7 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+            statusView = itemView.findViewById(R.id.cv_status_view);
             eventCard = itemView.findViewById(R.id.cv_ongoing);
             tvMonth = itemView.findViewById(R.id.tv_month);
             tvDay = itemView.findViewById(R.id.tv_day);

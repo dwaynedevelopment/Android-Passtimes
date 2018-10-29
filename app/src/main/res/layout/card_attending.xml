@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.card.MaterialCardView
+    android:id="@+id/cv_attending"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="170dp"
     android:layout_height="100dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="7.5dp">
+    app:cardCornerRadius="7.5dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="8dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,12 +16,13 @@
 
         <ImageView
             android:id="@+id/ic_sport_attending"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="12dp"
+            android:src="@drawable/ic_edit_black"
             android:contentDescription="@null"/>
 
         <TextView
@@ -29,6 +34,7 @@
             android:textStyle="bold"
             android:layout_marginEnd="8dp"
              android:layout_marginTop="16dp"
+            android:text="Thurday 05, 2018"
             android:layout_below="@id/ic_sport_attending"/>
 
         <TextView
@@ -39,6 +45,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginEnd="8dp"
+            android:text="Indoor Soccer"
             android:textColor="@color/colorDarkPrimary"
             android:layout_below="@id/tv_date_attending" />
 

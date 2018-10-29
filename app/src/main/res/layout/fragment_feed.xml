@@ -15,18 +15,18 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true">
 
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tb_feed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         </android.support.design.widget.AppBarLayout>
 
 
         <TextView
-            android:visibility="gone"
             android:id="@+id/tv_attending"
             style="@style/Titles"
             android:layout_width="match_parent"
@@ -35,7 +35,6 @@
             android:layout_below="@id/ab_feed"/>
 
         <android.support.v7.widget.RecyclerView
-            android:visibility="gone"
             android:id="@+id/rv_attending"
             android:layout_width="match_parent"
             android:layout_height="100dp"
@@ -59,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/ab_feed"
+            android:layout_below="@id/rv_attending"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
@@ -80,6 +79,17 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/app_name"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/kitten_swash"
+            android:textColor="@color/colorPrimaryAccent"
+            android:textSize="32sp"/>
 
     </RelativeLayout>
 

@@ -21,10 +21,11 @@
             android:background="@android:color/transparent">
 
             <View
+                android:id="@+id/cv_status_view"
                 android:layout_width="45dp"
                 android:layout_height="55dp"
                 android:layout_alignParentEnd="true"
-                android:background="@drawable/cv_date" />
+                android:background="@drawable/cv_idle"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"

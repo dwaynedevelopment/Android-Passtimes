@@ -24,6 +24,7 @@ import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.adapters.AttendingFeedViewAdapter;
 import com.dwaynedevelopment.passtimes.adapters.EventFeedViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
@@ -58,14 +59,19 @@ public class FeedFragment extends Fragment {
 
     private FirebaseFirestoreUtils mDb;
     private AuthUtils mAuth;
+
     private RecyclerView eventsRecyclerView;
     private EventFeedViewAdapter eventFeedViewAdapter;
+
+    private RecyclerView attendedRecyclerView;
+    private AttendingFeedViewAdapter attendingFeedViewAdapter;
 
     private EventReceiver eventReceiver;
     private PopupMenu popupMenu;
     private ProgressBar progressBar;
     private ImageButton filterImageButton;
 
+    private Map<String, Event> attendedEventsMap = new HashMap<>();
     private Map<String, Event> mainFeedEvents = new HashMap<>();
     private Map<String, Event> filteredEventsByCategory = new HashMap<>();
     private List<String> selectedSports = new ArrayList<>();
@@ -131,8 +137,6 @@ public class FeedFragment extends Fragment {
         }
     }
 
-
-
     private final EventListener<DocumentSnapshot> attendingSnapshotListener = new EventListener<DocumentSnapshot>() {
         @Override
         public void onEvent(@javax.annotation.Nullable DocumentSnapshot playerDocumentSnapshot,
@@ -145,24 +149,37 @@ public class FeedFragment extends Fragment {
                     List<DocumentReference> attendingEventsReference = attendedPlayer.getAttending();
                     if (attendingEventsReference != null) {
                         for (int i = 0; i < attendingEventsReference.size(); i++) {
-                            attendingEventsReference.get(i).addSnapshotListener((attendedDocumentSnapshot, attendedException) -> {
+                            attendingEventsReference.get(i).addSnapshotListener((DocumentSnapshot attendedDocumentSnapshot, FirebaseFirestoreException attendedException) -> {
                                 if (attendedDocumentSnapshot != null) {
+
                                     final Event attendedEvents = attendedDocumentSnapshot.toObject(Event.class);
 
                                     if (attendedEvents != null) {
                                         Log.i(TAG, "onEvent: ATTENDING" + attendedEvents.toString());
+
+                                        if (getActivity() != null) {
+                                            if (getView() != null) {
+                                                if (!attendedEventsMap.containsKey(attendedEvents.getId())) {
+                                                    attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
+                                                    attendingFeedViewAdapter = new AttendingFeedViewAdapter(attendedEventsMap, getActivity().getApplicationContext());
+
+                                                    attendedRecyclerView = getView().findViewById(R.id.rv_attending);
+                                                    attendedRecyclerView.setHasFixedSize(true);
+                                                    attendedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
+                                                            LinearLayoutManager.HORIZONTAL, false));
+
+                                                    attendedRecyclerView.setAdapter(attendingFeedViewAdapter);
+                                                    attendingFeedViewAdapter.notifyDataSetChanged();
+                                                }
+                                            }
+                                        }
                                     }
-
-
                                 }
                             });
                         }
                     }
                 }
-
             }
-
-
         }
     };
 
@@ -235,22 +252,25 @@ public class FeedFragment extends Fragment {
         public void onComplete(@NonNull Task<DocumentSnapshot> sportsTask) {
 
             if (sportsTask.isSuccessful()) {
-                List<DocumentReference> sportReferences = ((List<DocumentReference>) Objects.requireNonNull(sportsTask.getResult()).getData().get("favorites"));
 
-                if (sportReferences != null) {
-                    for (int i = 0; i < sportReferences.size(); i++) {
+                if (Objects.requireNonNull(sportsTask.getResult()).getData() != null) {
+                    List<DocumentReference> sportReferences = ((List<DocumentReference>) Objects.requireNonNull(sportsTask.getResult()).getData().get("favorites"));
+                    if (sportReferences != null) {
+                        for (int i = 0; i < sportReferences.size(); i++) {
 
-                        sportReferences.get(i).get().addOnCompleteListener(favoriteSportTask -> {
+                            sportReferences.get(i).get().addOnCompleteListener(favoriteSportTask -> {
 
-                            Sport sport = Objects.requireNonNull(favoriteSportTask.getResult()).toObject(Sport.class);
-                            popupMenu.getMenuInflater().inflate(R.menu.menu_filter, popupMenu.getMenu());
-                            if (sport != null) {
-                                popupMenu.getMenu().add(sport.getCategory());
-                                initialSports.add(sport.getCategory());
-                            }
-                        });
+                                Sport sport = Objects.requireNonNull(favoriteSportTask.getResult()).toObject(Sport.class);
+                                popupMenu.getMenuInflater().inflate(R.menu.menu_filter, popupMenu.getMenu());
+                                if (sport != null) {
+                                    popupMenu.getMenu().add(sport.getCategory());
+                                    initialSports.add(sport.getCategory());
+                                }
+                            });
+                        }
                     }
                 }
+
 
                 setupInitialRecyclerView(false);
                 progressBar.setVisibility(View.GONE);
@@ -260,7 +280,9 @@ public class FeedFragment extends Fragment {
 
 
     private void setupInitialRecyclerView(boolean initialSetup) {
-        filteredEventsByCategory.clear();
+        if (filteredEventsByCategory != null) {
+            filteredEventsByCategory.clear();
+        }
         if (getActivity() != null) {
             if (getView() != null) {
                 if (initialSetup) {
@@ -365,6 +387,7 @@ public class FeedFragment extends Fragment {
         super.onDestroyView();
         selectedSports.clear();
         initialSports.clear();
+        //attendedEventsMap.clear();
     }
 
     @Override

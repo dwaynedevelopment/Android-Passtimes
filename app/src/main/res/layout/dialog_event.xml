@@ -189,7 +189,7 @@
             android:visibility="gone"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_attending"
+            android:id="@+id/rv_attending_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/tv_attending"

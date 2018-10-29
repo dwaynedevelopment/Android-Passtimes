@@ -12,6 +12,7 @@ public class Event implements Parcelable {
 
     private String id;
     private String sport;
+    private String sportThumbnail;
     private String title;
     private String location;
     private double latitude;
@@ -24,27 +25,30 @@ public class Event implements Parcelable {
 
     public Event() { }
 
-    public Event(DocumentReference eventHost, String sport, String title, double latitude, double longitude,
-                 String location, long startDate, long endDate, int maxAttendees) {
+    public Event(String sport, String sportThumbnail, String title, String location, double latitude, double longitude,
+                 long startDate, long endDate, int maxAttendees, DocumentReference eventHost) {
         this.id = UUID.randomUUID().toString();
-        this.eventHost = eventHost;
         this.sport = sport;
+        this.sportThumbnail = sportThumbnail;
         this.title = title;
+        this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.location = location;
         this.startDate = startDate;
         this.endDate = endDate;
         this.maxAttendees = maxAttendees;
+        this.eventHost = eventHost;
     }
+
 
     private Event(Parcel in) {
         id = in.readString();
         sport = in.readString();
+        sportThumbnail = in.readString();
         title = in.readString();
+        location = in.readString();
         latitude = in.readDouble();
         longitude = in.readDouble();
-        location = in.readString();
         startDate = in.readLong();
         endDate = in.readLong();
         maxAttendees = in.readInt();
@@ -54,10 +58,11 @@ public class Event implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
         dest.writeString(sport);
+        dest.writeString(sportThumbnail);
         dest.writeString(title);
+        dest.writeString(location);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
-        dest.writeString(location);
         dest.writeLong(startDate);
         dest.writeLong(endDate);
         dest.writeInt(maxAttendees);
@@ -95,6 +100,14 @@ public class Event implements Parcelable {
                 ", sport='" + sport + '\'' +
                 ", title='" + title + '\'' +
                 '}';
+    }
+
+    public String getSportThumbnail() {
+        return sportThumbnail;
+    }
+
+    public void setSportThumbnail(String sportThumbnail) {
+        this.sportThumbnail = sportThumbnail;
     }
 
     public String getId() {

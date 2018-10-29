@@ -211,9 +211,15 @@ public class ViewEventDialogFragment extends DialogFragment {
                     dismiss();
                     break;
                 case R.id.btn_event_join:
-                    DocumentReference documentReference = mDb.getFirestore().document("/" + DATABASE_REFERENCE_USERS + "/" + mAuth.getCurrentSignedUser().getId());
-                    mDb.addAttendee(eventSelected, documentReference);
-                    v.setVisibility(View.GONE);
+                    final DocumentReference playerDocumentReference = mDb.getFirestore()
+                            .document("/" + DATABASE_REFERENCE_USERS + "/" + mAuth.getCurrentSignedUser().getId());
+                    mDb.addAttendee(eventSelected, playerDocumentReference);
+
+                    final DocumentReference eventDocumentReference = mDb.getFirestore()
+                            .document("/" + DATABASE_REFERENCE_EVENTS + "/" + eventSelected.getId());
+                    mDb.addAttendings(mAuth.getCurrentSignedUser(), eventDocumentReference);
+
+                    joinEventButton.setVisibility(View.GONE);
                     break;
                 case R.id.ib_delete:
                     if (getActivity() != null) {

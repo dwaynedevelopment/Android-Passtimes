@@ -223,19 +223,22 @@ public class CreateEventDialogFragment extends DialogFragment {
                             final DocumentReference playerDocumentReference = mDb.getFirestore()
                                     .document("/"+DATABASE_REFERENCE_USERS+"/"+currentPlayer.getId());
 
-                            final Event eventCreated = new Event(playerDocumentReference, selectedSport.getCategory(),title.getText().toString(), mPlaceData.getLatLng().latitude,
-                                    mPlaceData.getLatLng().longitude, etAddress.getText().toString(), mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5);
+                            final Event eventCreated = new Event(selectedSport.getCategory(), selectedSport.getActive(), title.getText().toString(), etAddress.getText().toString(),
+                                    mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5, playerDocumentReference);
 
                             final DocumentReference eventDocumentReference = mDb.getFirestore()
                                     .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventCreated.getId());
 
                             mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
+                            mDb.addAttendee(eventCreated, playerDocumentReference);
+                            mDb.addAttendings(currentPlayer, eventDocumentReference);
+                            dismiss();
 
-                            new Handler().postDelayed(() -> {
-                                mDb.addAttendee(eventCreated, playerDocumentReference);
-                                mDb.addAttendings(currentPlayer, eventDocumentReference);
-                                dismiss();
-                            }, 350);
+
+//                            new Handler().postDelayed(() -> {
+//
+//                            }, 1150);
+
                         } else {
                             Log.i(TAG, "onMenuItemClick: PLEASE SELECT A VALID ADDRESS");
                         }
