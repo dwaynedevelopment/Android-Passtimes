@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.card.MaterialCardView;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +25,6 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVEN
 
 public class AttendingFeedViewAdapter extends RecyclerView.Adapter<AttendingFeedViewAdapter.ViewHolder> {
 
-
-    private static final String TAG = "AttendingFeedViewAdapte";
     private Map<String, Event> attendingMap;
     private Context context;
 
@@ -56,10 +52,9 @@ public class AttendingFeedViewAdapter extends RecyclerView.Adapter<AttendingFeed
         Glide.with(context).load(event.getSportThumbnail()).into(viewHolder.sportImageView);
 
         viewHolder.cv_attending.setOnClickListener(v -> {
-//            Intent selectIntent = new Intent(ACTION_EVENT_SELECTED);
-//            selectIntent.putExtra(EXTRA_SELECTED_EVENT_ID,  event.getId());
-//            context.sendBroadcast(selectIntent);
-            Log.i(TAG, "onBindViewHolder: ATTENDING CLICKED");
+            Intent selectIntent = new Intent(ACTION_EVENT_SELECTED);
+            selectIntent.putExtra(EXTRA_SELECTED_EVENT_ID,  event.getId());
+            context.sendBroadcast(selectIntent);
         });
     }
 
