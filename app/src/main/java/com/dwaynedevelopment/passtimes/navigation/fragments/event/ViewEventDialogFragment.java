@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.adapters.AttendeesViewAdapter;
+import com.dwaynedevelopment.passtimes.adapters.AttendingFeedViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.INavigationHandler;
@@ -27,6 +31,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +59,9 @@ public class ViewEventDialogFragment extends DialogFragment {
     private Event eventSelected;
     private String eventIdExtra;
     private Map<String, Player> attendeesList = new HashMap<>();
+
+    private AttendeesViewAdapter attendeeFeedViewAdapter;
+    private RecyclerView attendeeRecyclerView;
 
 
     public static ViewEventDialogFragment newInstance(String eventId) {
@@ -129,6 +137,17 @@ public class ViewEventDialogFragment extends DialogFragment {
                             editImageButton = getView().findViewById(R.id.ib_edit_event);
                             editImageButton.setOnClickListener(eventOnClickListener);
                             editImageButton.setVisibility(View.GONE);
+
+
+                            attendeeFeedViewAdapter = new AttendeesViewAdapter(attendeesList, getActivity().getApplicationContext(), eventSelected);
+                            attendeeRecyclerView = getView().findViewById(R.id.rv_attending_list);
+                            attendeeRecyclerView.setHasFixedSize(true);
+                            attendeeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
+                                    LinearLayoutManager.VERTICAL, false));
+
+                            attendeeRecyclerView.setAdapter(attendeeFeedViewAdapter);
+                            attendeeFeedViewAdapter.notifyDataSetChanged();
+
                         }
                     } else {
                         Log.i(TAG, "onActivityCreated: NOTHING HERE");
@@ -139,7 +158,7 @@ public class ViewEventDialogFragment extends DialogFragment {
         }
     }
 
-    private final EventListener<DocumentSnapshot> eventSnapshotListener = (documentParentSnapshot, eventException) -> {
+    private final EventListener<DocumentSnapshot> eventSnapshotListener = (DocumentSnapshot documentParentSnapshot, FirebaseFirestoreException eventException) -> {
 
         eventSelected = Objects.requireNonNull(documentParentSnapshot).toObject(Event.class);
 
@@ -193,7 +212,7 @@ public class ViewEventDialogFragment extends DialogFragment {
                             if (documentSnapshot != null) {
                                 final Player attendeeReference = documentSnapshot.toObject(Player.class);
                                 if (attendeeReference != null) {
-                                    if (!attendeesList.containsKey(mAuth.getCurrentSignedUser().getId())) {
+                                    if (!attendeesList.containsKey(attendeeReference.getId())) {
                                         attendeesList.put(attendeeReference.getId(), attendeeReference);
                                         if(!attendeesList.containsKey(mAuth.getCurrentSignedUser().getId())) {
                                             joinEventButton.setVisibility(View.VISIBLE);
@@ -202,6 +221,9 @@ public class ViewEventDialogFragment extends DialogFragment {
                                         }
                                     } else {
                                         joinEventButton.setVisibility(View.GONE);
+                                    }
+                                    if (attendeeFeedViewAdapter != null) {
+                                        attendeeFeedViewAdapter.notifyDataSetChanged();
                                     }
                                 }
                             }
