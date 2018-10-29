@@ -39,6 +39,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -69,7 +70,6 @@ public class FeedFragment extends Fragment {
     private EventReceiver eventReceiver;
     private PopupMenu popupMenu;
     private ProgressBar progressBar;
-    private ImageButton filterImageButton;
 
     private Map<String, Event> attendedEventsMap = new HashMap<>();
     private Map<String, Event> mainFeedEvents = new HashMap<>();
@@ -112,7 +112,7 @@ public class FeedFragment extends Fragment {
                     progressBar = view.findViewById(R.id.pb_feed);
                     progressBar.setVisibility(View.VISIBLE);
 
-                    filterImageButton = view.findViewById(R.id.iv_filter_btn);
+                    ImageButton filterImageButton = view.findViewById(R.id.iv_filter_btn);
                     filterImageButton.setOnClickListener(filterListener);
 
                     popupMenu = new PopupMenu(getActivity().getApplicationContext(), filterImageButton, Gravity.BOTTOM);
@@ -120,10 +120,11 @@ public class FeedFragment extends Fragment {
                     mDb.databaseDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId())
                             .get().addOnCompleteListener(playerFavoritesListener);
 
-                    eventListenerRegister =  mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
+                    eventListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
                             .addSnapshotListener(eventSnapshotListener);
 
-                    attendingListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_USERS).document(mAuth.getCurrentSignedUser().getId())
+                    attendingListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
+                            .document(mAuth.getCurrentSignedUser().getId())
                             .addSnapshotListener(attendingSnapshotListener);
 
                     setupInitialRecyclerView(true);
@@ -137,6 +138,7 @@ public class FeedFragment extends Fragment {
         }
     }
 
+
     private final EventListener<DocumentSnapshot> attendingSnapshotListener = new EventListener<DocumentSnapshot>() {
         @Override
         public void onEvent(@javax.annotation.Nullable DocumentSnapshot playerDocumentSnapshot,
@@ -149,30 +151,28 @@ public class FeedFragment extends Fragment {
                     List<DocumentReference> attendingEventsReference = attendedPlayer.getAttending();
                     if (attendingEventsReference != null) {
                         for (int i = 0; i < attendingEventsReference.size(); i++) {
-                            attendingEventsReference.get(i).addSnapshotListener((DocumentSnapshot attendedDocumentSnapshot, FirebaseFirestoreException attendedException) -> {
+                            attendingEventsReference.get(i).addSnapshotListener((DocumentSnapshot attendedDocumentSnapshot,
+                                                                                 FirebaseFirestoreException attendedException) -> {
                                 if (attendedDocumentSnapshot != null) {
-
-                                    final Event attendedEvents = attendedDocumentSnapshot.toObject(Event.class);
-
-                                    if (attendedEvents != null) {
-                                        Log.i(TAG, "onEvent: ATTENDING" + attendedEvents.toString());
-
-                                        if (getActivity() != null) {
-                                            if (getView() != null) {
-                                                if (!attendedEventsMap.containsKey(attendedEvents.getId())) {
-                                                    attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
-                                                    attendingFeedViewAdapter = new AttendingFeedViewAdapter(attendedEventsMap, getActivity().getApplicationContext());
-
-                                                    attendedRecyclerView = getView().findViewById(R.id.rv_attending);
-                                                    attendedRecyclerView.setHasFixedSize(true);
-                                                    attendedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
-                                                            LinearLayoutManager.HORIZONTAL, false));
-
-                                                    attendedRecyclerView.setAdapter(attendingFeedViewAdapter);
-                                                    attendingFeedViewAdapter.notifyDataSetChanged();
+                                    if (attendedDocumentSnapshot.exists()) {
+                                        final Event attendedEvents = attendedDocumentSnapshot.toObject(Event.class);
+                                        if (attendedEvents != null) {
+                                            if (getActivity() != null) {
+                                                if (getView() != null) {
+                                                    if (!attendedEventsMap.containsKey(attendedEvents.getId())) {
+                                                        attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
+                                                    }
                                                 }
                                             }
                                         }
+                                    } else {
+                                        DocumentReference documentReference = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
+                                                            .document(mAuth.getCurrentSignedUser().getId());
+
+                                        final DocumentReference eventRemoveDocument = mDb.getFirestore()
+                                                .document("/" + DATABASE_REFERENCE_EVENTS + "/" + attendedDocumentSnapshot.getId());
+
+                                        documentReference.update("attending", FieldValue.arrayRemove(eventRemoveDocument));
                                     }
                                 }
                             });
@@ -303,6 +303,15 @@ public class FeedFragment extends Fragment {
                         eventsRecyclerView.setAdapter(eventFeedViewAdapter);
                         eventsRecyclerView.setVisibility(View.VISIBLE);
 
+                        attendingFeedViewAdapter = new AttendingFeedViewAdapter(attendedEventsMap, getActivity().getApplicationContext());
+                        attendedRecyclerView = getView().findViewById(R.id.rv_attending);
+                        attendedRecyclerView.setHasFixedSize(true);
+                        attendedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
+                                LinearLayoutManager.HORIZONTAL, false));
+
+                        attendedRecyclerView.setAdapter(attendingFeedViewAdapter);
+                        attendingFeedViewAdapter.notifyDataSetChanged();
+
                     }, 350);
                 }
             }
@@ -387,7 +396,6 @@ public class FeedFragment extends Fragment {
         super.onDestroyView();
         selectedSports.clear();
         initialSports.clear();
-        //attendedEventsMap.clear();
     }
 
     @Override

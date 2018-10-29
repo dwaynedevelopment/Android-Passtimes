@@ -64,17 +64,16 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
         final Event event = result.get(i);
 
         final DocumentReference playerDocumentReference = mDb.getFirestore()
-                .document("/"+DATABASE_REFERENCE_USERS+"/"+mAuth.getCurrentSignedUser().getId());
+                .document("/"+DATABASE_REFERENCE_USERS+"/" + mAuth.getCurrentSignedUser().getId());
 
         if (event != null) {
+            if (event.getEventHost().equals(playerDocumentReference)) {
+                holder.statusView.setBackgroundResource(R.drawable.cv_active);
+            } else {
+                holder.statusView.setBackgroundResource(R.drawable.cv_idle);
+            }
 
-//            if (event.getEventHost().equals(playerDocumentReference)) {
-//                holder.statusView.setBackgroundResource(R.drawable.cv_active);
-//            } else {
-//                holder.statusView.setBackgroundResource(R.drawable.cv_idle);
-//            }
-
-            if (event.getAttendees() != null &&  event.getAttendees().size() > 1) {
+            if (event.getAttendees() != null && event.getAttendees().size() > 1) {
                 for (int j = 0; j <event.getAttendees().size() ; j++) {
                     if (event.getAttendees().get(j).equals(playerDocumentReference)) {
                         holder.statusView.setBackgroundResource(R.drawable.cv_active);

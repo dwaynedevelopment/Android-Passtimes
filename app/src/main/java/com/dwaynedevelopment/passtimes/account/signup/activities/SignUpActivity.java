@@ -221,7 +221,6 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     };
 
 
-
     private final OnCompleteListener<Uri> uploadedWithCredentials = new OnCompleteListener<Uri>() {
         @Override
         public void onComplete(@NonNull Task<Uri> task) {
