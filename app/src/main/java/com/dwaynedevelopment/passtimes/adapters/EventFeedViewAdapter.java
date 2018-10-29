@@ -67,40 +67,35 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
                 .document("/"+DATABASE_REFERENCE_USERS+"/" + mAuth.getCurrentSignedUser().getId());
 
         if (event != null) {
-            if (event.getEventHost().equals(playerDocumentReference)) {
-                holder.statusView.setBackgroundResource(R.drawable.cv_active);
-            } else {
-                holder.statusView.setBackgroundResource(R.drawable.cv_idle);
-            }
-
             if (event.getAttendees() != null && event.getAttendees().size() > 1) {
                 for (int j = 0; j <event.getAttendees().size() ; j++) {
                     if (event.getAttendees().get(j).equals(playerDocumentReference)) {
                         holder.statusView.setBackgroundResource(R.drawable.cv_active);
+                        break;
                     } else {
                         holder.statusView.setBackgroundResource(R.drawable.cv_idle);
                     }
                 }
             }
+
+            String month = CalendarUtils.getMonthFromDate(event.getStartDate());
+            holder.tvMonth.setText(month);
+            String day = CalendarUtils.getDayFromDate(event.getStartDate());
+            holder.tvDay.setText(day);
+
+            holder.tvSport.setText(event.getSport());
+            holder.tvTitle.setText(event.getTitle());
+            holder.tvLocation.setText(event.getLocation());
+
+            String time = CalendarUtils.getDateTimeFromDate(event.getStartDate());
+            holder.tvTime.setText(time);
+
+            holder.eventCard.setOnClickListener(v -> {
+                Intent selectIntent = new Intent(ACTION_EVENT_SELECTED);
+                selectIntent.putExtra(EXTRA_SELECTED_EVENT_ID,  event.getId());
+                context.sendBroadcast(selectIntent);
+            });
         }
-
-        String month = CalendarUtils.getMonthFromDate(event.getStartDate());
-        holder.tvMonth.setText(month);
-        String day = CalendarUtils.getDayFromDate(event.getStartDate());
-        holder.tvDay.setText(day);
-
-        holder.tvSport.setText(event.getSport());
-        holder.tvTitle.setText(event.getTitle());
-        holder.tvLocation.setText(event.getLocation());
-
-        String time = CalendarUtils.getDateTimeFromDate(event.getStartDate());
-        holder.tvTime.setText(time);
-
-        holder.eventCard.setOnClickListener(v -> {
-            Intent selectIntent = new Intent(ACTION_EVENT_SELECTED);
-            selectIntent.putExtra(EXTRA_SELECTED_EVENT_ID,  event.getId());
-            context.sendBroadcast(selectIntent);
-        });
     }
 
     @Override

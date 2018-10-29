@@ -159,6 +159,9 @@ public class FeedFragment extends Fragment {
                                         if (attendedEvents != null) {
                                             if (!attendedEventsMap.containsKey(attendedEvents.getId())) {
                                                 attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
+                                                if (attendingFeedViewAdapter != null) {
+                                                    attendingFeedViewAdapter.notifyDataSetChanged();
+                                                }
                                             }
                                         }
                                     } else {
@@ -167,7 +170,6 @@ public class FeedFragment extends Fragment {
                                         final DocumentReference eventRemoveDocument = mDb.getFirestore()
                                                 .document("/" + DATABASE_REFERENCE_EVENTS + "/" + attendedDocumentSnapshot.getId());
                                         documentReference.update("attending", FieldValue.arrayRemove(eventRemoveDocument));
-
                                     }
                                 }
                             });
@@ -194,51 +196,56 @@ public class FeedFragment extends Fragment {
                     if (documentChange != null) {
                         switch (documentChange.getType()) {
                             case ADDED:
-                                Event addedEvent = documentChange.getDocument().toObject(Event.class);
-                                if (!mainFeedEvents.containsKey(addedEvent.getId()) && !filteredEventsByCategory.containsKey(addedEvent.getId())) {
-                                    mainFeedEvents.put(addedEvent.getId(), addedEvent);
-                                    filteredEventsByCategory.put(addedEvent.getId(), addedEvent);
-                                    if (!initialSports.contains(addedEvent.getSport())) {
-                                        filteredEventsByCategory.remove(addedEvent.getId());
+                                if (queryDocumentSnapshots.getDocuments().get(i).exists()) {
+                                    Event addedEvent = documentChange.getDocument().toObject(Event.class);
+                                    if (!mainFeedEvents.containsKey(addedEvent.getId()) && !filteredEventsByCategory.containsKey(addedEvent.getId())) {
+                                        mainFeedEvents.put(addedEvent.getId(), addedEvent);
+                                        filteredEventsByCategory.put(addedEvent.getId(), addedEvent);
+                                        if (!initialSports.contains(addedEvent.getSport())) {
+                                            filteredEventsByCategory.remove(addedEvent.getId());
+                                        }
+                                        eventFeedViewAdapter.notifyItemInserted(i);
+                                        eventFeedViewAdapter.notifyDataSetChanged();
+                                        Log.i(TAG, "onEvent: ADDED " + documentChange.getDocument().toObject(Event.class).toString());
+                                    } else {
+                                        Log.i(TAG, "onEvent: NOT ADDED " + documentChange.getDocument().toObject(Event.class).toString());
                                     }
-                                    eventFeedViewAdapter.notifyItemInserted(i);
-                                    eventFeedViewAdapter.notifyDataSetChanged();
-                                    Log.i(TAG, "onEvent: ADDED " + documentChange.getDocument().toObject(Event.class).toString());
-                                } else {
-                                    Log.i(TAG, "onEvent: NOT ADDED " + documentChange.getDocument().toObject(Event.class).toString());
                                 }
                                 break;
                             case MODIFIED:
-                                final Event editEvent = documentChange.getDocument().toObject(Event.class);
-                                if (mainFeedEvents.containsKey(editEvent.getId()) && filteredEventsByCategory.containsKey(editEvent.getId())) {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                        mainFeedEvents.replace(editEvent.getId(), editEvent);
-                                        filteredEventsByCategory.replace(editEvent.getId(), editEvent);
-                                        attendedEventsMap.replace(editEvent.getId(), editEvent);
-                                        if (attendingFeedViewAdapter != null) {
-                                            attendingFeedViewAdapter.notifyItemChanged(i);
-                                            attendingFeedViewAdapter.notifyDataSetChanged();
+                                if (queryDocumentSnapshots.getDocuments().get(i).exists()) {
+                                    final Event editEvent = documentChange.getDocument().toObject(Event.class);
+                                    if (mainFeedEvents.containsKey(editEvent.getId()) && filteredEventsByCategory.containsKey(editEvent.getId())) {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                            mainFeedEvents.replace(editEvent.getId(), editEvent);
+                                            filteredEventsByCategory.replace(editEvent.getId(), editEvent);
+                                            attendedEventsMap.replace(editEvent.getId(), editEvent);
+                                            if (attendingFeedViewAdapter != null) {
+                                                attendingFeedViewAdapter.notifyDataSetChanged();
+                                            }
+                                            eventFeedViewAdapter.notifyItemChanged(i);
+                                            eventFeedViewAdapter.notifyDataSetChanged();
+                                            Log.i(TAG, "onEvent: MODIFIED " + documentChange.getDocument().toObject(Event.class).toString());
                                         }
-                                        eventFeedViewAdapter.notifyItemChanged(i);
-                                        eventFeedViewAdapter.notifyDataSetChanged();
-                                        Log.i(TAG, "onEvent: MODIFIED " + documentChange.getDocument().toObject(Event.class).toString());
                                     }
                                 }
                                 break;
                             case REMOVED:
-                                Event removedEvent = documentChange.getDocument().toObject(Event.class);
-                                if (mainFeedEvents.containsKey(removedEvent.getId()) && filteredEventsByCategory.containsKey(removedEvent.getId())) {
-                                    mainFeedEvents.remove(removedEvent.getId());
-                                    filteredEventsByCategory.remove(removedEvent.getId());
-                                    attendedEventsMap.remove(removedEvent.getId());
-                                    if (attendingFeedViewAdapter != null) {
-                                        attendingFeedViewAdapter.notifyItemRemoved(i);
+                                if (queryDocumentSnapshots.getDocuments().get(i).exists()) {
+                                    Event removedEvent = documentChange.getDocument().toObject(Event.class);
+                                    if (mainFeedEvents.containsKey(removedEvent.getId()) && filteredEventsByCategory.containsKey(removedEvent.getId())) {
+                                        mainFeedEvents.remove(removedEvent.getId());
+                                        filteredEventsByCategory.remove(removedEvent.getId());
+                                        attendedEventsMap.remove(removedEvent.getId());
+                                        if (attendingFeedViewAdapter != null) {
+                                            eventFeedViewAdapter.notifyDataSetChanged();
+                                        }
+                                        eventFeedViewAdapter.notifyItemRemoved(i);
+                                        eventFeedViewAdapter.notifyDataSetChanged();
+                                        Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());
                                     }
-                                    eventFeedViewAdapter.notifyItemRemoved(i);
-                                    eventFeedViewAdapter.notifyDataSetChanged();
                                     Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());
                                 }
-                                Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());
                                 break;
 
                         }
@@ -397,6 +404,7 @@ public class FeedFragment extends Fragment {
         super.onDestroyView();
         selectedSports.clear();
         initialSports.clear();
+        attendedEventsMap.clear();
     }
 
     @Override
