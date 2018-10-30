@@ -9,10 +9,6 @@ import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.favorites.fragments.FavoriteFragment;
 import com.dwaynedevelopment.passtimes.favorites.interfaces.IFavoriteHandler;
 import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
-import com.dwaynedevelopment.passtimes.utils.AuthUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_REGISTRATION;
 

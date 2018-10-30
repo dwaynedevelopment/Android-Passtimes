@@ -51,8 +51,6 @@ public class FavoriteFragment extends Fragment {
     private IFavoriteHandler iFavoriteHandler;
     private FavoritesReceiver favoritesReceiver;
     private final List<DocumentReference> favoriteReferences = new ArrayList<>();
-    private final ArrayList<DocumentReference> receivedFavorites = new ArrayList<>();
-    private ArrayList<String> receivedStringFavorites = new ArrayList<>();
 
 
     public static FavoriteFragment newInstance(boolean editFavorites) {
@@ -107,7 +105,7 @@ public class FavoriteFragment extends Fragment {
                                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot,
                                                     @javax.annotation.Nullable FirebaseFirestoreException e) {
                                     if (documentSnapshot != null) {
-                                        final Sport favoritesFromEdit  = documentSnapshot.toObject(Sport.class);
+                                        final Sport favoritesFromEdit = documentSnapshot.toObject(Sport.class);
                                         if (favoritesFromEdit != null) {
                                             Log.i(TAG, "onEvent: FAVORITES" + favoritesFromEdit.toString());
                                         }
@@ -174,13 +172,12 @@ public class FavoriteFragment extends Fragment {
                     final ProgressBar progress = getView().findViewById(R.id.pb_dots_fav);
                     progress.setVisibility(View.VISIBLE);
 
-                    mDb.insertFavorites(player);
-
                     if (player.getFavorites().size() >= 1) {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 if (iFavoriteHandler != null) {
+                                    mDb.insertFavorites(player);
                                     progress.setVisibility(View.GONE);
                                     iFavoriteHandler.dismissActivity();
                                 }

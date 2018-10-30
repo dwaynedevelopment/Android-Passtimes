@@ -83,8 +83,7 @@ public class FeedFragment extends Fragment {
 
     private static final String TAG = "FeedFragment";
 
-    public FeedFragment() {
-    }
+    public FeedFragment() { }
 
     public static FeedFragment newInstance() {
         return new FeedFragment();
@@ -139,10 +138,10 @@ public class FeedFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        eventReceiver = new EventReceiver();
-        IntentFilter actionFilter = new IntentFilter();
-        actionFilter.addAction(ACTION_EVENT_SELECTED);
         if (getActivity() != null) {
+            eventReceiver = new EventReceiver();
+            IntentFilter actionFilter = new IntentFilter();
+            actionFilter.addAction(ACTION_EVENT_SELECTED);
             getActivity().registerReceiver(eventReceiver, actionFilter);
         }
     }
@@ -159,6 +158,7 @@ public class FeedFragment extends Fragment {
                     List<DocumentReference> attendingEventsReference = attendedPlayer.getAttending();
                     if (attendingEventsReference != null) {
                         for (int i = 0; i < attendingEventsReference.size(); i++) {
+                            final int index = i;
                             attendingEventsReference.get(i).addSnapshotListener((DocumentSnapshot attendedDocumentSnapshot,
                                                                                  FirebaseFirestoreException attendedException) -> {
                                 if (attendedDocumentSnapshot != null) {
@@ -168,18 +168,30 @@ public class FeedFragment extends Fragment {
                                             if (!attendedEventsMap.containsKey(attendedEvents.getId())) {
                                                 attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
                                                 if (attendingFeedViewAdapter != null) {
+                                                    attendingFeedViewAdapter.notifyItemInserted(index);
                                                     attendingFeedViewAdapter.notifyDataSetChanged();
+                                                }
+                                            } else {
+                                                if (attendingFeedViewAdapter != null) {
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                                        attendedEventsMap.replace(attendedEvents.getId(), attendedEvents);
+                                                        attendingFeedViewAdapter.notifyItemChanged(index);
+                                                        attendingFeedViewAdapter.notifyDataSetChanged();
+                                                    }
                                                 }
                                             }
                                         }
                                     } else {
                                         DocumentReference documentReference = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
                                                 .document(mAuth.getCurrentSignedUser().getId());
+
                                         final DocumentReference eventRemoveDocument = mDb.getFirestore()
                                                 .document("/" + DATABASE_REFERENCE_EVENTS + "/" + attendedDocumentSnapshot.getId());
                                         documentReference.update("attending", FieldValue.arrayRemove(eventRemoveDocument));
 
                                         if (attendingFeedViewAdapter != null) {
+                                            attendedEventsMap.remove(attendedDocumentSnapshot.getId());
+                                            attendingFeedViewAdapter.notifyItemRemoved(index);
                                             attendingFeedViewAdapter.notifyDataSetChanged();
                                         }
                                     }
@@ -201,6 +213,7 @@ public class FeedFragment extends Fragment {
                 Log.i(TAG, "onEvent: " + e.getLocalizedMessage());
                 return;
             }
+
             if (queryDocumentSnapshots != null) {
                 for (int i = 0; i < queryDocumentSnapshots.getDocumentChanges().size(); i++) {
                     final DocumentChange documentChange = queryDocumentSnapshots.getDocumentChanges().get(i);
@@ -232,20 +245,12 @@ public class FeedFragment extends Fragment {
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                             mainFeedEvents.replace(editEvent.getId(), editEvent);
                                             filteredEventsByCategory.replace(editEvent.getId(), editEvent);
-
-                                            if (attendedEventsMap.containsKey(editEvent.getId())) {
-                                                attendedEventsMap.replace(editEvent.getId(), editEvent);
-                                                if (attendingFeedViewAdapter != null) {
-                                                    eventFeedViewAdapter.notifyDataSetChanged();
-                                                }
-                                            }
                                             eventFeedViewAdapter.notifyItemChanged(i);
                                             eventFeedViewAdapter.notifyDataSetChanged();
                                             Log.i(TAG, "onEvent: MODIFIED " + documentChange.getDocument().toObject(Event.class).toString());
                                         }
                                     }
                                 }
-
                                 break;
                             case REMOVED:
                                 if (queryDocumentSnapshots.getDocuments().get(i).exists()) {
@@ -253,13 +258,6 @@ public class FeedFragment extends Fragment {
                                     if (mainFeedEvents.containsKey(removedEvent.getId()) && filteredEventsByCategory.containsKey(removedEvent.getId())) {
                                         mainFeedEvents.remove(removedEvent.getId());
                                         filteredEventsByCategory.remove(removedEvent.getId());
-
-                                        if (attendedEventsMap.containsKey(removedEvent.getId())) {
-                                            attendedEventsMap.remove(removedEvent.getId());
-                                            if (attendingFeedViewAdapter != null) {
-                                                eventFeedViewAdapter.notifyDataSetChanged();
-                                            }
-                                        }
                                         eventFeedViewAdapter.notifyItemRemoved(i);
                                         eventFeedViewAdapter.notifyDataSetChanged();
                                         Log.i(TAG, "onEvent: REMOVED " + documentChange.getDocument().toObject(Event.class).toString());

@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes.account.edit;
+package com.dwaynedevelopment.passtimes.account.edit.activities;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +14,8 @@ import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.account.edit.fragments.EditFragment;
+import com.dwaynedevelopment.passtimes.account.edit.interfaces.IEditHandler;
 import com.dwaynedevelopment.passtimes.navigation.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;

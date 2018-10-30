@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes.account.edit;
+package com.dwaynedevelopment.passtimes.account.edit.interfaces;
 
 public interface IEditHandler {
     void invokeCamera();

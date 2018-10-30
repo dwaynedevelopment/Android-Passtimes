@@ -1,42 +1,26 @@
 package com.dwaynedevelopment.passtimes.navigation.activities;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 
 import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.account.edit.EditActivity;
+import com.dwaynedevelopment.passtimes.account.edit.activities.EditActivity;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.favorites.activities.FavoriteActivity;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
-import com.dwaynedevelopment.passtimes.navigation.fragments.event.ViewEventDialogFragment;
-import com.dwaynedevelopment.passtimes.navigation.fragments.profile.ProfileFragment;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.IAccountHandler;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.onboarding.activities.OnboardActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVENT_ID;
 
 
 public class BaseActivity extends AppCompatActivity implements INavigationHandler, IAccountHandler {

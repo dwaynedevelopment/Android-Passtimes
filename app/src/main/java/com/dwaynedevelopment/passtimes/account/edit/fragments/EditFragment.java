@@ -1,4 +1,4 @@
-package com.dwaynedevelopment.passtimes.account.edit;
+package com.dwaynedevelopment.passtimes.account.edit.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
+import com.dwaynedevelopment.passtimes.account.edit.interfaces.IEditHandler;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 
 import java.util.Objects;
