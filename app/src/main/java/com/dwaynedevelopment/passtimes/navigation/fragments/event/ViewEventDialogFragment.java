@@ -2,6 +2,7 @@ package com.dwaynedevelopment.passtimes.navigation.fragments.event;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +21,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.AttendeesViewAdapter;
-import com.dwaynedevelopment.passtimes.adapters.AttendingFeedViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.INavigationHandler;
@@ -63,7 +63,6 @@ public class ViewEventDialogFragment extends DialogFragment {
 
     private AttendeesViewAdapter attendeeFeedViewAdapter;
     private RecyclerView attendeeRecyclerView;
-
 
     public static ViewEventDialogFragment newInstance(String eventId) {
 
@@ -252,8 +251,6 @@ public class ViewEventDialogFragment extends DialogFragment {
             }
         }
     };
-
-
 
 
     private final View.OnClickListener eventOnClickListener = new View.OnClickListener() {

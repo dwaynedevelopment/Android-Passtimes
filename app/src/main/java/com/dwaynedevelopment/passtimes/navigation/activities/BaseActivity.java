@@ -1,6 +1,7 @@
 package com.dwaynedevelopment.passtimes.navigation.activities;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.favorites.activities.FavoriteActivity;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.CreateEventDialogFragment;
 import com.dwaynedevelopment.passtimes.navigation.fragments.event.ViewEventDialogFragment;
+import com.dwaynedevelopment.passtimes.navigation.fragments.profile.ProfileFragment;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.IAccountHandler;
 import com.dwaynedevelopment.passtimes.navigation.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.onboarding.activities.OnboardActivity;
@@ -41,6 +43,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
 
     private ViewPager viewPager;
     private AuthUtils mAuth;
+    ViewPagerAdapter adapter;
 
     private static final String TAG = "BaseActivity";
     @Override
@@ -51,6 +54,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
         bottomNavigationSetup();
 
     }
+
 
     @Override
     public void onBackPressed() {
@@ -69,7 +73,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
 
         viewPager = findViewById(R.id.viewpager);
         viewPager.setOnTouchListener(viewPagerOnTouchListener);
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         NavigationUtils.viewPagerSetup(viewPager, adapter);
 
         viewPager.setCurrentItem(0);
@@ -87,6 +91,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
         }
     };
 
+
     // Notify view pager to change current Item selected
     private void selectedFragment(MenuItem item) {
         item.setChecked(true);
@@ -99,6 +104,8 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
                 break;
             case R.id.nv_item_profile:
                 // Set viewpager current item to profile without animation
+                viewPager.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
                 viewPager.setCurrentItem(1, false);
                 break;
         }

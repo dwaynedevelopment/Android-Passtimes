@@ -44,6 +44,24 @@
         android:textColor="@color/colorLightPrimary"
         android:layout_toStartOf="@+id/ci_profile" />
 
+    <TextView
+        android:id="@+id/tv_attending_profile"
+        style="@style/Titles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Attending"
+        android:layout_below="@id/im_header"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_attending_profile"
+        android:layout_width="match_parent"
+        android:layout_height="115dp"
+        android:layout_below="@+id/tv_attending_profile"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp">
+    </android.support.v7.widget.RecyclerView>
+
 
 </RelativeLayout>
 
