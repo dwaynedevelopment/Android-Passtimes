@@ -140,9 +140,10 @@ public class FavoriteFragment extends Fragment {
                     if (getActivity() != null) {
                         if (getView() != null) {
                             RecyclerView recyclerView = getView().findViewById(R.id.rv_favorite);
+                            recyclerView.setHasFixedSize(true);
                             recyclerView.setLayoutManager(new GridLayoutManager(getActivity().getApplicationContext(), 3));
                             recyclerView.setAdapter(adapter);
-                            recyclerView.setHasFixedSize(true);
+                            adapter.notifyDataSetChanged();
                         }
                     }
                 }

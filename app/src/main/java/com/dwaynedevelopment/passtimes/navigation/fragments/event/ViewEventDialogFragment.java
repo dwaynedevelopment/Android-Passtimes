@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.HashMap;
@@ -158,7 +159,8 @@ public class ViewEventDialogFragment extends DialogFragment {
         }
     }
 
-    private final EventListener<DocumentSnapshot> eventSnapshotListener = (DocumentSnapshot documentParentSnapshot, FirebaseFirestoreException eventException) -> {
+    private final EventListener<DocumentSnapshot> eventSnapshotListener = (DocumentSnapshot documentParentSnapshot,
+                                                                           FirebaseFirestoreException eventException) -> {
 
         eventSelected = Objects.requireNonNull(documentParentSnapshot).toObject(Event.class);
 
@@ -186,10 +188,8 @@ public class ViewEventDialogFragment extends DialogFragment {
 
                 if (hostReference != null) {
                     hostReference.addSnapshotListener((documentChildSnapshot, playerException) -> {
-                        final Player eventHost;
                         if (documentChildSnapshot != null) {
-                            eventHost = documentChildSnapshot.toObject(Player.class);
-
+                            final Player eventHost = documentChildSnapshot.toObject(Player.class);
                             if (eventHost != null) {
                                 if (getActivity() != null) {
                                     Glide.with(getActivity().getApplicationContext()).load(eventHost.getThumbnail()).into(ciHost);
@@ -210,18 +210,37 @@ public class ViewEventDialogFragment extends DialogFragment {
                     for (int i = 0; i <attendeesReference.size() ; i++) {
                         attendeesReference.get(i).addSnapshotListener((documentSnapshot, attendeeException) -> {
                             if (documentSnapshot != null) {
-                                final Player attendeeReference = documentSnapshot.toObject(Player.class);
-                                if (attendeeReference != null) {
-                                    if (!attendeesList.containsKey(attendeeReference.getId())) {
-                                        attendeesList.put(attendeeReference.getId(), attendeeReference);
-                                        if(!attendeesList.containsKey(mAuth.getCurrentSignedUser().getId())) {
-                                            joinEventButton.setVisibility(View.VISIBLE);
+                                if (documentSnapshot.exists()) {
+                                    final Player attendeeReference = documentSnapshot.toObject(Player.class);
+                                    if (attendeeReference != null) {
+                                        if (!attendeesList.containsKey(attendeeReference.getId())) {
+                                            attendeesList.put(attendeeReference.getId(), attendeeReference);
+                                            if(!attendeesList.containsKey(mAuth.getCurrentSignedUser().getId())) {
+                                                joinEventButton.setVisibility(View.VISIBLE);
+                                            } else {
+                                                joinEventButton.setVisibility(View.GONE);
+                                            }
                                         } else {
                                             joinEventButton.setVisibility(View.GONE);
                                         }
-                                    } else {
-                                        joinEventButton.setVisibility(View.GONE);
+                                        if (attendeeFeedViewAdapter != null) {
+                                            attendeeFeedViewAdapter.notifyDataSetChanged();
+                                        }
                                     }
+                                } else {
+
+                                    final Player removedPlayer = documentSnapshot.toObject(Player.class);
+                                    if (removedPlayer != null) {
+                                        attendeesList.remove(removedPlayer.getId());
+                                    }
+
+                                    final DocumentReference eventRemoveDocument = mDb.getFirestore()
+                                            .document("/" + DATABASE_REFERENCE_EVENTS + "/" + eventSelected.getId());
+
+                                    final DocumentReference documentReference = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
+                                            .document(mAuth.getCurrentSignedUser().getId());
+
+                                    eventRemoveDocument.update("attendees", FieldValue.arrayRemove(documentReference));
                                     if (attendeeFeedViewAdapter != null) {
                                         attendeeFeedViewAdapter.notifyDataSetChanged();
                                     }
@@ -233,6 +252,9 @@ public class ViewEventDialogFragment extends DialogFragment {
             }
         }
     };
+
+
+
 
     private final View.OnClickListener eventOnClickListener = new View.OnClickListener() {
         @Override

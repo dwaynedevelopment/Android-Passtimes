@@ -42,6 +42,7 @@
         <activity android:name=".account.login.activities.LoginActivity" />
         <activity android:name=".account.terms.activities.TermsActivity" />
         <activity android:name=".favorites.activities.FavoriteActivity" />
+        <activity android:name=".account.edit.EditActivity" />
     </application>
 
 </manifest>

@@ -84,9 +84,9 @@ public class ProfileFragment extends Fragment {
                     }
                     break;
                 case edit:
-//                    if (iNavigationHandler != null) {
-//                        iNavigationHandler.invokeSettings();
-//                    }
+                    if (iNavigationHandler != null) {
+                        iNavigationHandler.invokeEditProfile();
+                    }
                     break;
                 case favorites:
                     if (iNavigationHandler != null) {

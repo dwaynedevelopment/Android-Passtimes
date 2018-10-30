@@ -34,13 +34,14 @@ public class FavoriteActivity extends AppCompatActivity implements IFavoriteHand
                         .beginTransaction()
                         .replace(R.id.container_favorite, FavoriteFragment.newInstance(true))
                         .commit();
+                return;
             }
-        } else {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.container_favorite, FavoriteFragment.newInstance(false))
-                    .commit();
         }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container_favorite, FavoriteFragment.newInstance(false))
+                .commit();
     }
 
     @Override
@@ -53,6 +54,19 @@ public class FavoriteActivity extends AppCompatActivity implements IFavoriteHand
             }
         } else {
             finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getIntent() != null) {
+            if (getIntent().hasExtra(EXTRA_REGISTRATION) || getIntent().hasExtra("EXTRA_EDIT_FAVORITES")) {
+                finish();
+                Intent intent = new Intent(FavoriteActivity.this, BaseActivity.class);
+                startActivity(intent);
+            }
+        } else {
+            super.onBackPressed();
         }
     }
 }

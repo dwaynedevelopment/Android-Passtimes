@@ -19,6 +19,7 @@
     <string name="players_attending">Players Attending</string>
     <string name="on_going">On Going</string>
     <string name="submit">Submit</string>
+    <string name="full_name">Full Name</string>
 
     <string-array name="number_picker_am_pm">
         <item>"AM"</item>
