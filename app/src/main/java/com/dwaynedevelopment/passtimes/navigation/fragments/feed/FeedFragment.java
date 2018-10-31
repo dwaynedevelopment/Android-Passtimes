@@ -143,12 +143,45 @@ public class FeedFragment extends Fragment {
         registerBroadcastReceiver();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (eventListenerRegister != null && attendingListenerRegister != null && favoritesListenerRegister != null) {
+            eventListenerRegister.remove();
+            eventListenerRegister = null;
+            attendingListenerRegister.remove();
+            attendingListenerRegister = null;
+            favoritesListenerRegister.remove();
+            favoritesListenerRegister = null;
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        selectedSports.clear();
+        initialSports.clear();
+        attendedEventsMap.clear();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterBroadcastReceiver();
+    }
+
     private void registerBroadcastReceiver() {
         eventReceiver = new EventReceiver();
         IntentFilter actionFilter = new IntentFilter();
         actionFilter.addAction(ACTION_EVENT_SELECTED);
         if (getActivity() != null) {
             getActivity().registerReceiver(eventReceiver, actionFilter);
+        }
+    }
+
+    private void unregisterBroadcastReceiver() {
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(eventReceiver);
         }
     }
 
@@ -196,6 +229,7 @@ public class FeedFragment extends Fragment {
                     List<DocumentReference> attendingEventsReference = attendedPlayer.getAttending();
                     if (attendingEventsReference != null) {
                         for (int i = 0; i < attendingEventsReference.size(); i++) {
+                            final int index = i;
                             attendingEventsReference.get(i).addSnapshotListener((DocumentSnapshot attendedDocumentSnapshot,
                                                                                  FirebaseFirestoreException attendedException) -> {
                                 if (attendedDocumentSnapshot != null) {
@@ -205,18 +239,30 @@ public class FeedFragment extends Fragment {
                                             if (!attendedEventsMap.containsKey(attendedEvents.getId())) {
                                                 attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
                                                 if (attendingFeedViewAdapter != null) {
+                                                    attendingFeedViewAdapter.notifyItemInserted(index);
                                                     attendingFeedViewAdapter.notifyDataSetChanged();
+                                                }
+                                            } else {
+                                                if (attendingFeedViewAdapter != null) {
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                                        attendedEventsMap.replace(attendedEvents.getId(), attendedEvents);
+                                                        attendingFeedViewAdapter.notifyItemChanged(index);
+                                                        attendingFeedViewAdapter.notifyDataSetChanged();
+                                                    }
                                                 }
                                             }
                                         }
                                     } else {
                                         DocumentReference documentReference = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
                                                 .document(mAuth.getCurrentSignedUser().getId());
+
                                         final DocumentReference eventRemoveDocument = mDb.getFirestore()
                                                 .document("/" + DATABASE_REFERENCE_EVENTS + "/" + attendedDocumentSnapshot.getId());
                                         documentReference.update("attending", FieldValue.arrayRemove(eventRemoveDocument));
 
                                         if (attendingFeedViewAdapter != null) {
+                                            attendedEventsMap.remove(attendedDocumentSnapshot.getId());
+                                            attendingFeedViewAdapter.notifyItemRemoved(index);
                                             attendingFeedViewAdapter.notifyDataSetChanged();
                                         }
                                     }
@@ -415,38 +461,7 @@ public class FeedFragment extends Fragment {
         return false;
     };
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (eventListenerRegister != null && attendingListenerRegister != null && favoritesListenerRegister != null) {
-            eventListenerRegister.remove();
-            eventListenerRegister = null;
-            attendingListenerRegister.remove();
-            attendingListenerRegister = null;
-            favoritesListenerRegister.remove();
-            favoritesListenerRegister = null;
-        }
-    }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        selectedSports.clear();
-        initialSports.clear();
-        attendedEventsMap.clear();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unregisterBroadcastReceiver();
-    }
-
-    private void unregisterBroadcastReceiver() {
-        if (getActivity() != null) {
-            getActivity().unregisterReceiver(eventReceiver);
-        }
-    }
 
     public class EventReceiver extends BroadcastReceiver {
 
