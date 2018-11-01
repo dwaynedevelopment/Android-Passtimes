@@ -88,8 +88,8 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
                 break;
             case R.id.nv_item_profile:
                 // Set viewpager current item to profile without animation
-                viewPager.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
+//                viewPager.setAdapter(adapter);
+//                adapter.notifyDataSetChanged();
                 viewPager.setCurrentItem(1, false);
                 break;
         }
