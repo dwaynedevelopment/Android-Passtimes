@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/rl_login_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <ProgressBar
-        android:id="@+id/pb_dot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tv_login_title"
@@ -47,7 +41,7 @@
                 android:id="@+id/et_email_login"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Email"
+                android:hint="@string/email_login"
                 android:textSize="18sp"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/colorDarkPrimary"
@@ -69,7 +63,7 @@
                 android:id="@+id/et_password_login"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Password"
+                android:hint="@string/password_login"
                 android:textSize="18sp"
                 android:inputType="textPassword"
                 android:textColor="@color/colorDarkPrimary"
@@ -91,7 +85,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="15dp"
-        android:text="Login"
+        android:text="@string/login"
         android:layout_below="@id/ll_login_form"/>
 
     <LinearLayout
@@ -109,7 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:text="Forgot your password?"
+            android:text="@string/forgot_your_password"
             android:textColor="@color/colorDarkPrimary"
             android:textSize="12sp"
             android:textStyle="normal" />
@@ -120,7 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:fontFamily="sans-serif-medium"
-            android:text=" Request Password."
+            android:text="@string/request_password"
             android:textColor="@color/colorPrimaryAccent"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -150,7 +144,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-medium"
-            android:text="OR"
+            android:text="@string/or_login"
             android:textColor="@color/colorDarkPrimary"
             android:textSize="12sp"
             android:textStyle="normal"
@@ -189,14 +183,15 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="110dp"
-            android:src="@drawable/ic_facebook" />
+            android:src="@drawable/ic_facebook"
+            android:contentDescription="@null"/>
 
     </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/ll_bottom_login"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:layout_margin="20dp"
         android:gravity="center"
         android:orientation="horizontal"
@@ -224,8 +219,5 @@
             android:textStyle="bold" />
 
     </LinearLayout>
-
-
-
 
 </RelativeLayout>

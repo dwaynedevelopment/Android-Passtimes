@@ -1,8 +1,11 @@
 package com.dwaynedevelopment.passtimes.utils;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 
+import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.navigation.fragments.feed.FeedFragment;
 import com.dwaynedevelopment.passtimes.navigation.fragments.profile.ProfileFragment;
@@ -10,6 +13,8 @@ import com.dwaynedevelopment.passtimes.navigation.fragments.profile.SettingsPref
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
+
+import es.dmoral.toasty.Toasty;
 
 public class NavigationUtils {
 
@@ -21,11 +26,13 @@ public class NavigationUtils {
     }};
 
     // Initialize custom bottom navigation
-    public static void bottomNavigationSetup(BottomNavigationViewEx bottomNav) {
+    public static void bottomNavigationSetup(Context context, BottomNavigationViewEx bottomNav) {
         bottomNav.enableAnimation(false);
         bottomNav.setIconsMarginTop(45);
-        //bottomNav.enableShiftingMode(false);
-        //bottomNav.enableItemShiftingMode(false);
+//        Toasty.Config.getInstance()
+//                .setErrorColor(ContextCompat.getColor(context, R.color.colorPrimaryAccent))
+//                .setSuccessColor(ContextCompat.getColor(context, R.color.colorSecondaryAccent))
+//                .apply();
     }
 
     public static void viewPagerSetup(ViewPager viewPager, ViewPagerAdapter adapter) {

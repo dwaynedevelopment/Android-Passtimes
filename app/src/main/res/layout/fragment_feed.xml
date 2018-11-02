@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
+    android:id="@+id/cl_feed"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,16 +13,28 @@
         <android.support.design.widget.AppBarLayout
             android:id="@+id/ab_feed"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
             android:layout_alignParentTop="true">
-
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tb_feed"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:text="@string/app_name"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/kitten_swash"
+                    android:textColor="@color/colorPrimaryAccent"
+                    android:textSize="32sp"/>
+
+            </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.AppBarLayout>
 
@@ -31,7 +44,7 @@
             style="@style/Titles"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Attending"
+            android:text="@string/attending"
             android:layout_below="@id/ab_feed"/>
 
         <android.support.v7.widget.RecyclerView
@@ -55,12 +68,11 @@
 
         <ImageButton
             android:id="@+id/iv_filter_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_alignParentEnd="true"
             android:layout_below="@id/rv_attending"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
             android:background="@android:color/transparent"
             android:contentDescription="@null"
             android:src="@drawable/ic_filter" />
@@ -72,24 +84,6 @@
             android:layout_below="@+id/tv_ongoing"
             android:layout_marginTop="16dp">
         </android.support.v7.widget.RecyclerView>
-
-        <ProgressBar
-            android:id="@+id/pb_feed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="gone"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/app_name"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="@font/kitten_swash"
-            android:textColor="@color/colorPrimaryAccent"
-            android:textSize="32sp"/>
 
     </RelativeLayout>
 

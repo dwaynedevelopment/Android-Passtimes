@@ -46,26 +46,23 @@ public class FavoriteViewAdapter extends RecyclerView.Adapter<FavoriteViewAdapte
         Glide.with(context).load(favoriteSport.getIdle()).into(holder.ivIcon);
         holder.tvCategory.setText(favoriteSport.getCategory());
 
-        holder.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v.isSelected()) {
-                    Glide.with(context).load(favoriteSport.getIdle()).into(holder.ivIcon);
-                    v.setSelected(false);
-                    holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorDarkPrimary));
-                    selected.remove(favoriteSport);
+        holder.button.setOnClickListener(v -> {
+            if (v.isSelected()) {
+                Glide.with(context).load(favoriteSport.getIdle()).into(holder.ivIcon);
+                v.setSelected(false);
+                holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorDarkPrimary));
+                selected.remove(favoriteSport);
 
-                } else {
-                    Glide.with(context).load(favoriteSport.getActive()).into(holder.ivIcon);
-                    v.setSelected(true);
-                    holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorSecondaryAccent));
-                    selected.add(favoriteSport);
-                }
-
-                Intent selectIntent = new Intent(ACTION_FAVORITE_SELECTED);
-                selectIntent.putParcelableArrayListExtra("SELECTED_SPORTS", selected);
-                context.sendBroadcast(selectIntent);
+            } else {
+                Glide.with(context).load(favoriteSport.getActive()).into(holder.ivIcon);
+                v.setSelected(true);
+                holder.tvCategory.setTextColor(context.getResources().getColor(R.color.colorSecondaryAccent));
+                selected.add(favoriteSport);
             }
+
+            Intent selectIntent = new Intent(ACTION_FAVORITE_SELECTED);
+            selectIntent.putParcelableArrayListExtra("SELECTED_SPORTS", selected);
+            context.sendBroadcast(selectIntent);
         });
     }
 

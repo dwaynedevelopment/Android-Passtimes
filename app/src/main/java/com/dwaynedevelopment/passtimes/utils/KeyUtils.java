@@ -21,6 +21,10 @@ public class KeyUtils {
     public static final int NOTIFY_MODIFIED_DATA = 0x0411;
     public static final int NOTIFY_REMOVED_DATA = 0x0511;
 
+    public static final int TOAST_SUCCESS = 0x0611;
+    public static final int TOAST_ERROR = 0x0711;
+    public static final int TOAST_WARNING = 0x0811;
+
     public static final String ARGS_SELECTED_EVENT_ID = "com.dwaynedevelopment.passtimes.ARGS_SELECTED_EVENT_ID";
     public static final String EXTRA_SELECTED_EVENT_ID = "com.dwaynedevelopment.passtimes.EXTRA_SELECTED_EVENT_ID";
 

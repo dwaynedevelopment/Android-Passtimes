@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.design.widget.CoordinatorLayout android:id="@+id/cl_signup_layout"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
 <RelativeLayout
+    android:id="@+id/rl_signup_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
 
     <TextView
         android:id="@+id/tv_signup_title"
@@ -189,7 +184,7 @@
         <TextView
             android:id="@+id/tv_terms_cont"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-medium"
             android:text="@string/terms_title_cont"
@@ -268,7 +263,7 @@
     <LinearLayout
         android:id="@+id/ll_bottom_signup"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:layout_margin="10dp"
         android:gravity="center"
         android:orientation="horizontal"
@@ -297,13 +292,4 @@
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/pb_dots"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
-
 </RelativeLayout>
-
-</android.support.design.widget.CoordinatorLayout>

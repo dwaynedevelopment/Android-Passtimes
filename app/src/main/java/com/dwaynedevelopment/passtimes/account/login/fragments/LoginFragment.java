@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +17,8 @@ import com.dwaynedevelopment.passtimes.account.login.interfaces.ILoginHandler;
 
 import java.util.Objects;
 
-import static com.dwaynedevelopment.passtimes.utils.AuthUtils.credentialValidation;
-import static com.dwaynedevelopment.passtimes.utils.AlertUtils.invokeSnackBar;
+import static com.dwaynedevelopment.passtimes.utils.ValidationUtils.credentialLogInValidation;
+
 
 public class LoginFragment extends Fragment {
 
@@ -70,29 +69,23 @@ public class LoginFragment extends Fragment {
     private final View.OnClickListener loginLayoutListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (iLoginHandler != null) {
-                int id = v.getId();
-                final int signUp = R.id.ll_bottom_login;
-                final int login = R.id.btn_login;
-                switch (id) {
-                    case signUp:
+            final int signUp = R.id.ll_bottom_login;
+            final int login = R.id.btn_login;
+            switch (v.getId()) {
+                case signUp:
+                    if (iLoginHandler != null) {
                         iLoginHandler.invokeSignUp();
-                        break;
-                    case login:
-                        String email = Objects.requireNonNull(emailEditText.getText()).toString();
-                        String password = Objects.requireNonNull(passwordEditText.getText()).toString();
-
-                        if (email.isEmpty() && password.isEmpty()){
-                            invokeSnackBar((AppCompatActivity) Objects.requireNonNull(getContext()),
-                                    "One or more fields poorly formatted.",
-                                    getResources().getColor(R.color.colorDarkPrimary),
-                                    getResources().getColor(R.color.colorPrimaryAccent));
-
-                        } else if (credentialValidation(getContext(), email, password)) {
-                            iLoginHandler.authenticateSignInWithEmail(email, password);
+                    }
+                    break;
+                case login:
+                    if (credentialLogInValidation(getContext(), emailEditText, passwordEditText)) {
+                        if (iLoginHandler != null) {
+                            iLoginHandler.authenticateSignInWithEmail(
+                                    Objects.requireNonNull(emailEditText.getText()).toString(),
+                                    Objects.requireNonNull(passwordEditText.getText()).toString());
                         }
-                        break;
-                }
+                    }
+                    break;
             }
         }
     };

@@ -17,9 +17,16 @@
     <string name="continue_btn_title">Continue</string>
     <string name="select_your_favorite_sports">Select your favorite sports</string>
     <string name="players_attending">Players Attending</string>
-    <string name="on_going">On Going</string>
+    <string name="on_going">Up Coming</string>
     <string name="submit">Submit</string>
     <string name="full_name">Full Name</string>
+    <string name="attending">Attending</string>
+    <string name="or_login">OR</string>
+    <string name="request_password">Request Password.</string>
+    <string name="forgot_your_password">Forgot your password?</string>
+    <string name="login">Login</string>
+    <string name="password_login">Password</string>
+    <string name="email_login">Email</string>
 
     <string-array name="number_picker_am_pm">
         <item>"AM"</item>

@@ -122,54 +122,7 @@ public class AuthUtils {
         }
     }
 
-    public static boolean credentialValidation(Context context, String email, String password) {
-        return isValidEmail(context, email) && isValidPassword(context, password);
-    }
 
-    public static boolean credentialValidation(Context context, String email, String password, String name) {
-        return isValidEmail(context, email) && isValidPassword(context, password) && isValidName(context, name);
-    }
-
-
-    private static boolean isValidEmail(Context context, CharSequence email) {
-        if (TextUtils.isEmpty(email) && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            invokeSnackBar((AppCompatActivity) Objects.requireNonNull(context),
-                    "Email format not valid.",
-                    context.getResources().getColor(R.color.colorDarkPrimary),
-                    context.getResources().getColor(R.color.colorPrimaryAccent));
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean isValidName(Context context, String txt){
-        String regx = "^[^\\s]+,?(\\s[^\\s]+)*$";
-        Pattern pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(txt);
-
-        if (!matcher.find()) {
-            invokeSnackBar((AppCompatActivity) Objects.requireNonNull(context),
-                    "Name format not valid.",
-                    context.getResources().getColor(R.color.colorDarkPrimary),
-                    context.getResources().getColor(R.color.colorPrimaryAccent));
-            return false;
-        }
-        return true;
-
-    }
-
-    private static boolean isValidPassword(Context context, String password) {
-        Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
-
-        if (TextUtils.isEmpty(password) && !PASSWORD_PATTERN.matcher(password).matches()) {
-           invokeSnackBar((AppCompatActivity) Objects.requireNonNull(context),
-                    "Password not valid.",
-                    context.getResources().getColor(R.color.colorDarkPrimary),
-                    context.getResources().getColor(R.color.colorPrimaryAccent));
-            return false;
-        }
-        return true;
-    }
 
     public static void showTaskException(Context context, Task<AuthResult> task) {
 

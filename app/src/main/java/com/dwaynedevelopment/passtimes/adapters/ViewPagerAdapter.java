@@ -26,7 +26,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         //return POSITION_NONE;
     }
 
-
     public void addFragment(Fragment fragment) {
         mFragmentList.add(fragment);
     }

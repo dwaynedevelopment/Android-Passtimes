@@ -7,10 +7,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
@@ -43,7 +44,8 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_GALLERY_IMA
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_READ_EXTERNAL_STORAGE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ROOT_STORAGE_USER_PROFILES;
 import static com.dwaynedevelopment.passtimes.utils.PermissionUtils.permissionReadExternalStorage;
-import static com.dwaynedevelopment.passtimes.utils.AlertUtils.invokeSnackBar;
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.shakeViewWithAnimation;
 
 public class SignUpActivity extends AppCompatActivity implements ISignUpHandler {
 
@@ -52,20 +54,22 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     private AuthUtils mAuth;
     private FirebaseFirestoreUtils mDatabase;
     private StorageReference userFilePath;
-    private ProgressBar progress;
 
-    private static final String TAG = "SignUpActivity";
+    private RelativeLayout signUpParentLayout;
+    private ProgressBar progress;
+    private View view;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-
-        invokeFragment();
         mAuth = AuthUtils.getInstance();
         mDatabase = FirebaseFirestoreUtils.getInstance();
+        invokeFragment();
     }
 
     private void invokeFragment() {
+        signUpParentLayout = findViewById(R.id.rl_signup_parent);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container_signup, SignUpFragment.newInstance())
@@ -75,47 +79,23 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        view = findViewById(R.id.vw_placeholder);
         switch (requestCode) {
             case REQUEST_GALLERY_IMAGE_SELECT:
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (data != null) {
-                            invokeSnackBar(SignUpActivity.this,
-                                    "Image selected.",
-                                    getResources().getColor(R.color.colorDarkPrimary),
-                                    getResources().getColor(R.color.colorSecondaryAccent));
+                if (data != null) {
+                    view.setVisibility(View.GONE);
+                    signUpParentLayout = findViewById(R.id.rl_signup_parent);
 
-                            userPhotoUri = data.getData();
-                            final View view = findViewById(R.id.vw_placeholder);
-                            view.setVisibility(View.GONE);
+                    userPhotoUri = data.getData();
+                    final CircleImageView circleImageView = findViewById(R.id.ci_signup);
+                    Uri photoUri = getRealFilePathFromURI(getRealPathFromURI(SignUpActivity.this, Objects.requireNonNull(userPhotoUri)));
+                    circleImageView.setVisibility(View.VISIBLE);
 
-                            final CircleImageView circleImageView = findViewById(R.id.ci_signup);
-                            Uri photoUri = getRealFilePathFromURI(getRealPathFromURI(SignUpActivity.this, Objects.requireNonNull(userPhotoUri)));
-                            circleImageView.setVisibility(View.VISIBLE);
-                            Glide.with(SignUpActivity.this).load(photoUri).into(circleImageView);
-
-                        } else {
-                            Snackbar snackbar = invokeSnackBar(SignUpActivity.this,
-                                    "Image not selected.",
-                                    getResources().getColor(R.color.colorDarkPrimary),
-                                    getResources().getColor(R.color.colorPrimaryAccent),
-                                    getResources().getColor(R.color.colorSecondaryAccent));
-
-                            snackbar.setAction("Retry", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (permissionReadExternalStorage(SignUpActivity.this)) {
-                                        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                        startActivityForResult(galleryIntent, REQUEST_GALLERY_IMAGE_SELECT);
-                                    }
-                                }
-                            });
-                            snackbar.show();
-                        }
-                    }
-                }, 750);
+                    Glide.with(SignUpActivity.this).load(photoUri).into(circleImageView);
+                } else {
+                    Toast.makeText(this, "No Image Has Been Selected.", Toast.LENGTH_SHORT).show();
+                    shakeViewWithAnimation(this, view);
+                }
                 break;
             default:
                 break;
@@ -158,42 +138,29 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     @Override
     public void authenticateSignUpWithEmail(String email, String password, String name) {
         if (userPhotoUri != null) {
-            progress = findViewById(R.id.pb_dots);
-            progress.setVisibility(View.VISIBLE);
+            this.runOnUiThread(() -> {
+                progress = findViewById(R.id.pb_dots);
+                progress.setVisibility(View.VISIBLE);
+            });
+            parentLayoutStatus(signUpParentLayout, false);
             username = name;
             mAuth.getFireAuth().createUserWithEmailAndPassword(email, password)
                     .continueWithTask(signUpWithTaskListener)
                     .addOnSuccessListener(this, onSuccessListener)
                     .addOnFailureListener(this, onFailureListener);
         } else {
-            Snackbar snackbar = invokeSnackBar(SignUpActivity.this,
-                    "Image not selected.",
-                    getResources().getColor(R.color.colorDarkPrimary),
-                    getResources().getColor(R.color.colorPrimaryAccent),
-                    getResources().getColor(R.color.colorSecondaryAccent));
-
-            snackbar.setAction("Retry", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (permissionReadExternalStorage(SignUpActivity.this)) {
-                        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(galleryIntent, REQUEST_GALLERY_IMAGE_SELECT);
-                    }
-                }
-            });
-            snackbar.show();
+            view = findViewById(R.id.vw_placeholder);
+            Toast.makeText(this, "No Image Has Been Selected.", Toast.LENGTH_SHORT).show();
+            shakeViewWithAnimation(this, view);
+            parentLayoutStatus(signUpParentLayout, true);
         }
     }
 
-    private final Continuation<AuthResult, Task<Void>> signUpWithTaskListener = new Continuation<AuthResult, Task<Void>>() {
-        @Override
-        public Task<Void> then(@NonNull Task<AuthResult> task) {
-
-            UserProfileChangeRequest updateProfile = new UserProfileChangeRequest.Builder()
-                    .setDisplayName(username)
-                    .build();
-            return Objects.requireNonNull(task.getResult()).getUser().updateProfile(updateProfile);
-        }
+    private final Continuation<AuthResult, Task<Void>> signUpWithTaskListener = task -> {
+        UserProfileChangeRequest updateProfile = new UserProfileChangeRequest.Builder()
+                .setDisplayName(username)
+                .build();
+        return Objects.requireNonNull(task.getResult()).getUser().updateProfile(updateProfile);
     };
 
     private final OnSuccessListener<Void> onSuccessListener = new OnSuccessListener<Void>() {
@@ -234,34 +201,32 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     private final OnSuccessListener<Uri> completedSignUpListener = new OnSuccessListener<Uri>() {
         @Override
         public void onSuccess(Uri uri) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    progress.setVisibility(View.GONE);
-                    mDatabase.insertDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId(), mAuth.getCurrentSignedUser());
-                }
+            new Handler().postDelayed(() -> {
+                mDatabase.insertDocument(DATABASE_REFERENCE_USERS, mAuth.getCurrentSignedUser().getId(), mAuth.getCurrentSignedUser());
+                SignUpActivity.this.runOnUiThread(() -> progress.setVisibility(View.GONE));
             }, 250);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
+
+            new Handler().postDelayed(() -> {
+                mDatabase.updateImage(mAuth.getCurrentSignedUser());
+                SignUpActivity.this.runOnUiThread(() -> {
                     finish();
-                    mDatabase.updateImage(mAuth.getCurrentSignedUser());
                     Intent intent = new Intent(SignUpActivity.this, FavoriteActivity.class);
                     intent.putExtra(EXTRA_REGISTRATION, true);
                     startActivity(intent);
-                }
-            }, 1000);
+                });
+            }, 250);
         }
     };
 
     private final OnFailureListener onFailureListener = new OnFailureListener() {
         @Override
         public void onFailure(@NonNull Exception e) {
-            progress.setVisibility(View.GONE);
-            invokeSnackBar(SignUpActivity.this,
-                    e.getMessage(),
-                    getResources().getColor(R.color.colorDarkPrimary),
-                    getResources().getColor(R.color.colorPrimaryAccent));
+            parentLayoutStatus(signUpParentLayout, true);
+            runOnUiThread(() -> {
+                progress.setVisibility(View.GONE);
+                Toast.makeText(SignUpActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+            parentLayoutStatus(signUpParentLayout, true);
         }
     };
 }

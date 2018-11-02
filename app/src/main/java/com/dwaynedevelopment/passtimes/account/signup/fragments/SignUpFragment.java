@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +18,12 @@ import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 
 import java.util.Objects;
 
-import static com.dwaynedevelopment.passtimes.utils.AuthUtils.credentialValidation;
-import static com.dwaynedevelopment.passtimes.utils.AlertUtils.invokeSnackBar;
+import static com.dwaynedevelopment.passtimes.utils.ValidationUtils.credentialSignUpValidation;
 
 public class SignUpFragment extends Fragment {
 
     private ISignUpHandler iSignUpHandler;
+
     private TextInputEditText fullNameEditText;
     private TextInputEditText emailEditText;
     private TextInputEditText passwordEditText;
@@ -56,6 +55,8 @@ public class SignUpFragment extends Fragment {
             //AppCompatActivity activity = (AppCompatActivity) getActivity();
             if (getView() != null) {
                 View view = getView();
+
+
                 LinearLayout loginLayout = view.findViewById(R.id.ll_bottom_signup);
                 loginLayout.setOnClickListener(signUpLayoutListener);
 
@@ -79,46 +80,36 @@ public class SignUpFragment extends Fragment {
     private final View.OnClickListener signUpLayoutListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (iSignUpHandler != null) {
-                int id = v.getId();
-                final int login = R.id.ll_bottom_signup;
-                final int terms = R.id.ll_terms;
-                final int gallery = R.id.ic_camera_signup;
-                final int signUp = R.id.btn_signup;
-                switch (id) {
-                    case login:
+            final int login = R.id.ll_bottom_signup;
+            final int terms = R.id.ll_terms;
+            final int gallery = R.id.ic_camera_signup;
+            final int signUp = R.id.btn_signup;
+            switch (v.getId()) {
+                case login:
+                    if (iSignUpHandler != null) {
                         iSignUpHandler.invokeLogin();
-                        break;
-                    case terms:
+                    }
+                    break;
+                case terms:
+                    if (iSignUpHandler != null) {
                         iSignUpHandler.invokeTerms();
-                        break;
-                    case gallery:
+                    }
+                    break;
+                case gallery:
+                    if (iSignUpHandler != null) {
                         iSignUpHandler.invokeGallery();
-                        break;
-                    case signUp:
-                        String fullName = Objects.requireNonNull(fullNameEditText.getText()).toString();
-                        String email = Objects.requireNonNull(emailEditText.getText()).toString();
-                        String password = Objects.requireNonNull(passwordEditText.getText()).toString();
-                        String rePassword = Objects.requireNonNull(rePasswordEditText.getText()).toString();
-
-                        if (email.isEmpty() && password.isEmpty() && fullName.isEmpty() && rePassword.isEmpty()){
-                            invokeSnackBar((AppCompatActivity) Objects.requireNonNull(getContext()),
-                                    "One or more fields poorly formatted.",
-                                    getResources().getColor(R.color.colorDarkPrimary),
-                                    getResources().getColor(R.color.colorPrimaryAccent));
-
-                        } else if (credentialValidation(getContext(), email, password, fullName)) {
-                            if (password.equals(rePassword)) {
-                                iSignUpHandler.authenticateSignUpWithEmail(email, password, fullName);
-                            } else {
-                                invokeSnackBar((AppCompatActivity) Objects.requireNonNull(getContext()),
-                                        "Passwords don't match",
-                                        getResources().getColor(R.color.colorDarkPrimary),
-                                        getResources().getColor(R.color.colorPrimaryAccent));
-                            }
+                    }
+                    break;
+                case signUp:
+                    if (credentialSignUpValidation(getContext(), fullNameEditText, emailEditText, passwordEditText, rePasswordEditText)) {
+                        if (iSignUpHandler != null) {
+                            iSignUpHandler.authenticateSignUpWithEmail(
+                                    Objects.requireNonNull(emailEditText.getText()).toString(),
+                                    Objects.requireNonNull(passwordEditText.getText()).toString(),
+                                    Objects.requireNonNull(fullNameEditText.getText()).toString());
                         }
-                        break;
-                }
+                    }
+                    break;
             }
         }
     };

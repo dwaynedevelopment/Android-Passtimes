@@ -27,7 +27,6 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVEN
 
 public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdapter.ViewHolder> {
 
-    private static final String TAG = "EventFeedViewAdapter";
     private Map<String, Event> eventMap;
     private Context context;
     private AuthUtils mAuth;

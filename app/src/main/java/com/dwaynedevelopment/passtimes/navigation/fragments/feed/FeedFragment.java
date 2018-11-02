@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.AttendingFeedViewAdapter;
@@ -67,8 +68,8 @@ public class FeedFragment extends Fragment {
     private EventFeedViewAdapter eventFeedViewAdapter;
     private AttendingFeedViewAdapter attendingFeedViewAdapter;
 
+    private CoordinatorLayout feedCoordinatorLayout;
     private PopupMenu popupMenu;
-    private ProgressBar progressBar;
 
     private Map<String, Event> attendedEventsMap = new HashMap<>();
     private Map<String, Event> mainFeedEvents = new HashMap<>();
@@ -108,12 +109,12 @@ public class FeedFragment extends Fragment {
             if (getView() != null) {
                 View view = getView();
                 if (view != null) {
+
+                    feedCoordinatorLayout = view.findViewById(R.id.cl_feed);
+
                     Toolbar feedToolbar = view.findViewById(R.id.tb_feed);
                     feedToolbar.inflateMenu(R.menu.menu_feed);
                     feedToolbar.setOnMenuItemClickListener(menuItemClickListener);
-
-//                    progressBar = view.findViewById(R.id.pb_feed);
-//                    progressBar.setVisibility(View.VISIBLE);
 
                     ImageButton filterImageButton = view.findViewById(R.id.iv_filter_btn);
                     filterImageButton.setOnClickListener(filterListener);
@@ -122,7 +123,6 @@ public class FeedFragment extends Fragment {
                     popupMenu.getMenuInflater().inflate(R.menu.menu_filter, popupMenu.getMenu());
                 }
             }
-
 
             //THREAD: FAVORITES FETCH
             favoriteThreadExecute = new Thread() {
@@ -146,9 +146,8 @@ public class FeedFragment extends Fragment {
                 public void run() {
                     eventListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
                             .addSnapshotListener(eventSnapshotListener);
-                    getActivity().runOnUiThread(() -> {
-                        setUpOngoingRecyclerView(mainFeedEvents);
-                    });
+                    //THREAD: MAIN
+                    getActivity().runOnUiThread(() -> setUpOngoingRecyclerView(mainFeedEvents));
                 }
             };
 
@@ -159,9 +158,8 @@ public class FeedFragment extends Fragment {
                     attendingListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
                             .document(mAuth.getCurrentSignedUser().getId())
                             .addSnapshotListener(attendingSnapshotListener);
-                    getActivity().runOnUiThread(() -> {
-                        setUpAttendingRecyclerView();
-                    });
+                    //THREAD: MAIN
+                    getActivity().runOnUiThread(() -> setUpAttendingRecyclerView());
                 }
             };
         }
@@ -204,7 +202,7 @@ public class FeedFragment extends Fragment {
                         }
                     }
                     //THREAD: EVENT / ATTENDING EXECUTE
-                    if (!favoriteThreadExecute.isAlive()) {
+                    if (favoriteThreadExecute.getState().equals(Thread.State.TERMINATED)) {
                         if (attendingThreadExecute.getState().equals(Thread.State.NEW)) {
                             if (eventThreadExecute.getState().equals(Thread.State.NEW)) {
                                 attendingThreadExecute.start();
@@ -293,6 +291,7 @@ public class FeedFragment extends Fragment {
 
             if (queryDocumentSnapshots != null) {
                 for (int i = 0; i < queryDocumentSnapshots.getDocumentChanges().size(); i++) {
+                    Log.i(TAG, "onEvent: size: " + queryDocumentSnapshots.getDocumentChanges().size() + "index " + i);
                     final DocumentChange documentChange = queryDocumentSnapshots.getDocumentChanges().get(i);
                     if (documentChange != null) {
                         switch (documentChange.getType()) {
@@ -339,21 +338,20 @@ public class FeedFragment extends Fragment {
                                 }
                                 break;
                             case REMOVED:
-                                if (queryDocumentSnapshots.getDocuments().get(i) != null) {
-                                    if (queryDocumentSnapshots.getDocuments().get(i).exists()) {
-                                        Event removedEvent = documentChange.getDocument().toObject(Event.class);
-                                        if (mainFeedEvents.containsKey(removedEvent.getId()) && filteredEventsByCategory.containsKey(removedEvent.getId())) {
-                                            if (initialSports.contains(removedEvent.getSport())) {
-                                                final int index = i;
-                                                if (getActivity() != null) {
-                                                    //THREAD: REMOVED EVENT
-                                                    getActivity().runOnUiThread(() -> {
-                                                        mainFeedEvents.remove(removedEvent.getId());
-                                                        filteredEventsByCategory.remove(removedEvent.getId());
-                                                        adapterViewStatus(eventFeedViewAdapter, NOTIFY_REMOVED_DATA, index);
-                                                    });
-                                                }
-                                            }
+                                Log.i(TAG, "onEvent: size: REMOVED " + queryDocumentSnapshots.getDocumentChanges().size() + "index " + i);
+                                Event removedEvent = documentChange.getDocument().toObject(Event.class);
+                                if (mainFeedEvents.containsKey(removedEvent.getId()) && filteredEventsByCategory.containsKey(removedEvent.getId())) {
+                                    if (initialSports.contains(removedEvent.getSport())) {
+                                        final int index = i;
+                                        if (getActivity() != null) {
+                                            //THREAD: REMOVED EVENT
+                                            getActivity().runOnUiThread(() -> {
+                                                final String message = removedEvent.getTitle() + " has been removed.";
+                                                Snackbar.make(feedCoordinatorLayout, message, Snackbar.LENGTH_SHORT).show();
+                                                mainFeedEvents.remove(removedEvent.getId());
+                                                filteredEventsByCategory.remove(removedEvent.getId());
+                                                adapterViewStatus(eventFeedViewAdapter, NOTIFY_REMOVED_DATA, index);
+                                            });
                                         }
                                     }
                                 }
@@ -364,50 +362,6 @@ public class FeedFragment extends Fragment {
             }
         }
     };
-
-    private void setUpOngoingRecyclerView(Map<String, Event> eventsHashMap) {
-        if (getActivity() != null) {
-            if (getView() != null) {
-                eventFeedViewAdapter = new EventFeedViewAdapter(eventsHashMap, getActivity().getApplicationContext());
-                RecyclerView eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
-                eventsRecyclerView.setHasFixedSize(true);
-                eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
-                        LinearLayoutManager.VERTICAL, false));
-                eventsRecyclerView.setAdapter(eventFeedViewAdapter);
-                Log.i(TAG, "setUpOngoingRecyclerView: ONGOING");
-            }
-        }
-    }
-
-    private void setUpAttendingRecyclerView() {
-        if (getActivity() != null) {
-            if (getView() != null) {
-                attendingFeedViewAdapter = new AttendingFeedViewAdapter(attendedEventsMap, getActivity().getApplicationContext());
-                RecyclerView attendedRecyclerView = getView().findViewById(R.id.rv_attending);
-                attendedRecyclerView.setHasFixedSize(true);
-                attendedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
-                        LinearLayoutManager.HORIZONTAL, false));
-                attendedRecyclerView.setAdapter(attendingFeedViewAdapter);
-                Log.i(TAG, "setUpAttendingRecyclerView: ATTENDING");
-            }
-        }
-    }
-
-    private void registerBroadcastReceiver() {
-        eventReceiver = new EventReceiver();
-        IntentFilter actionFilter = new IntentFilter();
-        actionFilter.addAction(ACTION_EVENT_SELECTED);
-        if (getActivity() != null) {
-            getActivity().registerReceiver(eventReceiver, actionFilter);
-        }
-    }
-
-    private void unregisterBroadcastReceiver() {
-        if (getActivity() != null) {
-            getActivity().unregisterReceiver(eventReceiver);
-        }
-    }
-
 
     private final View.OnClickListener filterListener = new View.OnClickListener() {
         @Override
@@ -440,9 +394,7 @@ public class FeedFragment extends Fragment {
                     }
 
                     if (filteredEventsByCategory != null) {
-                        getActivity().runOnUiThread(() -> {
-                            setUpOngoingRecyclerView(filteredEventsByCategory);
-                        });
+                        getActivity().runOnUiThread(() -> setUpOngoingRecyclerView(filteredEventsByCategory));
                     } else {
                         menuItem.setChecked(true);
                         if (!selectedSports.contains(menuItem.getTitle().toString())) {
@@ -466,6 +418,50 @@ public class FeedFragment extends Fragment {
         return false;
     };
 
+    private void setUpOngoingRecyclerView(Map<String, Event> eventsHashMap) {
+        if (getActivity() != null) {
+            if (getView() != null) {
+                eventFeedViewAdapter = new EventFeedViewAdapter(eventsHashMap, getActivity().getApplicationContext());
+                RecyclerView eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
+                //eventsRecyclerView.setNestedScrollingEnabled(true);
+                eventsRecyclerView.setHasFixedSize(true);
+                eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
+                        LinearLayoutManager.VERTICAL, false));
+                eventsRecyclerView.setAdapter(eventFeedViewAdapter);
+                Log.i(TAG, "setUpOngoingRecyclerView: ONGOING");
+            }
+        }
+    }
+
+    private void setUpAttendingRecyclerView() {
+        if (getActivity() != null) {
+            if (getView() != null) {
+                attendingFeedViewAdapter = new AttendingFeedViewAdapter(attendedEventsMap, getActivity().getApplicationContext());
+                RecyclerView attendedRecyclerView = getView().findViewById(R.id.rv_attending);
+                //attendedRecyclerView.setNestedScrollingEnabled(true);
+                attendedRecyclerView.setHasFixedSize(true);
+                attendedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
+                        LinearLayoutManager.HORIZONTAL, false));
+                attendedRecyclerView.setAdapter(attendingFeedViewAdapter);
+                Log.i(TAG, "setUpAttendingRecyclerView: ATTENDING");
+            }
+        }
+    }
+
+    private void registerBroadcastReceiver() {
+        eventReceiver = new EventReceiver();
+        IntentFilter actionFilter = new IntentFilter();
+        actionFilter.addAction(ACTION_EVENT_SELECTED);
+        if (getActivity() != null) {
+            getActivity().registerReceiver(eventReceiver, actionFilter);
+        }
+    }
+
+    private void unregisterBroadcastReceiver() {
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(eventReceiver);
+        }
+    }
 
     @Override
     public void onPause() {
@@ -498,7 +494,6 @@ public class FeedFragment extends Fragment {
     }
 
     public class EventReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             String receivedEventId = intent.getStringExtra(EXTRA_SELECTED_EVENT_ID);

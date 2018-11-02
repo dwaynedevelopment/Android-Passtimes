@@ -1,17 +1,12 @@
 package com.dwaynedevelopment.passtimes.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.design.card.MaterialCardView;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -19,33 +14,21 @@ import com.dwaynedevelopment.passtimes.R;
 
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
-import com.dwaynedevelopment.passtimes.utils.AuthUtils;
-import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
-import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
-
 
 public class AttendeesViewAdapter extends RecyclerView.Adapter<AttendeesViewAdapter.ViewHolder> {
 
     private Map<String, Player> attendeesMap;
     private Event attendingEvent;
     private Context context;
-    private AuthUtils mAuth;
 
     public AttendeesViewAdapter(Map<String, Player> attendeesMap, Context context, Event attendingEvent) {
         this.attendeesMap = attendeesMap;
         this.context = context;
         this.attendingEvent = attendingEvent;
-        this.mAuth = AuthUtils.getInstance();
     }
 
     @NonNull
@@ -64,15 +47,12 @@ public class AttendeesViewAdapter extends RecyclerView.Adapter<AttendeesViewAdap
             viewHolder.attendeeNameTextView.setText(playerAttendee.getName());
             Glide.with(context).load(playerAttendee.getThumbnail()).into(viewHolder.attendeeProfileImageView);
             if (attendingEvent != null) {
-                attendingEvent.getEventHost().get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.getResult() != null) {
-                            final Player host = task.getResult().toObject(Player.class);
-                            if (host != null) {
-                                if (host.equals(playerAttendee)) {
-                                    viewHolder.cv_attendee.setBackgroundResource(R.drawable.cv_host);
-                                }
+                attendingEvent.getEventHost().get().addOnCompleteListener(task -> {
+                    if (task.getResult() != null) {
+                        final Player host = task.getResult().toObject(Player.class);
+                        if (host != null) {
+                            if (host.equals(playerAttendee)) {
+                                viewHolder.cv_attendee.setBackgroundResource(R.drawable.cv_host);
                             }
                         }
                     }

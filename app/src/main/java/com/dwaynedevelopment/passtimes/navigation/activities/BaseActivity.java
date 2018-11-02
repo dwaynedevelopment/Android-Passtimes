@@ -52,7 +52,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     // Setup bottom navigation with view pager
     private void bottomNavigationSetup() {
         BottomNavigationViewEx bottomNav = findViewById(R.id.bottom_navigation_controller);
-        NavigationUtils.bottomNavigationSetup(bottomNav);
+        NavigationUtils.bottomNavigationSetup(this, bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 
         viewPager = findViewById(R.id.viewpager);
