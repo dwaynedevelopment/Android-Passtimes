@@ -71,12 +71,12 @@
                 android:layout_height="match_parent"
                 android:hint="Full Name"
                 android:textSize="18sp"
-                android:inputType="textPersonName"
+                android:inputType="textCapWords"
                 android:textColor="@color/colorDarkPrimary"
                 android:background="@drawable/et_dynamic_style"
                 android:drawablePadding="10dp"
                 android:drawableStart="@drawable/ic_profile"/>
-            
+            <!--Please note that this will only work if your device keyboard Auto Capitalize Setting enabled.-->
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout

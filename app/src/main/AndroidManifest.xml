@@ -29,20 +29,27 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAPqRZ0TL0GbedhRcz3IrhiUfOLnpKN4lo" />
 
-        <activity android:name=".onboarding.activities.OnboardActivity">
+        <activity android:name=".onboarding.activities.OnboardActivity"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW"/>
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".navigation.activities.BaseActivity" />
-        <activity android:name=".account.signup.activities.SignUpActivity" />
-        <activity android:name=".account.login.activities.LoginActivity" />
-        <activity android:name=".account.terms.activities.TermsActivity" />
-        <activity android:name=".favorites.activities.FavoriteActivity" />
-        <activity android:name=".account.edit.activities.EditActivity" />
+        <activity android:name=".navigation.activities.BaseActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".account.signup.activities.SignUpActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".account.login.activities.LoginActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".account.terms.activities.TermsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".favorites.activities.FavoriteActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".account.edit.activities.EditActivity"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>

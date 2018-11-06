@@ -1,5 +1,7 @@
 package com.dwaynedevelopment.passtimes.navigation.fragments.feed;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +22,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 
@@ -432,6 +436,7 @@ public class FeedFragment extends Fragment {
             }
         }
     }
+
 
     private void setUpAttendingRecyclerView() {
         if (getActivity() != null) {

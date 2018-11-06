@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Passtimes</string>
+    <string name="app_name">Passtime</string>
     <string name="login_btn">Login</string>
     <string name="tv_onboarding_one">Connect with the Community</string>
     <string name="bottom_message_one">Don’t have an account?</string>

@@ -4,7 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -82,7 +83,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/tv_ongoing"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:visibility="visible">
         </android.support.v7.widget.RecyclerView>
 
     </RelativeLayout>

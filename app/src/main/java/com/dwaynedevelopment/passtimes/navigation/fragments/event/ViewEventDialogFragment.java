@@ -2,7 +2,6 @@ package com.dwaynedevelopment.passtimes.navigation.fragments.event;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,7 +61,6 @@ public class ViewEventDialogFragment extends DialogFragment {
     private Map<String, Player> attendeesList = new HashMap<>();
 
     private AttendeesViewAdapter attendeeFeedViewAdapter;
-    private RecyclerView attendeeRecyclerView;
 
     public static ViewEventDialogFragment newInstance(String eventId) {
 
@@ -140,7 +138,7 @@ public class ViewEventDialogFragment extends DialogFragment {
 
 
                             attendeeFeedViewAdapter = new AttendeesViewAdapter(attendeesList, getActivity().getApplicationContext(), eventSelected);
-                            attendeeRecyclerView = getView().findViewById(R.id.rv_attending_list);
+                            RecyclerView attendeeRecyclerView = getView().findViewById(R.id.rv_attending_list);
                             attendeeRecyclerView.setHasFixedSize(true);
                             attendeeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
                                     LinearLayoutManager.VERTICAL, false));
@@ -262,16 +260,19 @@ public class ViewEventDialogFragment extends DialogFragment {
                     break;
                 case R.id.ib_edit_event:
                     if (iNavigationHandler != null) {
-                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                        alertDialog.setTitle(eventSelected.getTitle());
-                        alertDialog.setMessage("Want to edit this event?");
-                        alertDialog.setPositiveButton("Edit", (dialog, which) -> {
-                            iNavigationHandler.invokeEditEvent("/"+DATABASE_REFERENCE_EVENTS+"/"+eventSelected.getId());
-                        });
-                        alertDialog.setNegativeButton("Cancel", (dialog, which) -> {
-                            dialog.cancel();
-                        });
-                        alertDialog.show();
+                        if (getActivity() != null) {
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                            alertDialog.setTitle(eventSelected.getTitle());
+                            alertDialog.setMessage("Want to edit this event?");
+
+                            alertDialog.setPositiveButton("Edit", (dialog, which) ->
+                                    iNavigationHandler.invokeEditEvent("/" + DATABASE_REFERENCE_EVENTS + "/" + eventSelected.getId()));
+
+                            alertDialog.setNegativeButton("Cancel", (dialog, which) ->
+                                    dialog.cancel());
+
+                            alertDialog.show();
+                        }
                     }
                     break;
                 case R.id.btn_event_join:
@@ -291,16 +292,16 @@ public class ViewEventDialogFragment extends DialogFragment {
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                         alertDialog.setTitle(eventSelected.getTitle());
                         alertDialog.setMessage("Are you sure you want delete this event?");
-                        alertDialog.setPositiveButton("Sure", (dialog, which) -> {
-                             mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
-                                     .document(eventIdExtra)
-                                     .delete()
-                                     .addOnSuccessListener(deleteEventListener);
 
-                        });
-                        alertDialog.setNegativeButton("Cancel", (dialog, which) -> {
-                            dialog.cancel();
-                        });
+                        alertDialog.setPositiveButton("Sure", (dialog, which) ->
+                                mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
+                                .document(eventIdExtra)
+                                .delete()
+                                .addOnSuccessListener(deleteEventListener));
+
+                        alertDialog.setNegativeButton("Cancel", (dialog, which) ->
+                                dialog.cancel());
+
                         alertDialog.show();
                     }
                     break;

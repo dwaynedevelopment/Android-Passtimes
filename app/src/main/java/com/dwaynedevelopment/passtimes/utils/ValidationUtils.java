@@ -38,7 +38,7 @@ public class ValidationUtils {
         return isValidFullNameFormat(context, fullNameTextInputEdit) && isValidEmailFormat(context, emailInputEditText) && isValidPasswordFormat(context, passwordTextInputEdit) && isPasswordFieldMatches(context, passwordTextInputEdit, matchingTextInputEdit);
     }
 
-    public static boolean isValidEmailFormat(Context context, TextInputEditText emailInputEditText) {
+    private static boolean isValidEmailFormat(Context context, TextInputEditText emailInputEditText) {
 
         CharSequence emailToValidate = Objects.requireNonNull(emailInputEditText.getText()).toString();
 
