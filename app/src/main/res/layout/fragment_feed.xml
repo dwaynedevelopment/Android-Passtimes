@@ -48,6 +48,34 @@
             android:text="@string/attending"
             android:layout_below="@id/ab_feed"/>
 
+        <LinearLayout
+            android:id="@+id/rv_attending_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="35dp"
+            android:layout_below="@+id/tv_attending"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ic_emptyview_attending"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_empty"
+                android:contentDescription="@null"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No Attending Events"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/colorThirdAccent"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_attending"
             android:layout_width="match_parent"
@@ -77,6 +105,35 @@
             android:background="@android:color/transparent"
             android:contentDescription="@null"
             android:src="@drawable/ic_filter" />
+
+        <LinearLayout
+            android:id="@+id/rv_events_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_below="@+id/tv_ongoing"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ic_emptyview"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginTop="125dp"
+                android:src="@drawable/ic_empty"
+                android:contentDescription="@null"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No Events Available"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/colorThirdAccent"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_ongoing"

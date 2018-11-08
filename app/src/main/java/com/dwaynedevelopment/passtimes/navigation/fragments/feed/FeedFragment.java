@@ -1,13 +1,14 @@
 package com.dwaynedevelopment.passtimes.navigation.fragments.feed;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -22,9 +23,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
 import com.dwaynedevelopment.passtimes.R;
@@ -63,7 +63,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_INSERTED_DAT
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_MODIFIED_DATA;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_REMOVED_DATA;
 
-public class FeedFragment extends Fragment {
+public class FeedFragment extends Fragment  {
 
     private FirebaseFirestoreUtils mDb;
     private AuthUtils mAuth;
@@ -71,6 +71,12 @@ public class FeedFragment extends Fragment {
     private EventReceiver eventReceiver;
     private EventFeedViewAdapter eventFeedViewAdapter;
     private AttendingFeedViewAdapter attendingFeedViewAdapter;
+
+
+    private LinearLayout eventEmptyStub;
+    private LinearLayout attendingEmptyStub;
+    private RecyclerView eventsRecyclerView;
+    private RecyclerView attendedRecyclerView;
 
     private CoordinatorLayout feedCoordinatorLayout;
     private PopupMenu popupMenu;
@@ -88,6 +94,7 @@ public class FeedFragment extends Fragment {
     private ListenerRegistration eventListenerRegister;
     private ListenerRegistration attendingListenerRegister;
     private ListenerRegistration favoritesListenerRegister;
+    
 
     private static final String TAG = "FeedFragment";
 
@@ -98,6 +105,12 @@ public class FeedFragment extends Fragment {
 
     public static FeedFragment newInstance() {
         return new FeedFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
     }
 
     @Nullable
@@ -113,8 +126,9 @@ public class FeedFragment extends Fragment {
             if (getView() != null) {
                 View view = getView();
                 if (view != null) {
-
                     feedCoordinatorLayout = view.findViewById(R.id.cl_feed);
+                    eventEmptyStub = view.findViewById(R.id.rv_events_empty);
+                    attendingEmptyStub = view.findViewById(R.id.rv_attending_empty);
 
                     Toolbar feedToolbar = view.findViewById(R.id.tb_feed);
                     feedToolbar.inflateMenu(R.menu.menu_feed);
@@ -150,8 +164,14 @@ public class FeedFragment extends Fragment {
                 public void run() {
                     eventListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
                             .addSnapshotListener(eventSnapshotListener);
-                    //THREAD: MAIN
-                    getActivity().runOnUiThread(() -> setUpOngoingRecyclerView(mainFeedEvents));
+
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        getActivity().runOnUiThread(() -> setUpOngoingRecyclerView(mainFeedEvents));
+                    }, 250);
+
+                    if (attendingThreadExecute.getState().equals(Thread.State.NEW)) {
+                        attendingThreadExecute.start();
+                    }
                 }
             };
 
@@ -174,6 +194,7 @@ public class FeedFragment extends Fragment {
         super.onStart();
         registerBroadcastReceiver();
     }
+
 
     private final EventListener<DocumentSnapshot> playerFavoritesListener = new EventListener<DocumentSnapshot>() {
         @Override
@@ -207,11 +228,8 @@ public class FeedFragment extends Fragment {
                     }
                     //THREAD: EVENT / ATTENDING EXECUTE
                     if (favoriteThreadExecute.getState().equals(Thread.State.TERMINATED)) {
-                        if (attendingThreadExecute.getState().equals(Thread.State.NEW)) {
-                            if (eventThreadExecute.getState().equals(Thread.State.NEW)) {
-                                attendingThreadExecute.start();
-                                eventThreadExecute.start();
-                            }
+                        if (eventThreadExecute.getState().equals(Thread.State.NEW)) {
+                            eventThreadExecute.start();
                         }
                     }
                 }
@@ -243,7 +261,11 @@ public class FeedFragment extends Fragment {
                                                     //THREAD: INSERTED ATTENDING
                                                     getActivity().runOnUiThread(() -> {
                                                         attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
+                                                        Log.i(TAG, "onEvent: ADDED");
                                                         adapterViewStatus(attendingFeedViewAdapter, NOTIFY_INSERTED_DATA, index);
+                                                        if (!attendedEventsMap.isEmpty()) {
+                                                            attendingEmptyStub.setVisibility(View.GONE);
+                                                        }
                                                     });
                                                 }
                                             } else {
@@ -259,12 +281,14 @@ public class FeedFragment extends Fragment {
                                             }
                                         }
                                     } else {
-                                        DocumentReference documentReference = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
+                                        final DocumentReference documentReference = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
                                                 .document(mAuth.getCurrentSignedUser().getId());
 
                                         final DocumentReference eventRemoveDocument = mDb.getFirestore()
                                                 .document("/" + DATABASE_REFERENCE_EVENTS + "/" + attendedDocumentSnapshot.getId());
+
                                         documentReference.update("attending", FieldValue.arrayRemove(eventRemoveDocument));
+                                        eventRemoveDocument.update("attendees", FieldValue.arrayRemove(documentReference));
 
                                         if (getActivity() != null) {
                                             //THREAD: REMOVED ATTENDING
@@ -273,11 +297,24 @@ public class FeedFragment extends Fragment {
                                                 adapterViewStatus(attendingFeedViewAdapter, NOTIFY_REMOVED_DATA, index);
                                             });
                                         }
+
                                     }
+
                                 }
+
                             });
                         }
                     }
+                }
+                if (getActivity() != null) {
+                    //THREAD: REMOVED ATTENDING
+                    getActivity().runOnUiThread(() -> {
+                        if (attendedEventsMap.isEmpty()) {
+                            attendingEmptyStub.setVisibility(View.VISIBLE);
+                        } else {
+                            attendingEmptyStub.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
         }
@@ -295,7 +332,6 @@ public class FeedFragment extends Fragment {
 
             if (queryDocumentSnapshots != null) {
                 for (int i = 0; i < queryDocumentSnapshots.getDocumentChanges().size(); i++) {
-                    Log.i(TAG, "onEvent: size: " + queryDocumentSnapshots.getDocumentChanges().size() + "index " + i);
                     final DocumentChange documentChange = queryDocumentSnapshots.getDocumentChanges().get(i);
                     if (documentChange != null) {
                         switch (documentChange.getType()) {
@@ -342,7 +378,6 @@ public class FeedFragment extends Fragment {
                                 }
                                 break;
                             case REMOVED:
-                                Log.i(TAG, "onEvent: size: REMOVED " + queryDocumentSnapshots.getDocumentChanges().size() + "index " + i);
                                 Event removedEvent = documentChange.getDocument().toObject(Event.class);
                                 if (mainFeedEvents.containsKey(removedEvent.getId()) && filteredEventsByCategory.containsKey(removedEvent.getId())) {
                                     if (initialSports.contains(removedEvent.getSport())) {
@@ -364,6 +399,19 @@ public class FeedFragment extends Fragment {
                     }
                 }
             }
+
+            if (getActivity() != null) {
+                //THREAD: REMOVED ATTENDING
+                getActivity().runOnUiThread(() -> {
+                    if (mainFeedEvents.isEmpty()) {
+                        eventEmptyStub.setVisibility(View.VISIBLE);
+                    } else {
+                        eventEmptyStub.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+
         }
     };
 
@@ -422,16 +470,18 @@ public class FeedFragment extends Fragment {
         return false;
     };
 
+
     private void setUpOngoingRecyclerView(Map<String, Event> eventsHashMap) {
         if (getActivity() != null) {
             if (getView() != null) {
                 eventFeedViewAdapter = new EventFeedViewAdapter(eventsHashMap, getActivity().getApplicationContext());
-                RecyclerView eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
+                eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
                 //eventsRecyclerView.setNestedScrollingEnabled(true);
                 eventsRecyclerView.setHasFixedSize(true);
                 eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
                         LinearLayoutManager.VERTICAL, false));
                 eventsRecyclerView.setAdapter(eventFeedViewAdapter);
+                eventFeedViewAdapter.notifyDataSetChanged();
                 Log.i(TAG, "setUpOngoingRecyclerView: ONGOING");
             }
         }
@@ -442,12 +492,13 @@ public class FeedFragment extends Fragment {
         if (getActivity() != null) {
             if (getView() != null) {
                 attendingFeedViewAdapter = new AttendingFeedViewAdapter(attendedEventsMap, getActivity().getApplicationContext());
-                RecyclerView attendedRecyclerView = getView().findViewById(R.id.rv_attending);
+                attendedRecyclerView = getView().findViewById(R.id.rv_attending);
                 //attendedRecyclerView.setNestedScrollingEnabled(true);
                 attendedRecyclerView.setHasFixedSize(true);
                 attendedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
                         LinearLayoutManager.HORIZONTAL, false));
                 attendedRecyclerView.setAdapter(attendingFeedViewAdapter);
+                attendingFeedViewAdapter.notifyDataSetChanged();
                 Log.i(TAG, "setUpAttendingRecyclerView: ATTENDING");
             }
         }
@@ -482,6 +533,7 @@ public class FeedFragment extends Fragment {
         }
     }
 
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -497,6 +549,7 @@ public class FeedFragment extends Fragment {
         super.onDestroy();
         unregisterBroadcastReceiver();
     }
+
 
     public class EventReceiver extends BroadcastReceiver {
         @Override

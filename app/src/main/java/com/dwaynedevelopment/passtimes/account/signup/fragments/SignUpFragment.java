@@ -6,10 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +17,6 @@ import android.widget.LinearLayout;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.account.signup.interfaces.ISignUpHandler;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 import static com.dwaynedevelopment.passtimes.utils.ValidationUtils.credentialSignUpValidation;
@@ -61,7 +57,6 @@ public class SignUpFragment extends Fragment {
             if (getView() != null) {
                 View view = getView();
 
-
                 LinearLayout loginLayout = view.findViewById(R.id.ll_bottom_signup);
                 loginLayout.setOnClickListener(signUpLayoutListener);
 
@@ -76,7 +71,7 @@ public class SignUpFragment extends Fragment {
 
                 fullNameEditText = view.findViewById(R.id.et_fullname);
                 fullNameEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-                //fullNameEditText.addTextChangedListener(fullNameTextWatcher);
+                //fullNameEditText.addTextChangedListener(watcher);
                 // Please note that this will only work if your device keyboard Auto Capitalize Setting enabled.
                 emailEditText = view.findViewById(R.id.et_email);
                 passwordEditText = view.findViewById(R.id.et_password);
@@ -85,66 +80,56 @@ public class SignUpFragment extends Fragment {
         }
     }
 
-//    private static final String TAG = "SignUpFragment";
-//    private final TextWatcher fullNameTextWatcher = new TextWatcher() {
+    private static final String TAG = "SignUpFragment";
+
+//    private final TextWatcher watcher = new TextWatcher() {
+//        int mStart = 0;
+//
 //        @Override
 //        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
 //        }
 //
 //        @Override
 //        public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
+//            mStart = start + count;
 //        }
 //
 //        @Override
 //        public void afterTextChanged(Editable s) {
-//            String editable = s.toString();
-//            String[] editableSegments = editable.split(" ");
+//            String input = s.toString();
+//            String capitalizedText;
+//            if (input.length() < 1) {
+//                capitalizedText = titleize(input);
+//            } else if (input.length() > 1 && input.contains(" ")) {
+//                capitalizedText = titleize(input);
+//            } else {
+//                capitalizedText = titleize(input);
+//            }
 //
-//
-//            StringBuilder fullName = new StringBuilder();
-//            char[] firstSegment = editableSegments[0].toCharArray();
-//            char firstLetter = Character.toUpperCase(firstSegment[0]);
-//            fullName.append(firstLetter);
-//
-//            for (int i = 0; i <editableSegments.length; i++) {
-//                char[] nameSegments = editableSegments[i].toCharArray();
-//
-//                for (int j = 1; j <nameSegments.length ; j++) {
-//
-//                    fullName.append(nameSegments[j]);
-//
-//                    if (nameSegments[j] == ' ') {
-//                        char secondLetter = Character.toUpperCase(nameSegments[0]);
-//                        fullName.append(secondLetter);
+//            if (!capitalizedText.equals(fullNameEditText.getText().toString())) {
+//                fullNameEditText.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 //
 //                    }
 //
-////                    fullName.append(nameSegments[j]);
-//                }
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
 //
+//                    }
 //
+//                    @Override
+//                    public void afterTextChanged(Editable s) {
+//                        fullNameEditText.setSelection(mStart);
+//                        fullNameEditText.removeTextChangedListener(this);
+//                    }
+//                });
+//                StringBuilder stringBuilder = new StringBuilder();
+//                stringBuilder.append(capitalizedText);
+////                stringBuilder.re
+//                fullNameEditText.setText(capitalizedText);
 //            }
-//
-//            Log.i(TAG, "afterTextChanged: " + fullName);
-//
-//
-////                if (firstSegment.length > 0) {
-////                    char firstLetter = Character.toUpperCase(firstSegment[0]);
-////                    StringBuilder firstName = new StringBuilder().append(firstLetter);
-////                    for (int i = 1; i <firstSegment.length ; i++) {
-////                        char restOfSegment = firstSegment[i];
-////                        firstName.append(restOfSegment);
-////                    }
-////
-////                    //String firstWord = first + Arrays.toString(firstSegment);
-////                    Log.i(TAG, "afterTextChanged: " + firstName);
-////                    //fullNameEditText.setText(firstName);
-////                }
-//
-//            }
-//
+//        }
 //    };
 
     private final View.OnClickListener signUpLayoutListener = new View.OnClickListener() {

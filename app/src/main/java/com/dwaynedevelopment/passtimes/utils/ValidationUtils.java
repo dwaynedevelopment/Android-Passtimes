@@ -10,6 +10,7 @@ import android.util.Patterns;
 import com.dwaynedevelopment.passtimes.R;
 
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.shakeViewWithAnimation;
@@ -144,5 +145,18 @@ public class ValidationUtils {
         }
 
         return true;
+    }
+
+
+    private static final Pattern bound = Pattern.compile("\\b(\\w)");
+
+    public static String titleize(final String input) {
+        StringBuffer sb = new StringBuffer(input.length());
+        Matcher mat = bound.matcher(input);
+        while (mat.find()) {
+            mat.appendReplacement(sb, mat.group().toUpperCase());
+        }
+        mat.appendTail(sb);
+        return sb.toString();
     }
 }

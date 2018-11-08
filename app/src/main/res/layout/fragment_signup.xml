@@ -71,7 +71,7 @@
                 android:layout_height="match_parent"
                 android:hint="Full Name"
                 android:textSize="18sp"
-                android:inputType="textCapWords"
+                android:inputType="textCapWords|textCapSentences"
                 android:textColor="@color/colorDarkPrimary"
                 android:background="@drawable/et_dynamic_style"
                 android:drawablePadding="10dp"

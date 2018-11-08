@@ -146,7 +146,7 @@ public class EditActivity extends AppCompatActivity implements IEditHandler {
             userFilePath = mAuth.getStorage()
                     .child(ROOT_STORAGE_USER_PROFILES)
                     .child(mAuth.getCurrentSignedUser().getId())
-                    .child(Objects.requireNonNull(userPhotoUri.getLastPathSegment()));
+                    .child("profile_image_" + mAuth.getCurrentSignedUser().getId());
 
             userFilePath.putFile(userPhotoUri)
                     .continueWithTask(uploadImageListener)

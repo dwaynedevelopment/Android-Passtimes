@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.navigation.fragments.feed.FeedFragment;
+import com.dwaynedevelopment.passtimes.navigation.fragments.leaderboard.LeaderboardFragment;
 import com.dwaynedevelopment.passtimes.navigation.fragments.profile.ProfileFragment;
 import com.dwaynedevelopment.passtimes.navigation.fragments.profile.SettingsPreferenceFragment;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -21,6 +22,7 @@ public class NavigationUtils {
     // Pre-load fragments
     private static final ArrayList<Fragment> fragments = new ArrayList<Fragment>() {{
         add(FeedFragment.newInstance());
+        add(LeaderboardFragment.newInstance());
         add(ProfileFragment.newInstance());
         add(SettingsPreferenceFragment.newInstance());
     }};

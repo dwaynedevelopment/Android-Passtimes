@@ -2,6 +2,7 @@ package com.dwaynedevelopment.passtimes.models;
 
 import com.google.firebase.firestore.DocumentReference;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
@@ -9,8 +10,9 @@ public class Player {
     private String id;
     private String name;
     private String thumbnail;
-    private List<DocumentReference> favorites;
-    private List<DocumentReference> attending;
+    private int overallXP;
+    private List<DocumentReference> favorites = new ArrayList<>();
+    private List<DocumentReference> attending = new ArrayList<>();
 
     public Player() {}
 
@@ -18,21 +20,15 @@ public class Player {
         this.id = id;
         this.name = name;
         this.thumbnail = thumbnail;
+        this.overallXP = 0;
     }
 
-    public Player(String id, String name, String thumbnail, List<DocumentReference> favorites) {
-        this.id = id;
-        this.name = name;
-        this.thumbnail = thumbnail;
-        this.favorites = favorites;
+    public int getOverallXP() {
+        return overallXP;
     }
 
-    public Player(String id, String name, String thumbnail, List<DocumentReference> favorites, List<DocumentReference> attending) {
-        this.id = id;
-        this.name = name;
-        this.thumbnail = thumbnail;
-        this.favorites = favorites;
-        this.attending = attending;
+    public void setOverallXP(int overallXP) {
+        this.overallXP = overallXP;
     }
 
     public List<DocumentReference> getAttending() {

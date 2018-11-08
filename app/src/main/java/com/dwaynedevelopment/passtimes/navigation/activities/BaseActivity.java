@@ -27,7 +27,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
 
     private ViewPager viewPager;
     private AuthUtils mAuth;
-    ViewPagerAdapter adapter;
+    private ViewPagerAdapter adapter;
 
     private static final String TAG = "BaseActivity";
     @Override
@@ -86,18 +86,21 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
                 // Set viewpager current item to feed without animation
                 viewPager.setCurrentItem(0, false);
                 break;
-            case R.id.nv_item_profile:
+            case R.id.nv_item_leaderboard:
                 // Set viewpager current item to profile without animation
-//                viewPager.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
                 viewPager.setCurrentItem(1, false);
                 break;
+            case R.id.nv_item_profile:
+                // Set viewpager current item to profile without animation
+                viewPager.setCurrentItem(2, false);
+                break;
+
         }
     }
 
     @Override
     public void invokeSettings() {
-        viewPager.setCurrentItem(2, true);
+        viewPager.setCurrentItem(3, true);
     }
 
     @Override

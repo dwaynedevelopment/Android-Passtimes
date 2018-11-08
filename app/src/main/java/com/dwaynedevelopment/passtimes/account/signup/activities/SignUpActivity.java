@@ -170,7 +170,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                 userFilePath = mAuth.getStorage()
                         .child(ROOT_STORAGE_USER_PROFILES)
                         .child(mAuth.getCurrentSignedUser().getId())
-                        .child(Objects.requireNonNull(userPhotoUri.getLastPathSegment()));
+                        .child("profile_image_" + mAuth.getCurrentSignedUser().getId());
 
                 userFilePath.putFile(userPhotoUri)
                         .continueWithTask(uploadImageListener)
@@ -206,15 +206,16 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                 SignUpActivity.this.runOnUiThread(() -> progress.setVisibility(View.GONE));
             }, 250);
 
+
             new Handler().postDelayed(() -> {
-                mDatabase.updateImage(mAuth.getCurrentSignedUser());
                 SignUpActivity.this.runOnUiThread(() -> {
+                    mDatabase.updateImage(mAuth.getCurrentSignedUser());
                     finish();
                     Intent intent = new Intent(SignUpActivity.this, FavoriteActivity.class);
                     intent.putExtra(EXTRA_REGISTRATION, true);
                     startActivity(intent);
                 });
-            }, 250);
+            }, 550);
         }
     };
 
