@@ -1,19 +1,13 @@
 package com.dwaynedevelopment.passtimes.utils;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.util.Log;
-
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
-import com.dwaynedevelopment.passtimes.models.Sport;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

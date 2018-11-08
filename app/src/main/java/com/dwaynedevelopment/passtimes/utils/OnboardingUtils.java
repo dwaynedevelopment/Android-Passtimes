@@ -3,10 +3,10 @@ package com.dwaynedevelopment.passtimes.utils;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
-import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
-import com.dwaynedevelopment.passtimes.onboarding.fragments.OnboardOneFragment;
-import com.dwaynedevelopment.passtimes.onboarding.fragments.OnboardThreeFragment;
-import com.dwaynedevelopment.passtimes.onboarding.fragments.OnboardTwoFragment;
+import com.dwaynedevelopment.passtimes.parent.adapters.BaseViewPagerAdapter;
+import com.dwaynedevelopment.passtimes.base.onboarding.fragments.OnboardOneFragment;
+import com.dwaynedevelopment.passtimes.base.onboarding.fragments.OnboardThreeFragment;
+import com.dwaynedevelopment.passtimes.base.onboarding.fragments.OnboardTwoFragment;
 
 import java.util.ArrayList;
 
@@ -18,7 +18,7 @@ public class OnboardingUtils {
         add(new OnboardThreeFragment());
     }};
 
-    public static void setupOnboardingViewPager(ViewPagerAdapter adapter, ViewPager viewPager) {
+    public static void setupOnboardingViewPager(BaseViewPagerAdapter adapter, ViewPager viewPager) {
         for (Fragment fragment : onboardingFragments) {
             adapter.addFragment(fragment);
         }

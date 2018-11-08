@@ -2,15 +2,13 @@ package com.dwaynedevelopment.passtimes.utils;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 
-import com.dwaynedevelopment.passtimes.R;
-import com.dwaynedevelopment.passtimes.adapters.ViewPagerAdapter;
-import com.dwaynedevelopment.passtimes.navigation.fragments.feed.FeedFragment;
-import com.dwaynedevelopment.passtimes.navigation.fragments.leaderboard.LeaderboardFragment;
-import com.dwaynedevelopment.passtimes.navigation.fragments.profile.ProfileFragment;
-import com.dwaynedevelopment.passtimes.navigation.fragments.profile.SettingsPreferenceFragment;
+import com.dwaynedevelopment.passtimes.parent.adapters.BaseViewPagerAdapter;
+import com.dwaynedevelopment.passtimes.base.feed.fragments.FeedFragment;
+import com.dwaynedevelopment.passtimes.base.leaderboard.fragments.LeaderboardFragment;
+import com.dwaynedevelopment.passtimes.base.profile.fragments.ProfileFragment;
+import com.dwaynedevelopment.passtimes.base.profile.fragments.SettingsPreferenceFragment;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ public class NavigationUtils {
 //                .apply();
     }
 
-    public static void viewPagerSetup(ViewPager viewPager, ViewPagerAdapter adapter) {
+    public static void viewPagerSetup(ViewPager viewPager, BaseViewPagerAdapter adapter) {
         for (Fragment fragment : fragments) {
             adapter.addFragment(fragment);
         }

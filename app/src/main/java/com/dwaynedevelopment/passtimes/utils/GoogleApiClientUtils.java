@@ -2,9 +2,8 @@ package com.dwaynedevelopment.passtimes.utils;
 
 import android.support.v7.app.AppCompatActivity;
 
-import com.dwaynedevelopment.passtimes.adapters.PlacesApiAdapter;
+import com.dwaynedevelopment.passtimes.base.event.adapters.PlacesApiAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Places;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.LAT_LNG_BOUNDS;

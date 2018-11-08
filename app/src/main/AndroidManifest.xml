@@ -29,7 +29,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAPqRZ0TL0GbedhRcz3IrhiUfOLnpKN4lo" />
 
-        <activity android:name=".onboarding.activities.OnboardActivity"
+        <activity android:name=".base.onboarding.activities.OnboardActivity"
                   android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,17 +37,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".navigation.activities.BaseActivity"
+        <activity android:name=".parent.activities.BaseActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".account.signup.activities.SignUpActivity"
+        <activity android:name=".base.account.signup.activities.SignUpActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".account.login.activities.LoginActivity"
+        <activity android:name=".base.account.login.activities.LoginActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".account.terms.activities.TermsActivity"
+        <activity android:name=".base.account.terms.activities.TermsActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".favorites.activities.FavoriteActivity"
+        <activity android:name=".base.favorites.activities.FavoriteActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".account.edit.activities.EditActivity"
+        <activity android:name=".base.account.edit.activities.EditActivity"
             android:screenOrientation="portrait"/>
 
     </application>

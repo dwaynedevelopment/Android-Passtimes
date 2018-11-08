@@ -3,8 +3,6 @@ package com.dwaynedevelopment.passtimes.utils;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Patterns;
 
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.R;
@@ -16,8 +14,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.SOCIAL_PROFILE_DIMEN;
 import static com.dwaynedevelopment.passtimes.utils.AlertUtils.invokeSnackBar;
