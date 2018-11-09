@@ -18,6 +18,9 @@ import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +52,9 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
 
         List<Event> result = createListFromMapEntries(eventMap);
+
+        Collections.sort(result, Collections.reverseOrder(new Event.EventComparator()));
+
         final Event event = result.get(i);
 
         final DocumentReference playerDocumentReference = mDb.getFirestore()

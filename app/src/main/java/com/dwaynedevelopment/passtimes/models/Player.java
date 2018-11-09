@@ -3,6 +3,7 @@ package com.dwaynedevelopment.passtimes.models;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Player {
@@ -77,5 +78,12 @@ public class Player {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    public static class PlayerComparator implements Comparator<Player> {
+        @Override
+        public int compare(Player o1, Player o2) {
+            return Long.compare(o1.overallXP, o2.overallXP);
+        }
     }
 }

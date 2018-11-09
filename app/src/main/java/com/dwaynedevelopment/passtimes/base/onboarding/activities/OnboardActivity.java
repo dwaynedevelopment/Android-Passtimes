@@ -2,6 +2,8 @@ package com.dwaynedevelopment.passtimes.base.onboarding.activities;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -20,10 +22,12 @@ import com.dwaynedevelopment.passtimes.parent.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 
 import static com.dwaynedevelopment.passtimes.utils.OnboardingUtils.setupOnboardingViewPager;
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
 
 public class OnboardActivity extends AppCompatActivity {
 
     private ViewPager onboardingViewPager;
+    private ConstraintLayout onboardingParentLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,51 +35,43 @@ public class OnboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_onboard);
 
         AuthUtils mAuth = AuthUtils.getInstance();
+        onboardingParentLayout = findViewById(R.id.cl_onboarding_parent);
         final LinearLayout bottomLayout = findViewById(R.id.ll_onboarding_bottom);
         final ProgressBar progress = findViewById(R.id.pb_dot_onboard);
         final TextView appTitle = findViewById(R.id.tv_app_name);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                progress.setVisibility(View.VISIBLE);
-                appTitle.setVisibility(View.VISIBLE);
-            }
+        new Handler().postDelayed(() -> {
+            progress.setVisibility(View.VISIBLE);
+            appTitle.setVisibility(View.VISIBLE);
         }, 550);
 
         if (mAuth.isCurrentUserAuthenticated()) {
             bottomLayout.setVisibility(View.GONE);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    progress.setVisibility(View.GONE);
-                    appTitle.setVisibility(View.GONE);
-                    finish();
-                    Intent intent = new Intent(OnboardActivity.this, BaseActivity.class);
-                    startActivity(intent);
-                }
+            new Handler().postDelayed(() -> {
+                progress.setVisibility(View.GONE);
+                appTitle.setVisibility(View.GONE);
+                finish();
+                Intent intent = new Intent(OnboardActivity.this, BaseActivity.class);
+                startActivity(intent);
             }, 1750);
 
         } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    progress.setVisibility(View.GONE);
-                    appTitle.setVisibility(View.GONE);
-                    bottomLayout.setVisibility(View.VISIBLE);
-                    onboardingViewPager = findViewById(R.id.vp_onboarding);
+            new Handler().postDelayed(() -> {
+                progress.setVisibility(View.GONE);
+                appTitle.setVisibility(View.GONE);
+                bottomLayout.setVisibility(View.VISIBLE);
+                onboardingViewPager = findViewById(R.id.vp_onboarding);
 
-                    TabLayout dotLayout = findViewById(R.id.tl_dots);
-                    dotLayout.setupWithViewPager(onboardingViewPager, true);
+                TabLayout dotLayout = findViewById(R.id.tl_dots);
+                dotLayout.setupWithViewPager(onboardingViewPager, true);
 
-                    setupOnboardingViewPager(new BaseViewPagerAdapter(getSupportFragmentManager()), onboardingViewPager);
+                setupOnboardingViewPager(new BaseViewPagerAdapter(getSupportFragmentManager()), onboardingViewPager);
 
-                    Button loginButton = findViewById(R.id.btn_login_onboard);
-                    loginButton.setOnClickListener(bottomSignUpListener);
+                Button loginButton = findViewById(R.id.btn_login_onboard);
+                loginButton.setOnClickListener(bottomSignUpListener);
 
-                    LinearLayout bottomLinearLayout = findViewById(R.id.ll_bottom_message);
-                    bottomLinearLayout.setOnClickListener(bottomSignUpListener);
-                }
+                LinearLayout bottomLinearLayout = findViewById(R.id.ll_bottom_message);
+                bottomLinearLayout.setOnClickListener(bottomSignUpListener);
             }, 1750);
         }
     }
@@ -89,20 +85,17 @@ public class OnboardActivity extends AppCompatActivity {
         }
     }
 
-    private final View.OnClickListener bottomSignUpListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int id = v.getId();
-            final int login = R.id.btn_login_onboard;
-            final int signup = R.id.ll_bottom_message;
-            switch (id) {
-                case login:
-                    intentHandler(login);
-                    break;
-                case signup:
-                    intentHandler(signup);
-                    break;
-            }
+    private final View.OnClickListener bottomSignUpListener = v -> {
+        int id = v.getId();
+        final int login = R.id.btn_login_onboard;
+        final int signup = R.id.ll_bottom_message;
+        switch (id) {
+            case login:
+                intentHandler(login);
+                break;
+            case signup:
+                intentHandler(signup);
+                break;
         }
     };
 
@@ -116,6 +109,7 @@ public class OnboardActivity extends AppCompatActivity {
         }
 
         if (intent != null) {
+            parentLayoutStatus(onboardingParentLayout, false);
             finish();
             startActivity(intent);
         }

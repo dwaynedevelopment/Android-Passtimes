@@ -17,6 +17,7 @@ import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +45,9 @@ public class LeaderboardViewAdapter extends RecyclerView.Adapter<LeaderboardView
     @Override
     public void onBindViewHolder(@NonNull LeaderboardViewAdapter.ViewHolder viewHolder, int i) {
         List<Player> result = createListFromMapEntries(leaderboardMap);
+
+        Collections.sort(result, Collections.reverseOrder(new Player.PlayerComparator()));
+
         final Player playerAttendee = result.get(i);
 
         if (playerAttendee != null) {

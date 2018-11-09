@@ -13,7 +13,6 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
 
-import es.dmoral.toasty.Toasty;
 
 public class NavigationUtils {
 

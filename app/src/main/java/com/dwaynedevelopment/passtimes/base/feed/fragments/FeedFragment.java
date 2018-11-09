@@ -52,6 +52,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+
+
 import static com.dwaynedevelopment.passtimes.utils.AdapterUtils.adapterViewStatus;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
@@ -475,7 +477,7 @@ public class FeedFragment extends Fragment  {
             if (getView() != null) {
                 eventFeedViewAdapter = new EventFeedViewAdapter(eventsHashMap, getActivity().getApplicationContext());
                 eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
-                //eventsRecyclerView.setNestedScrollingEnabled(true);
+
                 eventsRecyclerView.setHasFixedSize(true);
                 eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
                         LinearLayoutManager.VERTICAL, false));

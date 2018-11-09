@@ -5,9 +5,13 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -32,14 +36,20 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.dwaynedevelopment.passtimes.utils.ImageUtils.getFileFromImageCaptured;
 import static com.dwaynedevelopment.passtimes.utils.ImageUtils.getRealFilePathFromURI;
 import static com.dwaynedevelopment.passtimes.utils.ImageUtils.getRealPathFromURI;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.APPLICATION_PACKAGE_AUTHORITY;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_REGISTRATION;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.IMAGE_EXTRA_OUTPUT_DATA;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_CAMERA_IMAGE_CAPTURE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_GALLERY_IMAGE_SELECT;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_READ_EXTERNAL_STORAGE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ROOT_STORAGE_USER_PROFILES;
@@ -49,6 +59,7 @@ import static com.dwaynedevelopment.passtimes.utils.ViewUtils.shakeViewWithAnima
 
 public class SignUpActivity extends AppCompatActivity implements ISignUpHandler {
 
+    private String imageFilePath;
     private Uri userPhotoUri = null;
     private String username = null;
     private AuthUtils mAuth;
@@ -76,6 +87,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                 .commit();
     }
 
+    private static final String TAG = "SignUpActivity";
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -87,6 +99,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                     signUpParentLayout = findViewById(R.id.rl_signup_parent);
 
                     userPhotoUri = data.getData();
+                    Log.i(TAG, "onActivityResult: " + userPhotoUri);
                     final CircleImageView circleImageView = findViewById(R.id.ci_signup);
                     Uri photoUri = getRealFilePathFromURI(getRealPathFromURI(SignUpActivity.this, Objects.requireNonNull(userPhotoUri)));
                     circleImageView.setVisibility(View.VISIBLE);
@@ -96,6 +109,16 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                     Toast.makeText(this, "No Image Has Been Selected.", Toast.LENGTH_SHORT).show();
                     shakeViewWithAnimation(this, view);
                 }
+                break;
+            case REQUEST_CAMERA_IMAGE_CAPTURE:
+                view.setVisibility(View.GONE);
+                signUpParentLayout = findViewById(R.id.rl_signup_parent);
+
+                userPhotoUri = getRealFilePathFromURI(Uri.parse(imageFilePath));
+                final CircleImageView circleImageView = findViewById(R.id.ci_signup);
+                circleImageView.setVisibility(View.VISIBLE);
+
+                Glide.with(SignUpActivity.this).load(userPhotoUri).into(circleImageView);
                 break;
             default:
                 break;
@@ -109,20 +132,29 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
         int imagePermission = grantResults[0];
         if (requestCode == REQUEST_READ_EXTERNAL_STORAGE) {
             if (imagePermission == PackageManager.PERMISSION_GRANTED) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent, REQUEST_GALLERY_IMAGE_SELECT);
+                invokeGalleryOrCameraIntent();
             }
         }
     }
 
     @Override
     public void invokeLogin() {
+        this.runOnUiThread(() -> {
+            progress = findViewById(R.id.pb_dots);
+            progress.setVisibility(View.VISIBLE);
+        });
+        parentLayoutStatus(signUpParentLayout, false);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
     @Override
     public void invokeTerms() {
+        this.runOnUiThread(() -> {
+            progress = findViewById(R.id.pb_dots);
+            progress.setVisibility(View.VISIBLE);
+        });
+        parentLayoutStatus(signUpParentLayout, false);
         Intent intent = new Intent(this, TermsActivity.class);
         startActivity(intent);
     }
@@ -130,8 +162,7 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     @Override
     public void invokeGallery() {
         if (permissionReadExternalStorage(this)) {
-            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(galleryIntent, REQUEST_GALLERY_IMAGE_SELECT);
+            invokeGalleryOrCameraIntent();
         }
     }
 
@@ -206,10 +237,10 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
                 SignUpActivity.this.runOnUiThread(() -> progress.setVisibility(View.GONE));
             }, 250);
 
-
+            mDatabase.updateImage(mAuth.getCurrentSignedUser());
             new Handler().postDelayed(() -> {
                 SignUpActivity.this.runOnUiThread(() -> {
-                    mDatabase.updateImage(mAuth.getCurrentSignedUser());
+//                    mDatabase.updateImage(mAuth.getCurrentSignedUser());
                     finish();
                     Intent intent = new Intent(SignUpActivity.this, FavoriteActivity.class);
                     intent.putExtra(EXTRA_REGISTRATION, true);
@@ -230,4 +261,36 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
             parentLayoutStatus(signUpParentLayout, true);
         }
     };
+
+    private void invokeGalleryOrCameraIntent() {
+        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(
+                this);
+        myAlertDialog.setTitle("Upload Pictures Option");
+        myAlertDialog.setMessage("How do you want to set your picture?");
+
+        myAlertDialog.setPositiveButton("Gallery", (arg0, arg1) -> {
+                    Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(galleryIntent, REQUEST_GALLERY_IMAGE_SELECT);
+                });
+
+        myAlertDialog.setNegativeButton("Camera", (arg0, arg1) -> {
+                    Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if(pictureIntent.resolveActivity(getPackageManager()) != null){
+                        //Create a file to store the image
+                        File photoFile = null;
+                        try {
+                            photoFile = getFileFromImageCaptured(SignUpActivity.this, mAuth.getCurrentSignedUser());
+                            imageFilePath = photoFile.getAbsolutePath();
+                        } catch (IOException ex) {
+                            // Error occurred while creating the File
+                        }
+                        if (photoFile != null) {
+                            Uri photoURI = FileProvider.getUriForFile(SignUpActivity.this, APPLICATION_PACKAGE_AUTHORITY, photoFile);
+                            pictureIntent.putExtra(IMAGE_EXTRA_OUTPUT_DATA, photoURI);
+                            startActivityForResult(pictureIntent, REQUEST_CAMERA_IMAGE_CAPTURE);
+                        }
+                    }
+                });
+        myAlertDialog.show();
+    }
 }

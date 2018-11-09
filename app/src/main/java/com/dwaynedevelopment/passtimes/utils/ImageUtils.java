@@ -2,12 +2,28 @@ package com.dwaynedevelopment.passtimes.utils;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 
+import com.dwaynedevelopment.passtimes.models.Player;
+
 import java.io.File;
+import java.io.IOException;
+
 
 public class ImageUtils {
+
+
+    public static File getFileFromImageCaptured(AppCompatActivity activity, Player player) throws IOException {
+        String imageFileName = "profile_image_" + player.getId();
+        File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",  /* suffix */
+                storageDir     /* directory */
+        );
+    }
 
     public static Uri getRealPathFromURI(AppCompatActivity activity, Uri contentURI) {
         String result;
@@ -20,10 +36,8 @@ public class ImageUtils {
             result = cursor.getString(idx);
             cursor.close();
         }
-//        Toasty.error(this, result, Toast.LENGTH_SHORT).show();
         return Uri.parse(result);
     }
-
 
     public static Uri getRealFilePathFromURI(Uri uriStringPath) {
         return Uri.fromFile(new File(uriStringPath.getPath()));

@@ -9,10 +9,13 @@ import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.favorites.fragments.FavoriteFragment;
 import com.dwaynedevelopment.passtimes.base.favorites.interfaces.IFavoriteHandler;
 import com.dwaynedevelopment.passtimes.parent.activities.BaseActivity;
+import com.dwaynedevelopment.passtimes.utils.AuthUtils;
+import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_REGISTRATION;
 
 public class FavoriteActivity extends AppCompatActivity implements IFavoriteHandler {
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,7 +36,6 @@ public class FavoriteActivity extends AppCompatActivity implements IFavoriteHand
                 return;
             }
         }
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container_favorite, FavoriteFragment.newInstance(false))

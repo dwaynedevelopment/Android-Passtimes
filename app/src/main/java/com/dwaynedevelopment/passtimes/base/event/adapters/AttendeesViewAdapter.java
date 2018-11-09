@@ -16,6 +16,7 @@ import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,9 @@ public class AttendeesViewAdapter extends RecyclerView.Adapter<AttendeesViewAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         List<Player> result = createListFromMapEntries(attendeesMap);
+
+        Collections.sort(result, Collections.reverseOrder(new Player.PlayerComparator()));
+//        Collections.sort(result, new Person.AgeComparator());
         final Player playerAttendee = result.get(i);
 
         if (playerAttendee != null) {

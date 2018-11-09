@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.firebase.firestore.DocumentReference;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -191,5 +192,12 @@ public class Event implements Parcelable {
         this.attendees = attendees;
     }
 
+
+    public static class EventComparator implements Comparator<Event> {
+        @Override
+        public int compare(Event o1, Event o2) {
+            return Long.compare(o1.startDate, o2.startDate);
+        }
+    }
 
 }

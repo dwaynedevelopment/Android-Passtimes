@@ -17,6 +17,7 @@ import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,9 @@ public class AttendingFeedViewAdapter extends RecyclerView.Adapter<AttendingFeed
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         List<Event> result = createListFromMapEntries(attendingMap);
+
+        Collections.sort(result, Collections.reverseOrder(new Event.EventComparator()));
+
         final Event event = result.get(i);
 
         String time = CalendarUtils.getDateTimeFromDate(event.getStartDate());

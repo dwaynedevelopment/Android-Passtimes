@@ -4,10 +4,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 public class KeyUtils {
+
+
     public static final int REQUEST_READ_EXTERNAL_STORAGE = 0x1004;
     public static final int REQUEST_GALLERY_IMAGE_SELECT = 0x1005;
+    public static final int REQUEST_CAMERA_IMAGE_CAPTURE = 0x1006;
+    public static final String IMAGE_EXTRA_OUTPUT_DATA = "output";
     public static final String ROOT_STORAGE_USER_PROFILES = "ROOT_STORAGE_USER_PROFILES";
     static final int SOCIAL_PROFILE_DIMEN = 300;
+    public static final String APPLICATION_PACKAGE_AUTHORITY = "com.dwaynedevelopment.passtimes";
     public static final String DATABASE_REFERENCE_USERS = "players";
     public static final String DATABASE_REFERENCE_EVENTS = "events";
     public static final String DATABASE_REFERENCE_SPORTS = "sports";
