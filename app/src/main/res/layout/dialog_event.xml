@@ -193,15 +193,23 @@
         </LinearLayout>
 
         <android.support.design.card.MaterialCardView
-            android:visibility="gone"
+            android:visibility="visible"
             android:id="@+id/mp_event"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            app:cardCornerRadius="20dp"
+            android:layout_height="120dp"
+            app:cardCornerRadius="10dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_below="@id/ll_event_data" />
+            android:layout_below="@id/ll_event_data"
+            android:elevation="5dp">
+
+            <FrameLayout
+                android:id="@+id/container_map_child"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </android.support.design.card.MaterialCardView>
 
         <TextView
             android:id="@+id/tv_attending"

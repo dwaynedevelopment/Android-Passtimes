@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.favorites.adapters.FavoriteViewAdapter;
@@ -188,11 +189,8 @@ public class FavoriteFragment extends Fragment {
                             }
                         }, 1000);
                     } else {
+                        Toast.makeText(getContext(), "Please select a sport.", Toast.LENGTH_SHORT).show();
                         progress.setVisibility(View.GONE);
-                        invokeSnackBar((AppCompatActivity) Objects.requireNonNull(getContext()),
-                                "Please select a sport.",
-                                getResources().getColor(R.color.colorDarkPrimary),
-                                getResources().getColor(R.color.colorPrimaryAccent));
                     }
                 }
             }

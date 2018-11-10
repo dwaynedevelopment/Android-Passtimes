@@ -1,5 +1,7 @@
 package com.dwaynedevelopment.passtimes.utils;
 
+import android.Manifest;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -33,6 +35,10 @@ public class KeyUtils {
     public static final String ARGS_SELECTED_EVENT_ID = "com.dwaynedevelopment.passtimes.ARGS_SELECTED_EVENT_ID";
     public static final String EXTRA_SELECTED_EVENT_ID = "com.dwaynedevelopment.passtimes.EXTRA_SELECTED_EVENT_ID";
 
+    public static final int LOCATION_PERMISSION_REQUEST_CODE = 0x9000;
+    public static final int ERROR_DIALOG_REQUEST = 0x8000;
+    public static final String REQUEST_FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    public static final String REQUEST_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
             new LatLng(-40, -168),
             new LatLng(71, 136));

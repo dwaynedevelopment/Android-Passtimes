@@ -33,6 +33,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.type.LatLng;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_INSERTED_DATA;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_MODIFIED_DATA;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_REMOVED_DATA;
+import static com.dwaynedevelopment.passtimes.utils.LocationUtils.googlePlayServicesValid;
 
 public class EventDetailFragment extends Fragment {
 
@@ -93,6 +95,14 @@ public class EventDetailFragment extends Fragment {
         return inflater.inflate(R.layout.dialog_event, container, false);
     }
 
+
+    private void invokeChildFragment(String eventIdExtra) {
+        Fragment childMapFragment =  MapChildFragment.newInstance(eventIdExtra);
+        getChildFragmentManager().beginTransaction()
+                .add(R.id.container_map_child, childMapFragment)
+                .commit();
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -100,6 +110,7 @@ public class EventDetailFragment extends Fragment {
         if (getActivity() != null) {
             mDb = FirebaseFirestoreUtils.getInstance();
             mAuth = AuthUtils.getInstance();
+
             if (getArguments() != null) {
 
                 eventIdExtra = getArguments().getString(ARGS_SELECTED_EVENT_ID);
@@ -110,6 +121,10 @@ public class EventDetailFragment extends Fragment {
                                 .addSnapshotListener(eventSnapshotListener);
 
                         if (getView() != null) {
+
+                            if (googlePlayServicesValid(getActivity())) {
+                                invokeChildFragment(eventIdExtra);
+                            }
 
                             ImageButton closeImageButton = getView().findViewById(R.id.ib_close);
                             closeImageButton.setOnClickListener(eventOnClickListener);

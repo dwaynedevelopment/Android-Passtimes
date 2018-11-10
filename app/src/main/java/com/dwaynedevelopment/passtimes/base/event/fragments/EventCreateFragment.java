@@ -337,7 +337,9 @@ public class EventCreateFragment extends Fragment {
                         timePickerDialog.show();
                         break;
                     case R.id.et_end_time:
-                        timePickerDialog = new TimePickerDialog(context, android.R.style.Theme_Holo_Light_Dialog, endTimeSetListener, mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE), false);
+                        Calendar cal = Calendar.getInstance();
+                        cal.add(Calendar.HOUR, + 1);
+                        timePickerDialog = new TimePickerDialog(context, android.R.style.Theme_Holo_Light_Dialog, endTimeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
                         timePickerDialog.show();
                         break;
                 }
