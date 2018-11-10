@@ -560,10 +560,7 @@ public class FeedFragment extends Fragment  {
         public void onReceive(Context context, Intent intent) {
             if (iNavigationHandler != null) {
                 iNavigationHandler.invokeViewEvent(intent.getStringExtra(EXTRA_SELECTED_EVENT_ID));
-                Log.i(TAG, "invokeViewEvent: " + intent.getStringExtra(EXTRA_SELECTED_EVENT_ID));
             }
         }
     }
-
-
 }

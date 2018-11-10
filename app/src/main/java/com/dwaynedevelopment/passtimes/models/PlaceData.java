@@ -6,22 +6,16 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class PlaceData {
 
-    private String mId;
     private String mName;
     private String mAddress;
     private LatLng mLatLng;
 
     public PlaceData() {}
 
-    public PlaceData(String mId, String mName, String mAddress, LatLng mLatLng) {
-        this.mId = mId;
+    public PlaceData(String mName, String mAddress, LatLng mLatLng) {
         this.mName = mName;
         this.mAddress = mAddress;
         this.mLatLng = mLatLng;
-    }
-
-    public String getId() {
-        return mId;
     }
 
     public String getName() {
@@ -41,7 +35,6 @@ public class PlaceData {
     @Override
     public String toString() {
         return "PlaceData{" +
-                "mId='" + mId + '\'' +
                 ", mName='" + mName + '\'' +
                 ", mAddress='" + mAddress + '\'' +
                 ", mLatLng=" + mLatLng + '}';

@@ -45,6 +45,7 @@ import static com.dwaynedevelopment.passtimes.utils.AdapterUtils.adapterViewStat
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVENT_ID;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_INSERTED_DATA;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_MODIFIED_DATA;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_REMOVED_DATA;
@@ -290,10 +291,9 @@ public class ProfileFragment extends Fragment {
     public class EventReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-//            String receivedEventId = intent.getStringExtra(EXTRA_SELECTED_EVENT_ID);
-//            EventDetailFragment viewEventDialogFragment = EventDetailFragment.newInstance(receivedEventId);
-//            FragmentTransaction fragmentTransaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
-//            viewEventDialogFragment.show(fragmentTransaction, EventDetailFragment.TAG);
+            if (iNavigationHandler != null) {
+                iNavigationHandler.invokeViewEvent(intent.getStringExtra(EXTRA_SELECTED_EVENT_ID));
+            }
         }
     }
 }

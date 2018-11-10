@@ -268,8 +268,9 @@ public class EventDetailFragment extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.ib_close:
-                    //FIXME TODO
-//                    dismiss();
+                    if (iEventHandler != null) {
+                        iEventHandler.dismissDetailView();
+                    }
                     break;
                 case R.id.ib_edit_event:
                     if (iEventHandler != null) {
@@ -300,8 +301,6 @@ public class EventDetailFragment extends Fragment {
 
                     joinEventButton.setVisibility(View.GONE);
 
-                    //FIXME TODO
-//                    dismiss();
                     break;
                 case R.id.ib_delete:
                     if (getActivity() != null) {
@@ -337,8 +336,9 @@ public class EventDetailFragment extends Fragment {
                             documentReference.update("attending", FieldValue.arrayRemove(eventRemoveDocument));
                             eventRemoveDocument.update("attendees", FieldValue.arrayRemove(documentReference));
 
-                            //FIXME TODO
-//                    dismiss();
+                            if (iEventHandler != null) {
+                                iEventHandler.dismissDetailView();
+                            }
                         });
 
                         alertDialog.setNegativeButton("Cancel", (dialog, which) ->
@@ -354,8 +354,9 @@ public class EventDetailFragment extends Fragment {
 
 
     private final OnSuccessListener<Void> deleteEventListener = (Void aVoid) -> {
-        //FIXME TODO
-//                    dismiss();
+        if (iEventHandler != null) {
+            iEventHandler.dismissDetailView();
+        }
     };
 
 

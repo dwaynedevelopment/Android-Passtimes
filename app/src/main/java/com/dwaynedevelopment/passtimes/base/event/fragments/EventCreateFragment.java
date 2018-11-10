@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -83,9 +84,11 @@ public class EventCreateFragment extends Fragment {
     private EditText etEndTime;
     private AutoCompleteTextView etAddress;
     private PlaceData mPlaceData;
+    private PlaceData placeDataEdit;
 
     private Sport selectedSport;
     private Event eventToModify;
+    private boolean isEditing = false;
 
     public static EventCreateFragment newInstance(String editEventDocumentReference) {
         Bundle args = new Bundle();
@@ -119,8 +122,6 @@ public class EventCreateFragment extends Fragment {
             mAuth = AuthUtils.getInstance();
 
             if (getView() != null) {
-                mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
-                        .addOnCompleteListener(selectEventSportListener);
 
                 Toolbar createEventToolbar = getView().findViewById(R.id.tb_create_event);
                 createEventToolbar.inflateMenu(R.menu.menu_create_event);
@@ -134,10 +135,34 @@ public class EventCreateFragment extends Fragment {
                         (AppCompatActivity) getActivity(),
                         mGoogleApiClient);
 
-                selectReceiver = new SelectReceiver();
-                IntentFilter actionFilter = new IntentFilter();
-                actionFilter.addAction(ACTION_SELECT_SELECTED);
-                getActivity().registerReceiver(selectReceiver, actionFilter);
+                mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
+                        .addOnCompleteListener(selectEventSportListener);
+
+                if (getArguments() != null) {
+                    String stringReference = getArguments().getString("ARGS_EDIT_SELECTED_EVENT");
+                    if (stringReference != null && !stringReference.isEmpty()) {
+                        isEditing = true;
+                        final DocumentReference editEventDocumentReference = mDb.getFirestore().document(stringReference);
+                        editEventDocumentReference.get().addOnCompleteListener(task -> {
+                            if (task.getResult() != null) {
+                                eventToModify = task.getResult().toObject(Event.class);
+                                if (eventToModify != null) {
+                                    placeDataEdit = new PlaceData(eventToModify.getLocation(),
+                                            "",
+                                            new LatLng(eventToModify.getLatitude(), eventToModify.getLatitude()));
+
+                                    etTitle.setText(eventToModify.getTitle());
+
+                                    etAddress.setText(placeDataEdit.getName());
+                                    etStartTime.setText(getTimeFromDate(eventToModify.getStartDate()));
+                                    etEndTime.setText(getTimeFromDate(eventToModify.getEndDate()));
+
+                                }
+                            }
+                        });
+                    }
+                }
+
 
                 mStartCalendar = Calendar.getInstance();
                 mEndCalendar = Calendar.getInstance();
@@ -168,59 +193,39 @@ public class EventCreateFragment extends Fragment {
                 etAddress.setOnFocusChangeListener(focusChangeListener);
                 etAddress.setOnItemClickListener(autoCompleteClickListener);
 
-                if (getArguments() != null) {
-                    String stringReference = getArguments().getString("ARGS_EDIT_SELECTED_EVENT");
-                    if (stringReference != null && !stringReference.isEmpty()) {
-                        final DocumentReference editEventDocumentReference = mDb.getFirestore().document(stringReference);
-                        editEventDocumentReference.get().addOnCompleteListener(task -> {
-                            if (task.getResult() != null) {
-                                eventToModify = task.getResult().toObject(Event.class);
-                                if (eventToModify != null) {
-
-                                    etTitle.setText(eventToModify.getTitle());
-
-                                    etAddress.setText(eventToModify.getLocation());
-                                    etAddress.setFocusable(true);
-                                    etAddress.setFocusableInTouchMode(true);
-                                    etAddress.requestFocus();
-
-                                    etStartTime.setText(getTimeFromDate(eventToModify.getStartDate()));
-                                    etEndTime.setText(getTimeFromDate(eventToModify.getEndDate()));
-
-                                }
-                            }
-                        });
-                    }
-                }
-
             }
-
-
         }
     }
 
-    private final OnCompleteListener<QuerySnapshot> selectEventSportListener = new OnCompleteListener<QuerySnapshot>() {
-        @Override
-        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-            ArrayList<Sport> sportsArray = new ArrayList<>();
+    private final OnCompleteListener<QuerySnapshot> selectEventSportListener = task -> {
+        ArrayList<Sport> sportsArray = new ArrayList<>();
 
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                    sportsArray.add(document.toObject(Sport.class));
-
-                    SelectedViewAdapter adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray);
-                    if (getActivity() != null) {
-                        if (getView() != null) {
-                            RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
-                            recyclerView.setHasFixedSize(true);
-                            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
-                            recyclerView.setAdapter(adapter);
-                        }
+        SelectedViewAdapter adapter = null;
+        if (task.isSuccessful()) {
+            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                final Sport sport = document.toObject(Sport.class);
+                sportsArray.add(sport);
+                if (isEditing) {
+                    if (sport.getCategory().equals(eventToModify.getSport())) {
+                        Log.i(TAG, "SPORT TO MODIFY: " + sport.toString());
+                      adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray, sport, true);
                     }
+                } else {
+                    adapter = new SelectedViewAdapter((AppCompatActivity) getActivity(), sportsArray, null, false);
                 }
-            } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
             }
+
+            if (getActivity() != null) {
+                if (getView() != null) {
+                    RecyclerView recyclerView = getView().findViewById(R.id.rv_sports);
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+                    recyclerView.setAdapter(adapter);
+                }
+            }
+
+        } else {
+            Log.d(TAG, "Error getting documents: ", task.getException());
         }
     };
 
@@ -230,7 +235,7 @@ public class EventCreateFragment extends Fragment {
         public boolean onMenuItemClick(MenuItem item) {
             if (item.getItemId() == R.id.action_close) {
                 if (iEventHandler != null) {
-                    iEventHandler.dismissEvent();
+                    iEventHandler.dismissDetailView();
                 }
             } else if (item.getItemId() == R.id.action_save) {
                 // TODO: Validate inputs
@@ -240,47 +245,41 @@ public class EventCreateFragment extends Fragment {
                         validateTextField(etAddress, "Please enter a Location for the event") &&
                         validateTextField(etStartTime, "Please select a Start Time") &&
                         validateTextField(etEndTime, "Please select an End Time")) {
-                    // Validate for Time
-                    if (validateTime()) {
-                        if (mPlaceData != null) {
-                            if (eventToModify != null) {
-                                final DocumentReference eventDocumentReference = mDb.getFirestore()
-                                        .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventToModify.getId());
-                                eventDocumentReference.update("enDate", mEndCalendar.getTimeInMillis());
-                                eventDocumentReference.update("startDate", mStartCalendar.getTimeInMillis());
-                                eventDocumentReference.update("latitude", mPlaceData.getLatLng().latitude);
-                                eventDocumentReference.update("location", etAddress.getText().toString());
-                                eventDocumentReference.update("longitude", mPlaceData.getLatLng().longitude);
-                                eventDocumentReference.update("maxAttendees", 5);
-                                eventDocumentReference.update("title", etTitle.getText().toString())
-                                        .addOnSuccessListener(aVoid -> {
-                                            if (iEventHandler != null) {
-                                                iEventHandler.dismissEvent();
-                                            }
-                                        });
 
-                            } else {
-                                final DocumentReference playerDocumentReference = mDb.getFirestore()
-                                        .document("/"+DATABASE_REFERENCE_USERS+"/"+mAuth.getCurrentSignedUser().getId());
+                    if (eventToModify != null) {
+                        if (placeDataEdit != null) {
+                            final DocumentReference eventDocumentReference = mDb.getFirestore()
+                                    .document("/" + DATABASE_REFERENCE_EVENTS + "/" + eventToModify.getId());
+                            eventDocumentReference.update("enDate", mEndCalendar.getTimeInMillis());
+                            eventDocumentReference.update("startDate", mStartCalendar.getTimeInMillis());
+                            eventDocumentReference.update("latitude", placeDataEdit.getLatLng().latitude);
+                            eventDocumentReference.update("location", etAddress.getText().toString());
+                            eventDocumentReference.update("longitude", placeDataEdit.getLatLng().longitude);
+                            eventDocumentReference.update("maxAttendees", 5);
+                            eventDocumentReference.update("title", etTitle.getText().toString())
+                                    .addOnSuccessListener(aVoid -> {
+                                        if (iEventHandler != null) {
+                                            iEventHandler.dismissDetailView();
+                                        }
+                                    });
+                        }
 
-                                final Event eventCreated = new Event(selectedSport.getCategory(), selectedSport.getActive(), etTitle.getText().toString(), etAddress.getText().toString(),
-                                        mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5, playerDocumentReference);
+                    } else if (validateTime()) {
+                        final DocumentReference playerDocumentReference = mDb.getFirestore()
+                                .document("/"+DATABASE_REFERENCE_USERS+"/"+mAuth.getCurrentSignedUser().getId());
 
-                                final DocumentReference eventDocumentReference = mDb.getFirestore()
-                                        .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventCreated.getId());
+                        final Event eventCreated = new Event(selectedSport.getCategory(), selectedSport.getActive(), etTitle.getText().toString(), etAddress.getText().toString(),
+                                mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5, playerDocumentReference);
 
-                                mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
-                                mDb.addAttendee(eventCreated, playerDocumentReference);
-                                mDb.addAttendings(mAuth.getCurrentSignedUser(), eventDocumentReference);
+                        final DocumentReference eventDocumentReference = mDb.getFirestore()
+                                .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventCreated.getId());
 
-                                if (iEventHandler != null) {
-                                    iEventHandler.dismissEvent();
-                                }
-                            }
+                        mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
+                        mDb.addAttendee(eventCreated, playerDocumentReference);
+                        mDb.addAttendings(mAuth.getCurrentSignedUser(), eventDocumentReference);
 
-                        } else {
-                            Snackbar sb = Snackbar.make(Objects.requireNonNull(getView()), "Please Confirm Address By Re-Selecting.", Snackbar.LENGTH_SHORT);
-                            sb.show();
+                        if (iEventHandler != null) {
+                            iEventHandler.dismissDetailView();
                         }
                     }
                 }
@@ -390,7 +389,6 @@ public class EventCreateFragment extends Fragment {
             if (place != null) {
                 try {
                     mPlaceData = new PlaceData(
-                            place.getId(),
                             place.getName().toString(),
                             Objects.requireNonNull(place.getAddress()).toString(),
                             new LatLng(Objects.requireNonNull(
@@ -409,6 +407,15 @@ public class EventCreateFragment extends Fragment {
     };
 
     private final GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = connectionResult -> { };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        selectReceiver = new SelectReceiver();
+        IntentFilter actionFilter = new IntentFilter();
+        actionFilter.addAction(ACTION_SELECT_SELECTED);
+        Objects.requireNonNull(getActivity()).registerReceiver(selectReceiver, actionFilter);
+    }
 
     @Override
     public void onPause() {

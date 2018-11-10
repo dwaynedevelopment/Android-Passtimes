@@ -71,7 +71,7 @@ public class EventActivity extends AppCompatActivity implements IEventHandler {
     }
 
     @Override
-    public void dismissEvent() {
+    public void dismissDetailView() {
         Intent intent = new Intent(this, BaseActivity.class);// New activity
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         this.overridePendingTransition(0, 0);
