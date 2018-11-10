@@ -55,17 +55,42 @@
 
             <TextView
                 android:id="@+id/tv_leaderboard_name"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="14dp"
+                android:layout_marginEnd="4dp"
                 android:maxLines="2"
                 android:text="Jonathan Dwayne Becerra Vega Santori"
                 android:layout_toEndOf="@+id/ci_leaderboard_profile"
+                android:layout_toStartOf="@+id/tv_experience_points_rank"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center_vertical"
                 android:textColor="@color/colorDarkPrimary"
                 android:textSize="15.5sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_experience_points_rank"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/ic_experience"
+                android:fontFamily="sans-serif-medium"
+                android:text="500"
+                android:layout_marginEnd="6dp"
+                android:textColor="@color/colorDarkPrimary"
+                android:textStyle="bold|italic" />
+
+
+            <ImageView
+                android:id="@+id/ic_experience"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_xp" />
 
         </RelativeLayout>
 

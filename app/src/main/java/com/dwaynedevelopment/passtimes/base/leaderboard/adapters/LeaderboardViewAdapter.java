@@ -53,6 +53,7 @@ public class LeaderboardViewAdapter extends RecyclerView.Adapter<LeaderboardView
         if (playerAttendee != null) {
             viewHolder.leaderboardName.setText(playerAttendee.getName());
             viewHolder.leaderboardNumber.setText(String.valueOf(i + 1));
+            viewHolder.leaderboardPoints.setText(String.valueOf(playerAttendee.getOverallXP()));
             Glide.with(context).load(playerAttendee.getThumbnail()).into(viewHolder.leaderboardProfile);
 
             if (playerAttendee.getId().equals(mAuth.getCurrentSignedUser().getId())) {
@@ -82,12 +83,14 @@ public class LeaderboardViewAdapter extends RecyclerView.Adapter<LeaderboardView
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        private TextView leaderboardPoints;
         private TextView leaderboardNumber;
         private ImageView leaderboardProfile;
         private TextView leaderboardName;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+            leaderboardPoints = itemView.findViewById(R.id.tv_experience_points_rank);
             leaderboardNumber = itemView.findViewById(R.id.tv_leaderboard_number);
             leaderboardProfile = itemView.findViewById(R.id.ci_leaderboard_profile);
             leaderboardName = itemView.findViewById(R.id.tv_leaderboard_name);

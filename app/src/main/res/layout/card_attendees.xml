@@ -42,13 +42,41 @@
                 android:id="@+id/tv_attendee_name"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginStart="21dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:layout_toStartOf="@+id/tv_experience_points"
                 android:layout_toEndOf="@+id/ci_attendee_profile"
                 android:fontFamily="sans-serif-medium"
-                android:gravity="center"
+                android:gravity="center_vertical"
+                android:maxLines="2"
+                android:text="Jonathan Dwayne Becerra "
                 android:textColor="@color/colorDarkPrimary"
-                android:textSize="18sp"
+                android:textSize="15.5sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_experience_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/ic_experience"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="6dp"
+                android:text="500"
+                android:textColor="@color/colorDarkPrimary"
+                android:textStyle="bold|italic" />
+
+
+
+            <ImageView
+                android:id="@+id/ic_experience"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/v_attendee_view"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_xp" />
 
         </RelativeLayout>
 

@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
@@ -133,7 +134,7 @@ public class EventEndFragment extends Fragment {
     private final Toolbar.OnMenuItemClickListener menuItemClickListener = toolBarItem -> {
         if (toolBarItem.getItemId() == R.id.action_manager) {
                 if (getActivity() != null) {
-                    if (playerReferences.size() > 1) {
+                    if (playerReferences.size() > 0) {
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                         alertDialog.setTitle(mAuth.getCurrentSignedUser().getName());
                         alertDialog.setMessage("Is this selection correct?");
@@ -158,6 +159,8 @@ public class EventEndFragment extends Fragment {
 
                         alertDialog.show();
 
+                    } else {
+                        Toast.makeText(getContext(), "If Nobody Attended, Please Delete The Event.", Toast.LENGTH_LONG).show();
                     }
                 }
                 }

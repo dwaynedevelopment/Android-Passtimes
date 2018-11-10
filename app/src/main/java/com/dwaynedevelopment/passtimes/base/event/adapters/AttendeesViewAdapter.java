@@ -49,6 +49,7 @@ public class AttendeesViewAdapter extends RecyclerView.Adapter<AttendeesViewAdap
 
         if (playerAttendee != null) {
             viewHolder.attendeeNameTextView.setText(playerAttendee.getName());
+            viewHolder.attendeePoints.setText(String.valueOf(playerAttendee.getOverallXP()));
             Glide.with(context).load(playerAttendee.getThumbnail()).into(viewHolder.attendeeProfileImageView);
             if (attendingEvent != null) {
                 attendingEvent.getEventHost().get().addOnCompleteListener(task -> {
@@ -86,12 +87,14 @@ public class AttendeesViewAdapter extends RecyclerView.Adapter<AttendeesViewAdap
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        private TextView attendeePoints;
         private View cv_attendee; // cv_attending
         private ImageView attendeeProfileImageView; // ic_sport_attending
         private TextView attendeeNameTextView; // tv_date_attending
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+            attendeePoints = itemView.findViewById(R.id.tv_experience_points);
             cv_attendee = itemView.findViewById(R.id.v_attendee_view);
             attendeeProfileImageView = itemView.findViewById(R.id.ci_attendee_profile);
             attendeeNameTextView = itemView.findViewById(R.id.tv_attendee_name);
