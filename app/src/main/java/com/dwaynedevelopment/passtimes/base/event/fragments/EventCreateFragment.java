@@ -1,14 +1,19 @@
 package com.dwaynedevelopment.passtimes.base.event.fragments;
 
+import android.Manifest;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,7 +51,6 @@ import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -57,6 +61,8 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
+import static android.content.Context.LOCATION_SERVICE;
+import static android.location.LocationManager.GPS_PROVIDER;
 import static com.dwaynedevelopment.passtimes.utils.CalendarUtils.getTimeFromDate;
 import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getApiClient;
 import static com.dwaynedevelopment.passtimes.utils.GoogleApiClientUtils.getPlacesAdapter;
@@ -64,6 +70,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_SELECT_SELEC
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_SPORTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
+import static com.dwaynedevelopment.passtimes.utils.LocationUtils.getLocationPermission;
 
 public class EventCreateFragment extends Fragment {
 
@@ -112,6 +119,7 @@ public class EventCreateFragment extends Fragment {
         return inflater.inflate(R.layout.dialog_event_create, container, false);
     }
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -123,17 +131,26 @@ public class EventCreateFragment extends Fragment {
 
             if (getView() != null) {
 
+                selectReceiver = new SelectReceiver();
+                IntentFilter actionFilter = new IntentFilter();
+                actionFilter.addAction(ACTION_SELECT_SELECTED);
+                Objects.requireNonNull(getActivity()).registerReceiver(selectReceiver, actionFilter);
+
                 Toolbar createEventToolbar = getView().findViewById(R.id.tb_create_event);
                 createEventToolbar.inflateMenu(R.menu.menu_create_event);
                 createEventToolbar.setOnMenuItemClickListener(menuItemClickListener);
 
-                mGoogleApiClient = getApiClient(
-                        (AppCompatActivity) getActivity(),
-                        onConnectionFailedListener);
+                Location location = getLocationPermission((AppCompatActivity) getActivity(), (LocationManager) getActivity().getSystemService(LOCATION_SERVICE));
 
-                mPlacesApiAdapter = getPlacesAdapter(
-                        (AppCompatActivity) getActivity(),
-                        mGoogleApiClient);
+                    mGoogleApiClient = getApiClient(
+                            (AppCompatActivity) getActivity(),
+                            onConnectionFailedListener);
+
+                    mPlacesApiAdapter = getPlacesAdapter(
+                            (AppCompatActivity) getActivity(),
+                            mGoogleApiClient,
+                            new LatLng(location.getLatitude(), location.getLongitude()));
+
 
                 mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
                         .addOnCompleteListener(selectEventSportListener);
@@ -410,14 +427,6 @@ public class EventCreateFragment extends Fragment {
 
     private final GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = connectionResult -> { };
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        selectReceiver = new SelectReceiver();
-        IntentFilter actionFilter = new IntentFilter();
-        actionFilter.addAction(ACTION_SELECT_SELECTED);
-        Objects.requireNonNull(getActivity()).registerReceiver(selectReceiver, actionFilter);
-    }
 
     @Override
     public void onPause() {

@@ -2,6 +2,7 @@ package com.dwaynedevelopment.passtimes.parent.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import static com.dwaynedevelopment.passtimes.utils.LocationUtils.getLocationPermission;
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
 
 
@@ -35,7 +37,6 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
         setContentView(R.layout.activity_base);
         mAuth = AuthUtils.getInstance();
         bottomNavigationSetup();
-
     }
 
     @Override

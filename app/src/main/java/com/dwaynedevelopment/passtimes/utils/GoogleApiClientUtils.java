@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.dwaynedevelopment.passtimes.base.event.adapters.PlacesApiAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.LAT_LNG_BOUNDS;
 
@@ -24,12 +26,21 @@ public class GoogleApiClientUtils {
 
     public static PlacesApiAdapter getPlacesAdapter(
             AppCompatActivity activity,
-            GoogleApiClient googleApiClient) {
+            GoogleApiClient googleApiClient,
+            LatLng currentLocation) {
+
+        double radiusDegrees = 2.0;
+        LatLng northEast = new LatLng(currentLocation.latitude + radiusDegrees, currentLocation.longitude + radiusDegrees);
+        LatLng southWest = new LatLng(currentLocation.latitude - radiusDegrees, currentLocation.longitude - radiusDegrees);
+        LatLngBounds bounds = LatLngBounds.builder()
+                .include(northEast)
+                .include(southWest)
+                .build();
 
         return new PlacesApiAdapter(
                 activity.getApplicationContext(),
                 googleApiClient,
-                LAT_LNG_BOUNDS,
+                bounds,
                 null);
     }
 }

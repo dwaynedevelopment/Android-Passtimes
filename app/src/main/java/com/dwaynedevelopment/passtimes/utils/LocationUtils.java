@@ -49,42 +49,42 @@ public class LocationUtils {
         return false;
     }
 
-    public static Location getLocationPermission(Context context, LocationManager locationManager) {
+    public static Location getLocationPermission(AppCompatActivity context, LocationManager locationManager) {
         Location mLocation = null;
         if (ContextCompat.checkSelfPermission(context.getApplicationContext(),
                 REQUEST_FINE_LOCATION) == PERMISSION_GRANTED) {
             if (ContextCompat.checkSelfPermission(context.getApplicationContext(),
                     REQUEST_COARSE_LOCATION) == PERMISSION_GRANTED) {
 
-                boolean mIsGPSEnabled = locationManager.isProviderEnabled(GPS_PROVIDER);
-                boolean mIsNetworkEnabled = locationManager.isProviderEnabled(NETWORK_PROVIDER);
+                    boolean mIsGPSEnabled = locationManager.isProviderEnabled(GPS_PROVIDER);
+                    boolean mIsNetworkEnabled = locationManager.isProviderEnabled(NETWORK_PROVIDER);
 
-                if (mIsGPSEnabled) {
-                    locationManager.requestLocationUpdates(
-                            GPS_PROVIDER,
-                            10000, 4,
-                            (LocationListener) context);
-                    mLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
-                    mLocationServicesGranted = true;
-                } else if (mIsNetworkEnabled) {
-                    locationManager.requestLocationUpdates(
-                            NETWORK_PROVIDER,
-                            10000,
-                            4,
-                            (LocationListener) context);
-                    mLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
-                    mLocationServicesGranted = true;
+                    if (mIsGPSEnabled) {
+                        locationManager.requestLocationUpdates(
+                                GPS_PROVIDER,
+                                10000, 4,
+                                (LocationListener) context);
+                        mLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
+                        mLocationServicesGranted = true;
+                    } else if (mIsNetworkEnabled) {
+                        locationManager.requestLocationUpdates(
+                                NETWORK_PROVIDER,
+                                10000,
+                                4,
+                                (LocationListener) context);
+                        mLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
+                        mLocationServicesGranted = true;
+                    }
+                } else {
+                    ActivityCompat.requestPermissions(context,
+                            permissions,
+                            LOCATION_PERMISSION_REQUEST_CODE);
                 }
             } else {
-                ActivityCompat.requestPermissions((AppCompatActivity) context,
+                ActivityCompat.requestPermissions(context,
                         permissions,
                         LOCATION_PERMISSION_REQUEST_CODE);
             }
-        } else {
-            ActivityCompat.requestPermissions((AppCompatActivity) context,
-                    permissions,
-                    LOCATION_PERMISSION_REQUEST_CODE);
-        }
 
         return mLocation;
     }
