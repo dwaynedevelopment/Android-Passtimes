@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 import static com.dwaynedevelopment.passtimes.utils.AdapterUtils.adapterViewStatus;
@@ -354,6 +355,10 @@ public class FeedFragment extends Fragment  {
                                                     getActivity().runOnUiThread(() -> {
                                                         mainFeedEvents.put(addedEvent.getId(), addedEvent);
                                                         filteredEventsByCategory.put(addedEvent.getId(), addedEvent);
+                                                        if(Objects.requireNonNull(mainFeedEvents.get(addedEvent.getId())).getIsClosed()){
+                                                            mainFeedEvents.remove(addedEvent.getId());
+                                                            filteredEventsByCategory.remove(addedEvent.getId());
+                                                        }
                                                         adapterViewStatus(eventFeedViewAdapter, NOTIFY_INSERTED_DATA, index);
                                                     });
                                                 }
@@ -375,6 +380,12 @@ public class FeedFragment extends Fragment  {
                                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                                             mainFeedEvents.replace(editEvent.getId(), editEvent);
                                                             filteredEventsByCategory.replace(editEvent.getId(), editEvent);
+
+                                                            if(Objects.requireNonNull(mainFeedEvents.get(editEvent.getId())).getIsClosed()){
+                                                                mainFeedEvents.remove(editEvent.getId());
+                                                                filteredEventsByCategory.remove(editEvent.getId());
+                                                            }
+
                                                             adapterViewStatus(eventFeedViewAdapter, NOTIFY_MODIFIED_DATA, index);
                                                         }
                                                     });

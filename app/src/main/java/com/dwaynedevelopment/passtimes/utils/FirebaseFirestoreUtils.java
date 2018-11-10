@@ -60,6 +60,14 @@ public class FirebaseFirestoreUtils {
         mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId()).update("thumbnail", documentObject.getThumbnail());
     }
 
+    public void updateOverall(Player documentObject) {
+        mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId()).update("overallXP", documentObject.getOverallXP());
+    }
+
+    public void updateEvenStatus(Event documentObject) {
+        mFirestore.collection(DATABASE_REFERENCE_EVENTS).document(documentObject.getId()).update("isClosed", documentObject.getIsClosed());
+    }
+
     public void insertFavorites(Player documentObject) {
         mFirestore.collection(DATABASE_REFERENCE_USERS).document(documentObject.getId()).update("favorites", documentObject.getFavorites());
     }

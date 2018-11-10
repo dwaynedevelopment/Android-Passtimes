@@ -1,12 +1,15 @@
 package com.dwaynedevelopment.passtimes.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Player {
+public class Player implements Parcelable {
 
     private String id;
     private String name;
@@ -23,6 +26,25 @@ public class Player {
         this.thumbnail = thumbnail;
         this.overallXP = 0;
     }
+
+    protected Player(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        thumbnail = in.readString();
+        overallXP = in.readInt();
+    }
+
+    public static final Creator<Player> CREATOR = new Creator<Player>() {
+        @Override
+        public Player createFromParcel(Parcel in) {
+            return new Player(in);
+        }
+
+        @Override
+        public Player[] newArray(int size) {
+            return new Player[size];
+        }
+    };
 
     public int getOverallXP() {
         return overallXP;
@@ -78,6 +100,19 @@ public class Player {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(thumbnail);
+        dest.writeInt(overallXP);
     }
 
     public static class PlayerComparator implements Comparator<Player> {

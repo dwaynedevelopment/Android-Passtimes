@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.account.edit.fragments.EditFragment;
 import com.dwaynedevelopment.passtimes.base.account.edit.interfaces.IEditHandler;
+import com.dwaynedevelopment.passtimes.base.account.login.activities.LoginActivity;
 import com.dwaynedevelopment.passtimes.base.account.signup.activities.SignUpActivity;
 import com.dwaynedevelopment.passtimes.parent.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
@@ -239,22 +240,26 @@ public class EditActivity extends AppCompatActivity implements IEditHandler {
                     .document(mAuth.getCurrentSignedUser().getId())
                     .update("name", username,
                             "thumbnail", uri.toString()),
-                    1000);
-//            mDatabase.updateImage(mAuth.getCurrentSignedUser());
+                    500);
+            mDatabase.updateImage(mAuth.getCurrentSignedUser());
             new Handler().postDelayed(() -> {
                 progress.setVisibility(View.GONE);
-                finish();
-                Intent intent = new Intent(EditActivity.this, BaseActivity.class);
+                Intent intent = new Intent(EditActivity.this, BaseActivity.class); // New activity
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                EditActivity.this.overridePendingTransition(0, 0);
                 startActivity(intent);
+                finish();
             }, 250);
         }
     };
 
     @Override
     public void onBackPressed() {
-        finish();
-        Intent intent = new Intent(EditActivity.this, BaseActivity.class);
+        Intent intent = new Intent(this, BaseActivity.class); // New activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        EditActivity.this.overridePendingTransition(0, 0);
         startActivity(intent);
+        finish();
     }
 
     private void invokeGalleryOrCameraIntent() {

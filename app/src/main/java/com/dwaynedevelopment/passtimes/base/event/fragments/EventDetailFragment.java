@@ -59,6 +59,7 @@ public class EventDetailFragment extends Fragment {
     private AuthUtils mAuth;
     private IEventHandler iEventHandler;
 
+    private Button closeEventButton;
     private Button joinEventButton;
     private ImageButton deleteImageButton;
     private ImageButton editImageButton;
@@ -79,7 +80,6 @@ public class EventDetailFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -128,6 +128,10 @@ public class EventDetailFragment extends Fragment {
 
                             ImageButton closeImageButton = getView().findViewById(R.id.ib_close);
                             closeImageButton.setOnClickListener(eventOnClickListener);
+
+                            closeEventButton = getView().findViewById(R.id.btn_event_end);
+                            closeEventButton.setOnClickListener(eventOnClickListener);
+                            closeEventButton.setVisibility(View.GONE);
 
                             joinEventButton = getView().findViewById(R.id.btn_event_join);
                             joinEventButton.setOnClickListener(eventOnClickListener);
@@ -200,11 +204,24 @@ public class EventDetailFragment extends Fragment {
                                 if (getActivity() != null) {
                                     Glide.with(getActivity().getApplicationContext()).load(eventHost.getThumbnail()).into(ciHost);
                                     if (eventHost.getId().equals(mAuth.getCurrentSignedUser().getId())) {
-                                        isHostToggle = true;
-                                        deleteImageButton.setVisibility(View.VISIBLE);
-                                        editImageButton.setVisibility(View.VISIBLE);
-                                        joinEventButton.setVisibility(View.GONE);
-                                        unjoinEventImageButton.setVisibility(View.GONE);
+                                        if (eventHost.getId().equals(mAuth.getCurrentSignedUser().getId())) {
+                                            isHostToggle = true;
+                                            deleteImageButton.setVisibility(View.VISIBLE);
+                                            editImageButton.setVisibility(View.VISIBLE);
+                                            joinEventButton.setVisibility(View.GONE);
+                                            unjoinEventImageButton.setVisibility(View.GONE);
+                                            if (eventSelected != null) {
+                                                if (eventSelected.getIsClosed()) {
+                                                    deleteImageButton.setVisibility(View.GONE);
+                                                    editImageButton.setVisibility(View.GONE);
+                                                    joinEventButton.setVisibility(View.GONE);
+                                                    unjoinEventImageButton.setVisibility(View.GONE);
+                                                } else {
+                                                    closeEventButton.setVisibility(View.VISIBLE);
+                                                }
+                                            }
+
+                                        }
                                     }
                                 }
                             }
@@ -229,6 +246,11 @@ public class EventDetailFragment extends Fragment {
                                             } else {
                                                 if (!isHostToggle) {
                                                     unjoinEventImageButton.setVisibility(View.VISIBLE);
+                                                    if (eventSelected != null) {
+                                                        if (eventSelected.getIsClosed()) {
+                                                            unjoinEventImageButton.setVisibility(View.GONE);
+                                                        }
+                                                    }
                                                 }
                                                 //ALWAYS HITS EVENT OR JOINED:
                                                 joinEventButton.setVisibility(View.GONE);
@@ -282,6 +304,26 @@ public class EventDetailFragment extends Fragment {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+                case R.id.btn_event_end:
+                    if (iEventHandler != null) {
+                        if (eventSelected != null) {
+                            if (getActivity() != null) {
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                                alertDialog.setTitle(eventSelected.getTitle());
+                                alertDialog.setMessage("Are you sure you want to close this event?");
+
+                                alertDialog.setPositiveButton("Yes", (dialog, which) ->
+
+                                iEventHandler.invokeEndEvent(eventSelected.getId()));
+
+                                alertDialog.setNegativeButton("Cancel", (dialog, which) ->
+                                        dialog.cancel());
+
+                                alertDialog.show();
+                            }
+                        }
+                    }
+                    break;
                 case R.id.ib_close:
                     if (iEventHandler != null) {
                         iEventHandler.dismissDetailView();

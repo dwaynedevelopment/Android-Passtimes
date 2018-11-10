@@ -454,7 +454,9 @@ public class EventCreateFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            selectedSport = intent.getParcelableExtra("SELECTED_SELECT");
+            if (intent.getParcelableExtra("SELECTED_SELECT") != null) {
+                selectedSport = intent.getParcelableExtra("SELECTED_SELECT");
+            }
         }
     }
 

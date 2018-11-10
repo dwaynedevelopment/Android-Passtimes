@@ -38,7 +38,7 @@ public class NavigationUtils {
         for (Fragment fragment : fragments) {
             adapter.addFragment(fragment);
         }
-        viewPager.setOffscreenPageLimit(fragments.size());
+        //viewPager.setOffscreenPageLimit(fragments.size());
         viewPager.setAdapter(adapter);
     }
 }
