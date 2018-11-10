@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.favorites.adapters.FavoriteViewAdapter;
@@ -43,6 +44,7 @@ import java.util.Objects;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_FAVORITE_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_SPORTS;
 import static com.dwaynedevelopment.passtimes.utils.AlertUtils.invokeSnackBar;
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
 
 public class FavoriteFragment extends Fragment {
 
@@ -155,7 +157,6 @@ public class FavoriteFragment extends Fragment {
         super.onDestroy();
         if (getActivity() != null) {
             getActivity().unregisterReceiver(favoritesReceiver);
-            mAuth = null;
         }
     }
 
@@ -164,6 +165,10 @@ public class FavoriteFragment extends Fragment {
         @Override
         public void onClick(View v) {
             if (mAuth.getCurrentSignedUser() != null) {
+
+                RelativeLayout favoriteParentLayout = Objects.requireNonNull(getView()).findViewById(R.id.rl_favorite_parent);
+                parentLayoutStatus(favoriteParentLayout, false);
+
                 Player player = mAuth.getCurrentSignedUser();
                 player.setFavorites(favoriteReferences);
 

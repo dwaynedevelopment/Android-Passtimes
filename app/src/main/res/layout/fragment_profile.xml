@@ -62,6 +62,34 @@
         android:layout_marginBottom="16dp">
     </android.support.v7.widget.RecyclerView>
 
+    <!--<LinearLayout-->
+        <!--android:id="@+id/rv_attendeed_empty"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_marginTop="35dp"-->
+        <!--android:layout_below="@+id/tv_attending_profile"-->
+        <!--android:visibility="gone">-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/ic_emptyview_attending"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="35dp"-->
+            <!--android:src="@drawable/ic_empty"-->
+            <!--android:contentDescription="@null"/>-->
+
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="No Attended Events"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:textColor="@color/colorThirdAccent"-->
+            <!--android:fontFamily="sans-serif-medium"-->
+            <!--android:textStyle="bold"/>-->
+
+    <!--</LinearLayout>-->
+
 
 </RelativeLayout>
 

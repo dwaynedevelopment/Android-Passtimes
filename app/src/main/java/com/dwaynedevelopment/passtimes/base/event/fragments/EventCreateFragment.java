@@ -1,6 +1,5 @@
 package com.dwaynedevelopment.passtimes.base.event.fragments;
 
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,7 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +28,7 @@ import android.widget.TimePicker;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.account.edit.adapters.SelectedViewAdapter;
 import com.dwaynedevelopment.passtimes.base.event.adapters.PlacesApiAdapter;
+import com.dwaynedevelopment.passtimes.base.event.interfaces.IEventHandler;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.PlaceData;
 import com.dwaynedevelopment.passtimes.models.Sport;
@@ -36,7 +36,6 @@ import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.github.badoualy.datepicker.DatePickerTimeline;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -65,10 +64,11 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_SPORTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 
-public class CreateEventDialogFragment extends DialogFragment {
+public class EventCreateFragment extends Fragment {
 
     public static final String TAG = "CreateEventDialogFragme";
 
+    private IEventHandler iEventHandler;
     private FirebaseFirestoreUtils mDb;
     private AuthUtils mAuth;
 
@@ -87,38 +87,19 @@ public class CreateEventDialogFragment extends DialogFragment {
     private Sport selectedSport;
     private Event eventToModify;
 
-    public static CreateEventDialogFragment newInstance(String editEventDocumentReference) {
-        
+    public static EventCreateFragment newInstance(String editEventDocumentReference) {
         Bundle args = new Bundle();
         args.putString("ARGS_EDIT_SELECTED_EVENT", editEventDocumentReference);
-        CreateEventDialogFragment fragment = new CreateEventDialogFragment();
+        EventCreateFragment fragment = new EventCreateFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            Objects.requireNonNull(dialog.getWindow()).setLayout(width, height);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (getActivity() != null) {
-            mGoogleApiClient.stopAutoManage(getActivity());
-            mGoogleApiClient.disconnect();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof IEventHandler) {
+            iEventHandler = (IEventHandler) context;
         }
     }
 
@@ -248,7 +229,9 @@ public class CreateEventDialogFragment extends DialogFragment {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             if (item.getItemId() == R.id.action_close) {
-                dismiss();
+                if (iEventHandler != null) {
+                    iEventHandler.dismissEvent();
+                }
             } else if (item.getItemId() == R.id.action_save) {
                 // TODO: Validate inputs
 
@@ -271,7 +254,9 @@ public class CreateEventDialogFragment extends DialogFragment {
                                 eventDocumentReference.update("maxAttendees", 5);
                                 eventDocumentReference.update("title", etTitle.getText().toString())
                                         .addOnSuccessListener(aVoid -> {
-                                            dismiss();
+                                            if (iEventHandler != null) {
+                                                iEventHandler.dismissEvent();
+                                            }
                                         });
 
                             } else {
@@ -287,7 +272,10 @@ public class CreateEventDialogFragment extends DialogFragment {
                                 mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
                                 mDb.addAttendee(eventCreated, playerDocumentReference);
                                 mDb.addAttendings(mAuth.getCurrentSignedUser(), eventDocumentReference);
-                                dismiss();
+
+                                if (iEventHandler != null) {
+                                    iEventHandler.dismissEvent();
+                                }
                             }
 
                         } else {
@@ -420,11 +408,16 @@ public class CreateEventDialogFragment extends DialogFragment {
         }
     };
 
-    private final GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
-        @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    private final GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = connectionResult -> { };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity() != null) {
+            mGoogleApiClient.stopAutoManage(getActivity());
+            mGoogleApiClient.disconnect();
         }
-    };
+    }
 
     @Override
     public void onDestroy() {

@@ -60,10 +60,7 @@ public class LeaderboardFragment extends Fragment {
     private RankingReceiver rankingReceiver;
 
 
-    public LeaderboardFragment() {
-        mDb = FirebaseFirestoreUtils.getInstance();
-        mAuth = AuthUtils.getInstance();
-    }
+    public LeaderboardFragment() { }
 
     public static LeaderboardFragment newInstance() {
         Bundle args = new Bundle();
@@ -84,6 +81,8 @@ public class LeaderboardFragment extends Fragment {
 
         if (getActivity() != null) {
             if (getView() != null) {
+                mDb = FirebaseFirestoreUtils.getInstance();
+                mAuth = AuthUtils.getInstance();
                 playerRankName = getView().findViewById(R.id.tv_rank_name);
                 playerRankName.setText(mAuth.getCurrentSignedUser().getName());
                 playerRankNumber = getView().findViewById(R.id.tv_rank_num);
@@ -239,6 +238,7 @@ public class LeaderboardFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         unregisterBroadcastReceiver();
+        mAuth = null;
     }
 
     public class RankingReceiver extends BroadcastReceiver {

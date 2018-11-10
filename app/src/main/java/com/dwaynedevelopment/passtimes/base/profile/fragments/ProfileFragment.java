@@ -1,6 +1,9 @@
 package com.dwaynedevelopment.passtimes.base.profile.fragments;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -38,6 +42,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.dwaynedevelopment.passtimes.utils.AdapterUtils.adapterViewStatus;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_INSERTED_DATA;
@@ -49,10 +54,13 @@ public class ProfileFragment extends Fragment {
     private FirebaseFirestoreUtils mDb;
     private AuthUtils mAuth;
 
+    private EventReceiver eventReceiver;
+
     private INavigationHandler iNavigationHandler;
     private ListenerRegistration attendingListenerRegister;
     private Thread attendingThreadExecute;
     private RecyclerView attendedRecyclerView;
+    private LinearLayout attendedEmptyStub;
     private AttendingFeedViewAdapter attendingFeedViewAdapter;
     private Map<String, Event> attendedEventsMap = new HashMap<>();
 
@@ -90,6 +98,7 @@ public class ProfileFragment extends Fragment {
 
                 View view = getView();
 
+               // attendedEmptyStub = view.findViewById(R.id.rv_attendeed_empty);
                 Toolbar feedToolbar = view.findViewById(R.id.tb_profile);
                 feedToolbar.inflateMenu(R.menu.menu_profile);
                 feedToolbar.setOnMenuItemClickListener(menuItemClickListener);
@@ -171,7 +180,11 @@ public class ProfileFragment extends Fragment {
                                                     getActivity().runOnUiThread(() -> {
                                                         attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
                                                         adapterViewStatus(attendingFeedViewAdapter, NOTIFY_INSERTED_DATA, index);
+                                                        if (!attendedEventsMap.isEmpty()) {
+//                                                            attendedEmptyStub.setVisibility(View.GONE);
+                                                        }
                                                     });
+
                                                 }
                                             } else {
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -205,6 +218,16 @@ public class ProfileFragment extends Fragment {
                         }
                     }
                 }
+                if (getActivity() != null) {
+                    //THREAD: REMOVED ATTENDING
+                    getActivity().runOnUiThread(() -> {
+                        if (attendedEventsMap.isEmpty()) {
+//                            attendedEmptyStub.setVisibility(View.VISIBLE);
+                        } else {
+//                            attendedEmptyStub.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }
         }
     };
@@ -236,4 +259,41 @@ public class ProfileFragment extends Fragment {
             return false;
         }
     };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        registerBroadcastReceiver();
+    }
+
+    private void registerBroadcastReceiver() {
+        eventReceiver = new ProfileFragment.EventReceiver();
+        IntentFilter actionFilter = new IntentFilter();
+        actionFilter.addAction(ACTION_EVENT_SELECTED);
+        if (getActivity() != null) {
+            getActivity().registerReceiver(eventReceiver, actionFilter);
+        }
+    }
+
+    private void unregisterBroadcastReceiver() {
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(eventReceiver);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterBroadcastReceiver();
+    }
+
+    public class EventReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+//            String receivedEventId = intent.getStringExtra(EXTRA_SELECTED_EVENT_ID);
+//            EventDetailFragment viewEventDialogFragment = EventDetailFragment.newInstance(receivedEventId);
+//            FragmentTransaction fragmentTransaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
+//            viewEventDialogFragment.show(fragmentTransaction, EventDetailFragment.TAG);
+        }
+    }
 }

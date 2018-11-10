@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.account.signup.interfaces.ISignUpHandler;
@@ -20,6 +21,7 @@ import com.dwaynedevelopment.passtimes.base.account.signup.interfaces.ISignUpHan
 import java.util.Objects;
 
 import static com.dwaynedevelopment.passtimes.utils.ValidationUtils.credentialSignUpValidation;
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
 
 public class SignUpFragment extends Fragment {
 

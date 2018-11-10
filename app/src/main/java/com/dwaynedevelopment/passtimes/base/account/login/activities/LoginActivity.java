@@ -24,13 +24,13 @@ import com.google.firebase.auth.AuthResult;
 
 import java.util.Objects;
 
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
 
 public class LoginActivity extends AppCompatActivity implements ILoginHandler {
 
     private AuthUtils mAuth;
     private ProgressBar progress;
-
     private RelativeLayout loginParentLayout;
 
     @Override
@@ -39,6 +39,12 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
         setContentView(R.layout.activity_login);
         mAuth = AuthUtils.getInstance();
         invokeFragment();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        onTouchesBegan(this, R.id.ac_login);
     }
 
     private void invokeFragment() {
@@ -50,8 +56,13 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
 
     @Override
     public void invokeSignUp() {
-        Intent intent = new Intent(this, SignUpActivity.class);
+        loginParentLayout = findViewById(R.id.rl_login_parent);
+        parentLayoutStatus(loginParentLayout, false);
+        Intent intent = new Intent(this, SignUpActivity.class);// New activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        this.overridePendingTransition(0, 0);
         startActivity(intent);
+        finish();
     }
 
     @Override
@@ -82,9 +93,11 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
 
                 new Handler().postDelayed(() ->
                         LoginActivity.this.runOnUiThread(() -> {
-                            finish();
-                            Intent intent = new Intent(LoginActivity.this, BaseActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, BaseActivity.class);// New activity
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            LoginActivity.this.overridePendingTransition(0, 0);
                             startActivity(intent);
+                            finish();
                 }), 250);
             }
         }
@@ -103,4 +116,6 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
             parentLayoutStatus(loginParentLayout, true);
         }
     };
+
+
 }

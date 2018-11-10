@@ -24,6 +24,7 @@ import com.dwaynedevelopment.passtimes.base.account.terms.activities.TermsActivi
 import com.dwaynedevelopment.passtimes.base.account.login.activities.LoginActivity;
 import com.dwaynedevelopment.passtimes.base.account.signup.interfaces.ISignUpHandler;
 import com.dwaynedevelopment.passtimes.base.account.signup.fragments.SignUpFragment;
+import com.dwaynedevelopment.passtimes.parent.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.google.android.gms.tasks.Continuation;
@@ -54,6 +55,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_GALLERY_IMA
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_READ_EXTERNAL_STORAGE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ROOT_STORAGE_USER_PROFILES;
 import static com.dwaynedevelopment.passtimes.utils.PermissionUtils.permissionReadExternalStorage;
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.shakeViewWithAnimation;
 
@@ -79,6 +81,12 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
         invokeFragment();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        onTouchesBegan(this, R.id.ac_signup);
+    }
+
     private void invokeFragment() {
         signUpParentLayout = findViewById(R.id.rl_signup_parent);
         getSupportFragmentManager()
@@ -92,12 +100,12 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         view = findViewById(R.id.vw_placeholder);
+//        signUpParentLayout = findViewById(R.id.rl_login_parent);
+//        parentLayoutStatus(signUpParentLayout, true);
         switch (requestCode) {
             case REQUEST_GALLERY_IMAGE_SELECT:
                 if (data != null) {
                     view.setVisibility(View.GONE);
-                    signUpParentLayout = findViewById(R.id.rl_signup_parent);
-
                     userPhotoUri = data.getData();
                     Log.i(TAG, "onActivityResult: " + userPhotoUri);
                     final CircleImageView circleImageView = findViewById(R.id.ci_signup);
@@ -139,22 +147,12 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
 
     @Override
     public void invokeLogin() {
-        this.runOnUiThread(() -> {
-            progress = findViewById(R.id.pb_dots);
-            progress.setVisibility(View.VISIBLE);
-        });
-        parentLayoutStatus(signUpParentLayout, false);
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
     @Override
     public void invokeTerms() {
-        this.runOnUiThread(() -> {
-            progress = findViewById(R.id.pb_dots);
-            progress.setVisibility(View.VISIBLE);
-        });
-        parentLayoutStatus(signUpParentLayout, false);
         Intent intent = new Intent(this, TermsActivity.class);
         startActivity(intent);
     }
@@ -162,6 +160,8 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
     @Override
     public void invokeGallery() {
         if (permissionReadExternalStorage(this)) {
+            signUpParentLayout = findViewById(R.id.rl_login_parent);
+            parentLayoutStatus(signUpParentLayout, false);
             invokeGalleryOrCameraIntent();
         }
     }
@@ -240,10 +240,11 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
             mDatabase.updateImage(mAuth.getCurrentSignedUser());
             new Handler().postDelayed(() -> {
                 SignUpActivity.this.runOnUiThread(() -> {
-//                    mDatabase.updateImage(mAuth.getCurrentSignedUser());
-                    finish();
-                    Intent intent = new Intent(SignUpActivity.this, FavoriteActivity.class);
+                    mDatabase.updateImage(mAuth.getCurrentSignedUser());
+                    Intent intent = new Intent(SignUpActivity.this, FavoriteActivity.class);// New activity
                     intent.putExtra(EXTRA_REGISTRATION, true);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    SignUpActivity.this.overridePendingTransition(0, 0);
                     startActivity(intent);
                 });
             }, 550);

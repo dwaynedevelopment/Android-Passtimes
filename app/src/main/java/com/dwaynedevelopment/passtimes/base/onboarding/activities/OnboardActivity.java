@@ -50,9 +50,11 @@ public class OnboardActivity extends AppCompatActivity {
             new Handler().postDelayed(() -> {
                 progress.setVisibility(View.GONE);
                 appTitle.setVisibility(View.GONE);
-                finish();
-                Intent intent = new Intent(OnboardActivity.this, BaseActivity.class);
+                Intent intent = new Intent(this, BaseActivity.class);// New activity
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                this.overridePendingTransition(0, 0);
                 startActivity(intent);
+                finish();
             }, 1750);
 
         } else {
@@ -110,8 +112,10 @@ public class OnboardActivity extends AppCompatActivity {
 
         if (intent != null) {
             parentLayoutStatus(onboardingParentLayout, false);
-            finish();
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            this.overridePendingTransition(0, 0);
             startActivity(intent);
+            finish();
         }
 
     }

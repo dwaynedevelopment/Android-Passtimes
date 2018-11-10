@@ -2,7 +2,6 @@ package com.dwaynedevelopment.passtimes.parent.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +11,8 @@ import android.view.MenuItem;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.account.edit.activities.EditActivity;
+import com.dwaynedevelopment.passtimes.base.event.activities.EventActivity;
 import com.dwaynedevelopment.passtimes.base.favorites.activities.FavoriteActivity;
-import com.dwaynedevelopment.passtimes.base.event.fragments.CreateEventDialogFragment;
 import com.dwaynedevelopment.passtimes.parent.adapters.BaseViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.parent.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.base.profile.interfaces.IAccountHandler;
@@ -22,14 +21,14 @@ import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
+
 
 public class BaseActivity extends AppCompatActivity implements INavigationHandler, IAccountHandler {
 
     private ViewPager viewPager;
     private AuthUtils mAuth;
-    private BaseViewPagerAdapter adapter;
 
-    private static final String TAG = "BaseActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +38,11 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        onTouchesBegan(this, R.id.ac_base);
+    }
 
     @Override
     public void onBackPressed() {
@@ -50,6 +54,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     }
 
     // Setup bottom navigation with view pager
+    @SuppressLint("ClickableViewAccessibility")
     private void bottomNavigationSetup() {
         BottomNavigationViewEx bottomNav = findViewById(R.id.bottom_navigation_controller);
         NavigationUtils.bottomNavigationSetup(this, bottomNav);
@@ -57,7 +62,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
 
         viewPager = findViewById(R.id.viewpager);
         viewPager.setOnTouchListener(viewPagerOnTouchListener);
-        adapter = new BaseViewPagerAdapter(getSupportFragmentManager());
+        BaseViewPagerAdapter adapter = new BaseViewPagerAdapter(getSupportFragmentManager());
         NavigationUtils.viewPagerSetup(viewPager, adapter);
 
         viewPager.setCurrentItem(0);
@@ -67,12 +72,9 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     private final ViewPager.OnTouchListener viewPagerOnTouchListener = (v, event) -> true;
 
 
-    private final BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-            selectedFragment(menuItem);
-            return false;
-        }
+    private final BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = menuItem -> {
+        selectedFragment(menuItem);
+        return false;
     };
 
 
@@ -104,33 +106,55 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     }
 
     @Override
-    public void invokeEditEvent(String stringDocumentReference) {
-        CreateEventDialogFragment viewEventDialogFragment = CreateEventDialogFragment.newInstance(stringDocumentReference);
-        viewEventDialogFragment.show(getSupportFragmentManager(), CreateEventDialogFragment.TAG);
-    }
-
-    @Override
     public void invokeFavorites() {
-        finish();
-        Intent intent = new Intent(BaseActivity.this, FavoriteActivity.class);
+        Intent intent = new Intent(this, FavoriteActivity.class);// New activity
         intent.putExtra("EXTRA_EDIT_FAVORITES", true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        this.overridePendingTransition(0, 0);
         startActivity(intent);
+        finish();
     }
 
     @Override
     public void invokeEditProfile() {
-        finish();
-        Intent intent = new Intent(BaseActivity.this, EditActivity.class);
+        Intent intent = new Intent(this, EditActivity.class);// New activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        this.overridePendingTransition(0, 0);
         startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void invokeCreateEvent() {
+        Intent intent = new Intent(this, EventActivity.class);// New activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.putExtra("EXTRA_EVENT_VIEW_ID", "");
+        intent.putExtra("EXTRA_EVENT_EDIT_ID", false);
+        this.overridePendingTransition(0, 0);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void invokeViewEvent(String eventDocumentReference) {
+        Intent intent = new Intent(this, EventActivity.class);// New activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.putExtra("EXTRA_EVENT_VIEW_ID", eventDocumentReference);
+        intent.putExtra("EXTRA_EVENT_EDIT_ID", false);
+        this.overridePendingTransition(0, 0);
+        startActivity(intent);
+        finish();
     }
 
     @Override
     public void signOutOfAccount() {
         if (mAuth.isCurrentUserAuthenticated()) {
             mAuth.signOutFromHostAndSocial();
-            finish();
-            Intent intent = new Intent(BaseActivity.this, OnboardActivity.class);
+            Intent intent = new Intent(this, OnboardActivity.class);// New activity
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            this.overridePendingTransition(0, 0);
             startActivity(intent);
+            finish();
         }
     }
 }

@@ -1,0 +1,6 @@
+package com.dwaynedevelopment.passtimes.base.event.interfaces;
+
+public interface IEventHandler {
+    void invokeEditDetailView(String eventDocumentReference);
+    void dismissEvent();
+}

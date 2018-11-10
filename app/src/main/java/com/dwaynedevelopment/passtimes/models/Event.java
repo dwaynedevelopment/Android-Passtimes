@@ -21,6 +21,7 @@ public class Event implements Parcelable {
     private long startDate;
     private long endDate;
     private int maxAttendees;
+    private boolean isClosed = false;
     private DocumentReference eventHost;
     private List<DocumentReference> attendees;
 
@@ -42,7 +43,7 @@ public class Event implements Parcelable {
     }
 
 
-    private Event(Parcel in) {
+    protected Event(Parcel in) {
         id = in.readString();
         sport = in.readString();
         sportThumbnail = in.readString();
@@ -53,6 +54,7 @@ public class Event implements Parcelable {
         startDate = in.readLong();
         endDate = in.readLong();
         maxAttendees = in.readInt();
+        isClosed = in.readByte() != 0;
     }
 
     @Override
@@ -67,6 +69,7 @@ public class Event implements Parcelable {
         dest.writeLong(startDate);
         dest.writeLong(endDate);
         dest.writeInt(maxAttendees);
+        dest.writeByte((byte) (isClosed ? 1 : 0));
     }
 
     @Override
@@ -85,6 +88,14 @@ public class Event implements Parcelable {
             return new Event[size];
         }
     };
+
+    public boolean getIsClosed() {
+        return isClosed;
+    }
+
+    public void setIsClosed(boolean closed) {
+        isClosed = closed;
+    }
 
     public DocumentReference getEventHost() {
         return eventHost;

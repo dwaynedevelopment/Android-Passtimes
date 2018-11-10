@@ -1,13 +1,20 @@
 package com.dwaynedevelopment.passtimes.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import com.dwaynedevelopment.passtimes.R;
 
+import java.util.Objects;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 import static android.view.animation.AnimationUtils.loadAnimation;
 
 public class ViewUtils {
@@ -30,6 +37,15 @@ public class ViewUtils {
 //                break;
 //        }
 //    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    public static void onTouchesBegan(AppCompatActivity activity, int resourceView) {
+        activity.findViewById(resourceView).setOnTouchListener((v, event) -> {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(Objects.requireNonNull(activity.getCurrentFocus()).getWindowToken(), 0);
+            return false;
+        });
+    }
 
     /** shakeViewWithAnimation();
      * @param context

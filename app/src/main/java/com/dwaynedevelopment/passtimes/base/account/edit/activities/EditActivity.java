@@ -1,5 +1,7 @@
 package com.dwaynedevelopment.passtimes.base.account.edit.activities;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -13,8 +15,12 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -51,10 +57,13 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_GALLERY_IMA
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_READ_EXTERNAL_STORAGE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ROOT_STORAGE_USER_PROFILES;
 import static com.dwaynedevelopment.passtimes.utils.PermissionUtils.permissionReadExternalStorage;
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.shakeViewWithAnimation;
 
 public class EditActivity extends AppCompatActivity implements IEditHandler {
 
+    private RelativeLayout editParentLayout;
     private String imageFilePath;
     private Uri userPhotoUri = null;
     private String username = null;
@@ -62,8 +71,7 @@ public class EditActivity extends AppCompatActivity implements IEditHandler {
     private FirebaseFirestoreUtils mDatabase;
     private StorageReference userFilePath;
     private ProgressBar progress;
-    private CircleImageView circleImageView;
-    private View view;
+
 
 
     @Override
@@ -77,14 +85,20 @@ public class EditActivity extends AppCompatActivity implements IEditHandler {
 
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        onTouchesBegan(this, R.id.ac_edit);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        view = findViewById(R.id.vw_placeholder_edit);
+        View view = findViewById(R.id.vw_placeholder_edit);
         switch (requestCode) {
             case REQUEST_GALLERY_IMAGE_SELECT:
                 if (data != null) {
                     view.setVisibility(View.GONE);
-                    //signUpParentLayout = findViewById(R.id.rl_signup_parent);
+                    editParentLayout = findViewById(R.id.rl_edit_parent);
 
                     userPhotoUri = data.getData();
                     final CircleImageView circleImageView = findViewById(R.id.ci_edit_image);
@@ -140,10 +154,13 @@ public class EditActivity extends AppCompatActivity implements IEditHandler {
 
     @Override
     public void submitEditChanges(String displayName) {
+        editParentLayout = findViewById(R.id.rl_edit_parent);
+        parentLayoutStatus(editParentLayout, false);
         username = displayName;
         progress = findViewById(R.id.pb_edit_bar);
         progress.setVisibility(View.VISIBLE);
         if (userPhotoUri != null) {
+            parentLayoutStatus(editParentLayout, false);
             userFilePath = mAuth.getStorage()
                     .child(ROOT_STORAGE_USER_PROFILES)
                     .child(mAuth.getCurrentSignedUser().getId())
@@ -154,6 +171,7 @@ public class EditActivity extends AppCompatActivity implements IEditHandler {
                     .addOnCompleteListener(uploadedWithCredentials)
                     .addOnSuccessListener(completedSignUpListener);
         } else {
+            parentLayoutStatus(editParentLayout, false);
             UserProfileChangeRequest updateProfile;
             if (!username.isEmpty()) {
                 updateProfile = new UserProfileChangeRequest.Builder()

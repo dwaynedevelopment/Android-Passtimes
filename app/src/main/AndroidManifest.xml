@@ -51,6 +51,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".base.account.edit.activities.EditActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".base.event.activities.EventActivity"
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -1,11 +1,11 @@
 package com.dwaynedevelopment.passtimes.base.event.fragments;
 
-import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,9 +20,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.event.adapters.AttendeesViewAdapter;
+import com.dwaynedevelopment.passtimes.base.event.interfaces.IEventHandler;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
-import com.dwaynedevelopment.passtimes.parent.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.utils.AdapterUtils;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.CalendarUtils;
@@ -41,18 +41,21 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.dwaynedevelopment.passtimes.utils.AdapterUtils.adapterViewStatus;
 import static com.dwaynedevelopment.passtimes.utils.CalendarUtils.timeRangeString;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ARGS_SELECTED_EVENT_ID;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_INSERTED_DATA;
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_MODIFIED_DATA;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_REMOVED_DATA;
 
-public class ViewEventDialogFragment extends DialogFragment {
+public class EventDetailFragment extends Fragment {
 
-    public static final String TAG = "ViewEventDialogFragment";
+    public static final String TAG = "EventDetailFragment";
     private FirebaseFirestoreUtils mDb;
     private AuthUtils mAuth;
-    private INavigationHandler iNavigationHandler;
+    private IEventHandler iEventHandler;
 
     private Button joinEventButton;
     private ImageButton deleteImageButton;
@@ -66,11 +69,11 @@ public class ViewEventDialogFragment extends DialogFragment {
 
     private AttendeesViewAdapter attendeeFeedViewAdapter;
 
-    public static ViewEventDialogFragment newInstance(String eventId) {
+    public static EventDetailFragment newInstance(String eventId) {
 
         Bundle args = new Bundle();
         args.putString(ARGS_SELECTED_EVENT_ID, eventId);
-        ViewEventDialogFragment fragment = new ViewEventDialogFragment();
+        EventDetailFragment fragment = new EventDetailFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -79,25 +82,8 @@ public class ViewEventDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof INavigationHandler) {
-            iNavigationHandler = (INavigationHandler) context;
-        }
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            Objects.requireNonNull(dialog.getWindow()).setLayout(width, height);
+        if (context instanceof IEventHandler) {
+            iEventHandler = (IEventHandler) context;
         }
     }
 
@@ -232,12 +218,21 @@ public class ViewEventDialogFragment extends DialogFragment {
                                                 //ALWAYS HITS EVENT OR JOINED:
                                                 joinEventButton.setVisibility(View.GONE);
                                             }
-                                        } else {
-                                            // HITS AFTER LEAVING EVENT
-                                            joinEventButton.setVisibility(View.GONE);
-                                        }
-                                        if (attendeeFeedViewAdapter != null) {
-                                            attendeeFeedViewAdapter.notifyDataSetChanged();
+                                            if (getActivity() != null) {
+                                                getActivity().runOnUiThread(() -> {
+                                                    adapterViewStatus(attendeeFeedViewAdapter, NOTIFY_INSERTED_DATA, finalI);
+                                                });
+                                            }
+                                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                            if (getActivity() != null) {
+                                                //THREAD: MODIFIED ATTENDING
+                                                getActivity().runOnUiThread(() -> {
+                                                    attendeesList.replace(attendeeReference.getId(), attendeeReference);
+                                                    adapterViewStatus(attendeeFeedViewAdapter, NOTIFY_MODIFIED_DATA, finalI);
+
+                                                    joinEventButton.setVisibility(View.GONE);
+                                                });
+                                            }
                                         }
                                     }
                                 } else {
@@ -273,17 +268,19 @@ public class ViewEventDialogFragment extends DialogFragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.ib_close:
-                    dismiss();
+                    //FIXME TODO
+//                    dismiss();
                     break;
                 case R.id.ib_edit_event:
-                    if (iNavigationHandler != null) {
+                    if (iEventHandler != null) {
                         if (getActivity() != null) {
                             AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                             alertDialog.setTitle(eventSelected.getTitle());
                             alertDialog.setMessage("Want to edit this event?");
 
                             alertDialog.setPositiveButton("Edit", (dialog, which) ->
-                                    iNavigationHandler.invokeEditEvent("/" + DATABASE_REFERENCE_EVENTS + "/" + eventSelected.getId()));
+
+                                    iEventHandler.invokeEditDetailView(eventSelected.getId()));
 
                             alertDialog.setNegativeButton("Cancel", (dialog, which) ->
                                     dialog.cancel());
@@ -302,7 +299,9 @@ public class ViewEventDialogFragment extends DialogFragment {
                     mDb.addAttendings(mAuth.getCurrentSignedUser(), eventDocumentReference);
 
                     joinEventButton.setVisibility(View.GONE);
-                    dismiss();
+
+                    //FIXME TODO
+//                    dismiss();
                     break;
                 case R.id.ib_delete:
                     if (getActivity() != null) {
@@ -327,8 +326,8 @@ public class ViewEventDialogFragment extends DialogFragment {
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                         alertDialog.setTitle(eventSelected.getTitle());
                         alertDialog.setMessage("Are you sure you want leave this event?");
-
                         alertDialog.setPositiveButton("Sure", (dialog, which) -> {
+
                             final DocumentReference documentReference = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
                                     .document(mAuth.getCurrentSignedUser().getId());
 
@@ -338,17 +337,8 @@ public class ViewEventDialogFragment extends DialogFragment {
                             documentReference.update("attending", FieldValue.arrayRemove(eventRemoveDocument));
                             eventRemoveDocument.update("attendees", FieldValue.arrayRemove(documentReference));
 
-
-                            if (getActivity() != null) {
-                                //THREAD: REMOVED ATTENDING
-                                getActivity().runOnUiThread(() -> {
-                                    attendeesList.remove(mAuth.getCurrentSignedUser().getId());
-                                    AdapterUtils.adapterViewStatus(attendeeFeedViewAdapter, NOTIFY_REMOVED_DATA, 0);
-                                });
-                            }
-
-
-                            dismiss();
+                            //FIXME TODO
+//                    dismiss();
                         });
 
                         alertDialog.setNegativeButton("Cancel", (dialog, which) ->
@@ -361,6 +351,12 @@ public class ViewEventDialogFragment extends DialogFragment {
         }
     };
 
-    private final OnSuccessListener<Void> deleteEventListener = aVoid -> dismiss();
+
+
+    private final OnSuccessListener<Void> deleteEventListener = (Void aVoid) -> {
+        //FIXME TODO
+//                    dismiss();
+    };
+
 
 }

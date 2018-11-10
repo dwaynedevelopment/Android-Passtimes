@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -32,8 +31,7 @@ import com.dwaynedevelopment.passtimes.base.feed.adapters.EventFeedViewAdapter;
 import com.dwaynedevelopment.passtimes.models.Event;
 import com.dwaynedevelopment.passtimes.models.Player;
 import com.dwaynedevelopment.passtimes.models.Sport;
-import com.dwaynedevelopment.passtimes.base.event.fragments.CreateEventDialogFragment;
-import com.dwaynedevelopment.passtimes.base.event.fragments.ViewEventDialogFragment;
+import com.dwaynedevelopment.passtimes.parent.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.google.firebase.firestore.DocumentChange;
@@ -50,16 +48,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-
 
 
 import static com.dwaynedevelopment.passtimes.utils.AdapterUtils.adapterViewStatus;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ACTION_EVENT_SELECTED;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_USERS;
-import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVENT_ID;
 
+import static com.dwaynedevelopment.passtimes.utils.KeyUtils.EXTRA_SELECTED_EVENT_ID;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_INSERTED_DATA;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_MODIFIED_DATA;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.NOTIFY_REMOVED_DATA;
@@ -95,6 +91,8 @@ public class FeedFragment extends Fragment  {
     private ListenerRegistration eventListenerRegister;
     private ListenerRegistration attendingListenerRegister;
     private ListenerRegistration favoritesListenerRegister;
+
+    private INavigationHandler iNavigationHandler;
     
 
     private static final String TAG = "FeedFragment";
@@ -108,16 +106,18 @@ public class FeedFragment extends Fragment  {
         return new FeedFragment();
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_feed, container, false);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof INavigationHandler) {
+            iNavigationHandler = (INavigationHandler) context;
+        }
     }
 
     @Override
@@ -143,50 +143,7 @@ public class FeedFragment extends Fragment  {
                 }
             }
 
-            //THREAD: FAVORITES FETCH
-            favoriteThreadExecute = new Thread() {
-                @Override
-                public void run() {
-                    favoritesListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
-                            .document(mAuth.getCurrentSignedUser().getId())
-                            .addSnapshotListener(playerFavoritesListener);
 
-                }
-            };
-
-            //THREAD: FAVORITE EXECUTE
-            if (favoriteThreadExecute.getState().equals(Thread.State.NEW)) {
-                favoriteThreadExecute.start();
-            }
-
-            //THREAD: EVENT FETCH
-            eventThreadExecute = new Thread() {
-                @Override
-                public void run() {
-                    eventListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
-                            .addSnapshotListener(eventSnapshotListener);
-
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        getActivity().runOnUiThread(() -> setUpOngoingRecyclerView(mainFeedEvents));
-                    }, 250);
-
-                    if (attendingThreadExecute.getState().equals(Thread.State.NEW)) {
-                        attendingThreadExecute.start();
-                    }
-                }
-            };
-
-            //THREAD: ATTENDING FETCH
-            attendingThreadExecute = new Thread() {
-                @Override
-                public void run() {
-                    attendingListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
-                            .document(mAuth.getCurrentSignedUser().getId())
-                            .addSnapshotListener(attendingSnapshotListener);
-                    //THREAD: MAIN
-                    getActivity().runOnUiThread(() -> setUpAttendingRecyclerView());
-                }
-            };
         }
     }
 
@@ -194,6 +151,56 @@ public class FeedFragment extends Fragment  {
     public void onStart() {
         super.onStart();
         registerBroadcastReceiver();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //THREAD: FAVORITES FETCH
+        favoriteThreadExecute = new Thread() {
+            @Override
+            public void run() {
+                favoritesListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
+                        .document(mAuth.getCurrentSignedUser().getId())
+                        .addSnapshotListener(playerFavoritesListener);
+
+            }
+        };
+
+        //THREAD: FAVORITE EXECUTE
+        if (favoriteThreadExecute.getState().equals(Thread.State.NEW)) {
+            favoriteThreadExecute.start();
+        }
+
+        //THREAD: EVENT FETCH
+        eventThreadExecute = new Thread() {
+            @Override
+            public void run() {
+                eventListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
+                        .addSnapshotListener(eventSnapshotListener);
+
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    getActivity().runOnUiThread(() -> setUpOngoingRecyclerView(mainFeedEvents));
+                }, 250);
+
+                if (attendingThreadExecute.getState().equals(Thread.State.NEW)) {
+                    attendingThreadExecute.start();
+                }
+            }
+        };
+
+        //THREAD: ATTENDING FETCH
+        attendingThreadExecute = new Thread() {
+            @Override
+            public void run() {
+                attendingListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
+                        .document(mAuth.getCurrentSignedUser().getId())
+                        .addSnapshotListener(attendingSnapshotListener);
+                //THREAD: MAIN
+                getActivity().runOnUiThread(() -> setUpAttendingRecyclerView());
+            }
+        };
     }
 
 
@@ -300,7 +307,6 @@ public class FeedFragment extends Fragment  {
                                         }
 
                                     }
-
                                 }
 
                             });
@@ -464,9 +470,9 @@ public class FeedFragment extends Fragment  {
 
     private final Toolbar.OnMenuItemClickListener menuItemClickListener = toolBarItem -> {
         if (toolBarItem.getItemId() == R.id.action_add) {
-            CreateEventDialogFragment createEventDialog = new CreateEventDialogFragment();
-            FragmentTransaction fragmentTransaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
-            createEventDialog.show(fragmentTransaction, CreateEventDialogFragment.TAG);
+            if (iNavigationHandler != null) {
+                iNavigationHandler.invokeCreateEvent();
+            }
         }
         return false;
     };
@@ -494,7 +500,6 @@ public class FeedFragment extends Fragment  {
             if (getView() != null) {
                 attendingFeedViewAdapter = new AttendingFeedViewAdapter(attendedEventsMap, getActivity().getApplicationContext());
                 attendedRecyclerView = getView().findViewById(R.id.rv_attending);
-                //attendedRecyclerView.setNestedScrollingEnabled(true);
                 attendedRecyclerView.setHasFixedSize(true);
                 attendedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
                         LinearLayoutManager.HORIZONTAL, false));
@@ -530,10 +535,8 @@ public class FeedFragment extends Fragment  {
             attendingListenerRegister = null;
             favoritesListenerRegister.remove();
             favoritesListenerRegister = null;
-
         }
     }
-
 
     @Override
     public void onDestroyView() {
@@ -555,11 +558,12 @@ public class FeedFragment extends Fragment  {
     public class EventReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String receivedEventId = intent.getStringExtra(EXTRA_SELECTED_EVENT_ID);
-            ViewEventDialogFragment viewEventDialogFragment = ViewEventDialogFragment.newInstance(receivedEventId);
-            FragmentTransaction fragmentTransaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
-            viewEventDialogFragment.show(fragmentTransaction, ViewEventDialogFragment.TAG);
+            if (iNavigationHandler != null) {
+                iNavigationHandler.invokeViewEvent(intent.getStringExtra(EXTRA_SELECTED_EVENT_ID));
+                Log.i(TAG, "invokeViewEvent: " + intent.getStringExtra(EXTRA_SELECTED_EVENT_ID));
+            }
         }
     }
+
 
 }
