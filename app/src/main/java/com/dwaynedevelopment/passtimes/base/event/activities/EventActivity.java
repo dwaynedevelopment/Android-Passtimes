@@ -26,6 +26,8 @@ import com.dwaynedevelopment.passtimes.utils.LocationUtils;
 import java.util.Objects;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.location.LocationManager.GPS_PROVIDER;
+import static android.location.LocationManager.NETWORK_PROVIDER;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.DATABASE_REFERENCE_EVENTS;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_COARSE_LOCATION;
@@ -58,10 +60,15 @@ public class EventActivity extends AppCompatActivity implements IEventHandler, L
                     REQUEST_FINE_LOCATION) == PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                         REQUEST_COARSE_LOCATION) == PERMISSION_GRANTED) {
-                    invokeFragment(
-                            getIntent().getStringExtra("EXTRA_EVENT_VIEW_ID"),
-                            getIntent().getBooleanExtra("EXTRA_EVENT_EDIT_ID", false)
-                    );
+                    locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    getLocationPermission(this, locationManager);
+                    if (mLocationServicesGranted) {
+                        requestUpdates = true;
+                        invokeFragment(
+                                getIntent().getStringExtra("EXTRA_EVENT_VIEW_ID"),
+                                getIntent().getBooleanExtra("EXTRA_EVENT_EDIT_ID", false)
+                        );
+                    }
 
                 }
 
@@ -79,14 +86,11 @@ public class EventActivity extends AppCompatActivity implements IEventHandler, L
                         .commit();
             } else if (!eventId.isEmpty()) {
                 if (isEditing) {
-                    locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                    getLocationPermission(this, locationManager);
-                    if (mLocationServicesGranted) {
-                        requestUpdates = true;
+
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.container_event, EventCreateFragment.newInstance(eventId))
                                 .commit();
-                    }
+
                 } else {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.container_event, EventDetailFragment.newInstance(eventId))
@@ -132,10 +136,15 @@ public class EventActivity extends AppCompatActivity implements IEventHandler, L
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if(grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
                     grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                invokeFragment(
-                        getIntent().getStringExtra("EXTRA_EVENT_VIEW_ID"),
-                        getIntent().getBooleanExtra("EXTRA_EVENT_EDIT_ID", false)
-                );
+                locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                getLocationPermission(this, locationManager);
+                if (mLocationServicesGranted) {
+                    requestUpdates = true;
+                    invokeFragment(
+                            getIntent().getStringExtra("EXTRA_EVENT_VIEW_ID"),
+                            getIntent().getBooleanExtra("EXTRA_EVENT_EDIT_ID", false)
+                    );
+                }
             } else {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION,

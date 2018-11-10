@@ -30,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.account.edit.adapters.SelectedViewAdapter;
@@ -96,6 +97,7 @@ public class EventCreateFragment extends Fragment {
     private Sport selectedSport;
     private Event eventToModify;
     private boolean isEditing = false;
+    private Location location;
 
     public static EventCreateFragment newInstance(String editEventDocumentReference) {
         Bundle args = new Bundle();
@@ -140,8 +142,9 @@ public class EventCreateFragment extends Fragment {
                 createEventToolbar.inflateMenu(R.menu.menu_create_event);
                 createEventToolbar.setOnMenuItemClickListener(menuItemClickListener);
 
-                Location location = getLocationPermission((AppCompatActivity) getActivity(), (LocationManager) getActivity().getSystemService(LOCATION_SERVICE));
+                location = getLocationPermission((AppCompatActivity) getActivity(), (LocationManager) getActivity().getSystemService(LOCATION_SERVICE));
 
+                if (location != null) {
                     mGoogleApiClient = getApiClient(
                             (AppCompatActivity) getActivity(),
                             onConnectionFailedListener);
@@ -150,7 +153,9 @@ public class EventCreateFragment extends Fragment {
                             (AppCompatActivity) getActivity(),
                             mGoogleApiClient,
                             new LatLng(location.getLatitude(), location.getLongitude()));
-
+                } else {
+                    Toast.makeText(getActivity(), "Location is being fetched, Autocomplete will not work at the moment.", Toast.LENGTH_LONG).show();
+                }
 
                 mDb.databaseCollection(DATABASE_REFERENCE_SPORTS).get()
                         .addOnCompleteListener(selectEventSportListener);
@@ -431,7 +436,7 @@ public class EventCreateFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (getActivity() != null) {
+        if (getActivity() != null && location != null) {
             mGoogleApiClient.stopAutoManage(getActivity());
             mGoogleApiClient.disconnect();
         }
