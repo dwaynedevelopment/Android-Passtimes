@@ -30,8 +30,7 @@ public class ManagerViewAdapter extends RecyclerView.Adapter<ManagerViewAdapter.
 
     private Map<String, Player> attendeesMap;
     private Context context;
-    ArrayList<Player> selectedPlayers = new ArrayList<>();
-    private static final String TAG = "ManagerViewAdapter";
+    private ArrayList<Player> selectedPlayers = new ArrayList<>();
 
     public ManagerViewAdapter(Map<String, Player> attendeesMap, Context context) {
         this.attendeesMap = attendeesMap;
@@ -49,11 +48,12 @@ public class ManagerViewAdapter extends RecyclerView.Adapter<ManagerViewAdapter.
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         List<Player> result = createListFromMapEntries(attendeesMap);
 
-        Collections.sort(result, Collections.reverseOrder(new Player.PlayerComparator()));
+        result.sort(Collections.reverseOrder(new Player.PlayerComparator()));
         final Player playerAttendee = result.get(i);
 
         if (playerAttendee != null) {
             viewHolder.attendeeNameTextView.setText(playerAttendee.getName());
+            viewHolder.attendeeExperienceTextView.setText(String.valueOf(playerAttendee.getOverallXP()));
             Glide.with(context).load(playerAttendee.getThumbnail()).into(viewHolder.attendeeProfileImageView);
 
             viewHolder.cv_attendee.setOnClickListener(v -> {
@@ -98,12 +98,15 @@ public class ManagerViewAdapter extends RecyclerView.Adapter<ManagerViewAdapter.
         private View cv_attendee; // cv_attending
         private ImageView attendeeProfileImageView; // ic_sport_attending
         private TextView attendeeNameTextView; // tv_date_attending
+        private TextView attendeeExperienceTextView;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             cv_attendee = itemView.findViewById(R.id.v_attendee_view);
             attendeeProfileImageView = itemView.findViewById(R.id.ci_attendee_profile);
             attendeeNameTextView = itemView.findViewById(R.id.tv_attendee_name);
+            attendeeExperienceTextView = itemView.findViewById(R.id.tv_experience_points);
         }
     }
 }

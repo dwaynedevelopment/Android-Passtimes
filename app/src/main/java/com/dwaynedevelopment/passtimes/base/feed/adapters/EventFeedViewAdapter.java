@@ -53,7 +53,7 @@ public class EventFeedViewAdapter extends RecyclerView.Adapter<EventFeedViewAdap
 
         List<Event> result = createListFromMapEntries(eventMap);
 
-        Collections.sort(result, Collections.reverseOrder(new Event.EventComparator()));
+        result.sort(new Event.EventComparator());
 
         final Event event = result.get(i);
 

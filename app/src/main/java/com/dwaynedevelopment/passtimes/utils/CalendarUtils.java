@@ -59,7 +59,6 @@ public class CalendarUtils {
     public static String timeRangeString(Event event) {
         String startTime = CalendarUtils.getTimeFromDate(event.getStartDate());
         String endTime = CalendarUtils.getTimeFromDate(event.getEndDate());
-
         return startTime + " - " + endTime;
     }
 }

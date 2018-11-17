@@ -2,13 +2,13 @@ package com.dwaynedevelopment.passtimes.parent.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.view.MenuItem;
+import android.view.View;
 
 import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.account.edit.activities.EditActivity;
@@ -22,7 +22,7 @@ import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-import static com.dwaynedevelopment.passtimes.utils.LocationUtils.getLocationPermission;
+import static com.dwaynedevelopment.passtimes.utils.ViewUtils.dissmissKeyboardOnItemSelected;
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
 
 
@@ -83,19 +83,26 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     private void selectedFragment(MenuItem item) {
         item.setChecked(true);
         int navItem = item.getItemId();
-
+        View view = this.getCurrentFocus();
         switch (navItem) {
             case R.id.nv_item_feed:
+                dissmissKeyboardOnItemSelected(this, view);
                 // Set viewpager current item to feed without animation
                 viewPager.setCurrentItem(0, false);
                 break;
-            case R.id.nv_item_leaderboard:
+            case R.id.nv_item_search:
                 // Set viewpager current item to profile without animation
                 viewPager.setCurrentItem(1, false);
                 break;
-            case R.id.nv_item_profile:
+            case R.id.nv_item_leaderboard:
+                dissmissKeyboardOnItemSelected(this, view);
                 // Set viewpager current item to profile without animation
                 viewPager.setCurrentItem(2, false);
+                break;
+            case R.id.nv_item_profile:
+                dissmissKeyboardOnItemSelected(this, view);
+                // Set viewpager current item to profile without animation
+                viewPager.setCurrentItem(3, false);
                 break;
 
         }
@@ -103,7 +110,7 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
 
     @Override
     public void invokeSettings() {
-        viewPager.setCurrentItem(3, true);
+        viewPager.setCurrentItem(4, true);
     }
 
     @Override

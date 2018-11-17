@@ -38,6 +38,14 @@ public class ViewUtils {
 //        }
 //    }
 
+    public static void dissmissKeyboardOnItemSelected(AppCompatActivity activity, View view) {
+        if (view != null) {
+            InputMethodManager inputManager = null;
+            inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     public static void onTouchesBegan(AppCompatActivity activity, int resourceView) {
         activity.findViewById(resourceView).setOnTouchListener((v, event) -> {

@@ -183,7 +183,7 @@ public class LeaderboardFragment extends Fragment {
                                                         if (playerEdited.getId().equals(mAuth.getCurrentSignedUser().getId())) {
                                                             if (getView() != null) {
 
-                                                                playerPoints =getView().findViewById(R.id.tv_experience_points_user);
+                                                                playerPoints = getView().findViewById(R.id.tv_experience_points_user);
                                                                 playerPoints.setText(String.valueOf(playerEdited.getOverallXP()));
                                                                 playerRankName = getView().findViewById(R.id.tv_rank_name);
                                                                 playerRankName.setText(playerEdited.getName());

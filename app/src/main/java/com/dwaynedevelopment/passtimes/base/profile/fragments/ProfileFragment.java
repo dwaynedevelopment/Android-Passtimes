@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,6 +34,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +59,6 @@ public class ProfileFragment extends Fragment {
 
     private INavigationHandler iNavigationHandler;
     private ListenerRegistration attendingListenerRegister;
-    private Thread attendingThreadExecute;
-    private RecyclerView attendedRecyclerView;
     private LinearLayout attendedEmptyStub;
     private AttendingFeedViewAdapter attendingFeedViewAdapter;
     private Map<String, Event> attendedEventsMap = new HashMap<>();
@@ -110,15 +108,13 @@ public class ProfileFragment extends Fragment {
                 profileName.setText(mAuth.getCurrentSignedUser().getName());
 
                 //THREAD: ATTENDING FETCH
-                attendingThreadExecute = new Thread() {
+                Thread attendingThreadExecute = new Thread() {
                     @Override
                     public void run() {
                         attendingListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_USERS)
                                 .document(mAuth.getCurrentSignedUser().getId())
                                 .addSnapshotListener(attendingSnapshotListener);
-                        getActivity().runOnUiThread(() -> {
-                            setUpAttendingRecyclerView();
-                        });
+                        getActivity().runOnUiThread(() -> setUpAttendingRecyclerView());
                     }
                 };
 
@@ -134,7 +130,7 @@ public class ProfileFragment extends Fragment {
         if (getActivity() != null) {
             if (getView() != null) {
                 attendingFeedViewAdapter = new AttendingFeedViewAdapter(attendedEventsMap, getActivity().getApplicationContext());
-                attendedRecyclerView = getView().findViewById(R.id.rv_attending_profile);
+                RecyclerView attendedRecyclerView = getView().findViewById(R.id.rv_attending_profile);
                 attendedRecyclerView.setHasFixedSize(true);
                 attendedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
                         LinearLayoutManager.HORIZONTAL, false));
@@ -178,18 +174,16 @@ public class ProfileFragment extends Fragment {
                                         if (attendedEvents != null) {
                                             if (!attendedEventsMap.containsKey(attendedEvents.getId())) {
                                                 if (getActivity() != null) {
-                                                    getActivity().runOnUiThread(() -> {
-                                                        attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
-                                                        adapterViewStatus(attendingFeedViewAdapter, NOTIFY_INSERTED_DATA, index);
-                                                        if (!attendedEventsMap.isEmpty()) {
-//                                                            attendedEmptyStub.setVisibility(View.GONE);
-                                                        }
-                                                    });
-
+                                                    if (Calendar.getInstance().getTimeInMillis() > attendedEvents.getEndDate() || attendedEvents.getIsClosed()) {
+                                                        getActivity().runOnUiThread(() -> {
+                                                            attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
+                                                            adapterViewStatus(attendingFeedViewAdapter, NOTIFY_INSERTED_DATA, index);
+                                                        });
+                                                    }
                                                 }
                                             } else {
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                                    if (getActivity() != null) {
+                                                if (getActivity() != null) {
+                                                    if (Calendar.getInstance().getTimeInMillis() < attendedEvents.getEndDate() || attendedEvents.getIsClosed()) {
                                                         getActivity().runOnUiThread(() -> {
                                                             attendedEventsMap.replace(attendedEvents.getId(), attendedEvents);
                                                             adapterViewStatus(attendingFeedViewAdapter, NOTIFY_MODIFIED_DATA, index);
@@ -218,16 +212,6 @@ public class ProfileFragment extends Fragment {
                             });
                         }
                     }
-                }
-                if (getActivity() != null) {
-                    //THREAD: REMOVED ATTENDING
-                    getActivity().runOnUiThread(() -> {
-                        if (attendedEventsMap.isEmpty()) {
-//                            attendedEmptyStub.setVisibility(View.VISIBLE);
-                        } else {
-//                            attendedEmptyStub.setVisibility(View.GONE);
-                        }
-                    });
                 }
             }
         }

@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -45,6 +44,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,8 +73,6 @@ public class FeedFragment extends Fragment  {
 
     private LinearLayout eventEmptyStub;
     private LinearLayout attendingEmptyStub;
-    private RecyclerView eventsRecyclerView;
-    private RecyclerView attendedRecyclerView;
 
     private CoordinatorLayout feedCoordinatorLayout;
     private PopupMenu popupMenu;
@@ -143,8 +141,6 @@ public class FeedFragment extends Fragment  {
                     popupMenu.getMenuInflater().inflate(R.menu.menu_filter, popupMenu.getMenu());
                 }
             }
-
-
         }
     }
 
@@ -181,9 +177,9 @@ public class FeedFragment extends Fragment  {
                 eventListenerRegister = mDb.databaseCollection(DATABASE_REFERENCE_EVENTS)
                         .addSnapshotListener(eventSnapshotListener);
 
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    getActivity().runOnUiThread(() -> setUpOngoingRecyclerView(mainFeedEvents));
-                }, 250);
+                new Handler(Looper.getMainLooper()).postDelayed(() ->
+                        Objects.requireNonNull(getActivity()).runOnUiThread(() ->
+                                setUpOngoingRecyclerView(mainFeedEvents)), 250);
 
                 if (attendingThreadExecute.getState().equals(Thread.State.NEW)) {
                     attendingThreadExecute.start();
@@ -199,7 +195,7 @@ public class FeedFragment extends Fragment  {
                         .document(mAuth.getCurrentSignedUser().getId())
                         .addSnapshotListener(attendingSnapshotListener);
                 //THREAD: MAIN
-                getActivity().runOnUiThread(() -> setUpAttendingRecyclerView());
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> setUpAttendingRecyclerView());
             }
         };
     }
@@ -267,20 +263,22 @@ public class FeedFragment extends Fragment  {
                                         if (attendedEvents != null) {
                                             if (!attendedEventsMap.containsKey(attendedEvents.getId())) {
                                                 if (getActivity() != null) {
-                                                    //THREAD: INSERTED ATTENDING
-                                                    getActivity().runOnUiThread(() -> {
-                                                        attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
-                                                        Log.i(TAG, "onEvent: ADDED");
-                                                        adapterViewStatus(attendingFeedViewAdapter, NOTIFY_INSERTED_DATA, index);
-                                                        if (!attendedEventsMap.isEmpty()) {
-                                                            attendingEmptyStub.setVisibility(View.GONE);
-                                                        }
-                                                    });
+                                                    if (Calendar.getInstance().getTimeInMillis() < attendedEvents.getEndDate() && !attendedEvents.getIsClosed()) {
+                                                        //THREAD: INSERTED ATTENDING
+                                                        getActivity().runOnUiThread(() -> {
+                                                            attendedEventsMap.put(attendedEvents.getId(), attendedEvents);
+                                                            Log.i(TAG, "onEvent: ADDED");
+                                                            adapterViewStatus(attendingFeedViewAdapter, NOTIFY_INSERTED_DATA, index);
+                                                            if (!attendedEventsMap.isEmpty()) {
+                                                                attendingEmptyStub.setVisibility(View.GONE);
+                                                            }
+                                                        });
+                                                    }
                                                 }
                                             } else {
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                                    if (getActivity() != null) {
-                                                        //THREAD: MODIFIED ATTENDING
+                                                if (getActivity() != null) {
+                                                    //THREAD: MODIFIED ATTENDING
+                                                    if (Calendar.getInstance().getTimeInMillis() < attendedEvents.getEndDate() && !attendedEvents.getIsClosed()) {
                                                         getActivity().runOnUiThread(() -> {
                                                             attendedEventsMap.replace(attendedEvents.getId(), attendedEvents);
                                                             adapterViewStatus(attendingFeedViewAdapter, NOTIFY_MODIFIED_DATA, index);
@@ -352,15 +350,17 @@ public class FeedFragment extends Fragment  {
                                                 final int index = i;
                                                 if (getActivity() != null) {
                                                     //THREAD: ADDED EVENT
-                                                    getActivity().runOnUiThread(() -> {
-                                                        mainFeedEvents.put(addedEvent.getId(), addedEvent);
-                                                        filteredEventsByCategory.put(addedEvent.getId(), addedEvent);
-                                                        if(Objects.requireNonNull(mainFeedEvents.get(addedEvent.getId())).getIsClosed()){
-                                                            mainFeedEvents.remove(addedEvent.getId());
-                                                            filteredEventsByCategory.remove(addedEvent.getId());
-                                                        }
-                                                        adapterViewStatus(eventFeedViewAdapter, NOTIFY_INSERTED_DATA, index);
-                                                    });
+                                                    if (Calendar.getInstance().getTimeInMillis() <= addedEvent.getStartDate() && !addedEvent.getIsClosed()) {
+                                                        getActivity().runOnUiThread(() -> {
+                                                            mainFeedEvents.put(addedEvent.getId(), addedEvent);
+                                                            filteredEventsByCategory.put(addedEvent.getId(), addedEvent);
+                                                            if(Objects.requireNonNull(mainFeedEvents.get(addedEvent.getId())).getIsClosed()){
+                                                                mainFeedEvents.remove(addedEvent.getId());
+                                                                filteredEventsByCategory.remove(addedEvent.getId());
+                                                            }
+                                                            adapterViewStatus(eventFeedViewAdapter, NOTIFY_INSERTED_DATA, index);
+                                                        });
+                                                    }
                                                 }
                                             }
                                         }
@@ -376,19 +376,19 @@ public class FeedFragment extends Fragment  {
                                                 final int index = i;
                                                 if (getActivity() != null) {
                                                     //THREAD: MODIFIED EVENT
-                                                    getActivity().runOnUiThread(() -> {
-                                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                                    if (Calendar.getInstance().getTimeInMillis() <= editEvent.getStartDate() && !editEvent.getIsClosed()) {
+                                                        getActivity().runOnUiThread(() -> {
                                                             mainFeedEvents.replace(editEvent.getId(), editEvent);
                                                             filteredEventsByCategory.replace(editEvent.getId(), editEvent);
 
-                                                            if(Objects.requireNonNull(mainFeedEvents.get(editEvent.getId())).getIsClosed()){
+                                                            if (Objects.requireNonNull(mainFeedEvents.get(editEvent.getId())).getIsClosed()) {
                                                                 mainFeedEvents.remove(editEvent.getId());
                                                                 filteredEventsByCategory.remove(editEvent.getId());
                                                             }
 
                                                             adapterViewStatus(eventFeedViewAdapter, NOTIFY_MODIFIED_DATA, index);
-                                                        }
-                                                    });
+                                                        });
+                                                    }
                                                 }
                                             }
                                         }
@@ -493,7 +493,7 @@ public class FeedFragment extends Fragment  {
         if (getActivity() != null) {
             if (getView() != null) {
                 eventFeedViewAdapter = new EventFeedViewAdapter(eventsHashMap, getActivity().getApplicationContext());
-                eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
+                RecyclerView eventsRecyclerView = getView().findViewById(R.id.rv_ongoing);
 
                 eventsRecyclerView.setHasFixedSize(true);
                 eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
@@ -510,7 +510,7 @@ public class FeedFragment extends Fragment  {
         if (getActivity() != null) {
             if (getView() != null) {
                 attendingFeedViewAdapter = new AttendingFeedViewAdapter(attendedEventsMap, getActivity().getApplicationContext());
-                attendedRecyclerView = getView().findViewById(R.id.rv_attending);
+                RecyclerView attendedRecyclerView = getView().findViewById(R.id.rv_attending);
                 attendedRecyclerView.setHasFixedSize(true);
                 attendedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext(),
                         LinearLayoutManager.HORIZONTAL, false));

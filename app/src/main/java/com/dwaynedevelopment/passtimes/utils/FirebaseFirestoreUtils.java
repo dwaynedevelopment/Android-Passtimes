@@ -84,84 +84,43 @@ public class FirebaseFirestoreUtils {
 
 
     public Map<String, Event> filterEventByFavoriteSport(Map<String, Event> eventMap, final List<String> selectedSports) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            switch (selectedSports.size()) {
-                case 1:
-                    return eventMap.entrySet()
-                            .stream()
-                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                case 2:
-                    return eventMap.entrySet()
-                            .stream()
-                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(1).equals(map.getValue().getSport()))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                case 3:
-                    return eventMap.entrySet()
-                            .stream()
-                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(1).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(2).equals(map.getValue().getSport()))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                case 4:
-                    return eventMap.entrySet()
-                            .stream()
-                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(1).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(2).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(3).equals(map.getValue().getSport()))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                case 5:
-                    return eventMap.entrySet()
-                            .stream()
-                            .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(1).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(2).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(3).equals(map.getValue().getSport()) ||
-                                    selectedSports.get(4).equals(map.getValue().getSport()))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            }
+        switch (selectedSports.size()) {
+            case 1:
+                return eventMap.entrySet()
+                        .stream()
+                        .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            case 2:
+                return eventMap.entrySet()
+                        .stream()
+                        .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
+                                selectedSports.get(1).equals(map.getValue().getSport()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            case 3:
+                return eventMap.entrySet()
+                        .stream()
+                        .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
+                                selectedSports.get(1).equals(map.getValue().getSport()) ||
+                                selectedSports.get(2).equals(map.getValue().getSport()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            case 4:
+                return eventMap.entrySet()
+                        .stream()
+                        .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
+                                selectedSports.get(1).equals(map.getValue().getSport()) ||
+                                selectedSports.get(2).equals(map.getValue().getSport()) ||
+                                selectedSports.get(3).equals(map.getValue().getSport()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            case 5:
+                return eventMap.entrySet()
+                        .stream()
+                        .filter(map -> selectedSports.get(0).equals(map.getValue().getSport()) ||
+                                selectedSports.get(1).equals(map.getValue().getSport()) ||
+                                selectedSports.get(2).equals(map.getValue().getSport()) ||
+                                selectedSports.get(3).equals(map.getValue().getSport()) ||
+                                selectedSports.get(4).equals(map.getValue().getSport()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
         return null;
     }
-
-
-
-
-    public void f() {
-
-        Map<Integer, String> h = new HashMap<>();
-        h.put(11, "Apple");
-        h.put(22, "Orange");
-        h.put(33, "Kiwi");
-        h.put(44, "Banana");
-
-        Map<Integer, String> hh = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            hh = h.entrySet()
-                    .stream()
-                    .filter(map -> map.getKey().intValue() <= 22)
-                    .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
-        }
-
-
-        //Log.i(TAG, "Result: " + hh);
-
-        Map<Integer, String> m = new HashMap<>();
-        m.put(11, "Apple");
-        m.put(22, "Orange");
-        m.put(33, "Kiwi");
-        m.put(44, "Banana");
-
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            Map<Integer, String> mm = m.entrySet()
-                    .stream()
-                    .filter(map -> "Orange".equals(map.getValue()) || "".equals(map.getValue()) || "".equals(map.getValue()))
-                    .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
-            //Log.i(TAG, "Result: " + mm);
-        }
-    }
-
 }

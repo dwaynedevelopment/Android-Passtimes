@@ -7,6 +7,11 @@
         android:icon="@drawable/ic_feed"/>
 
     <item
+        android:id="@+id/nv_item_search"
+        android:title=""
+        android:icon="@drawable/ic_search"/>
+
+    <item
         android:id="@+id/nv_item_leaderboard"
         android:title=""
         android:icon="@drawable/ic_leaderboard"/>
