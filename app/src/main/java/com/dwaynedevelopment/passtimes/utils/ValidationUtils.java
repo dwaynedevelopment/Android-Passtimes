@@ -87,7 +87,7 @@ public class ValidationUtils {
     }
 
     private static boolean isValidPasswordFormat(Context context, TextInputEditText passwordTextInputEdit) {
-        Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{4,}$");
+        Pattern PASSWORD_PATTERN = Pattern.compile("(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}");
         CharSequence passwordToValidate = Objects.requireNonNull(passwordTextInputEdit.getText()).toString();
 
         if (TextUtils.isEmpty(passwordToValidate)) {
@@ -100,7 +100,7 @@ public class ValidationUtils {
 
         if (!PASSWORD_PATTERN.matcher(passwordToValidate).matches()) {
             shakeViewWithAnimation(context, passwordTextInputEdit);
-            passwordTextInputEdit.setError("Required: 1 Special Character, 1 Upper Case, 1 Lower Case, and 1 Digit.", getErrorDrawableForView(context));
+            passwordTextInputEdit.setError("Required: 1 Upper Case, 1 Lower Case, and 1 Digit.", getErrorDrawableForView(context));
             passwordTextInputEdit.setFocusable(true);
             passwordTextInputEdit.requestFocus();
             return false;
