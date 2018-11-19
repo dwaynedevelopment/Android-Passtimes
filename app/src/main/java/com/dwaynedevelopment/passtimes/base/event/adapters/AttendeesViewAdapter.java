@@ -43,7 +43,7 @@ public class AttendeesViewAdapter extends RecyclerView.Adapter<AttendeesViewAdap
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         List<Player> result = createListFromMapEntries(attendeesMap);
 
-        Collections.sort(result, Collections.reverseOrder(new Player.PlayerComparator()));
+        result.sort(Collections.reverseOrder(new Player.PlayerComparator()));
 //        Collections.sort(result, new Person.AgeComparator());
         final Player playerAttendee = result.get(i);
 

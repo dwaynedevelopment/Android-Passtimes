@@ -49,25 +49,6 @@ public class AuthUtils {
         return mFireAuth.getCurrentUser() != null;
     }
 
-//    public CallbackManager getFBCallbackManager() {
-//        return CallbackManager.Factory.create();
-//    }
-//
-//    public AuthCredential authenticateWithFB(AccessToken token) {
-//        return getCredential(token.getToken());
-//    }
-//
-//    public AuthCredential authenticateWithGP(GoogleSignInAccount acct) {
-//        return GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-//    }
-//
-//    public GoogleSignInOptions googleSignInOptions(Context context) {
-//        return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestIdToken(context.getString(R.string.default_web_client_id))
-//                .requestEmail()
-//                .requestProfile()
-//                .build();
-//    }
 
     private String getUserProfileImage() {
         if (mFireAuth != null) {

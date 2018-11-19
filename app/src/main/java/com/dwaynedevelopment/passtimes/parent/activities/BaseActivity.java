@@ -1,12 +1,16 @@
 package com.dwaynedevelopment.passtimes.parent.activities;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -14,6 +18,7 @@ import com.dwaynedevelopment.passtimes.R;
 import com.dwaynedevelopment.passtimes.base.account.edit.activities.EditActivity;
 import com.dwaynedevelopment.passtimes.base.event.activities.EventActivity;
 import com.dwaynedevelopment.passtimes.base.favorites.activities.FavoriteActivity;
+import com.dwaynedevelopment.passtimes.base.profile.fragments.ProfileDialogFragment;
 import com.dwaynedevelopment.passtimes.parent.adapters.BaseViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.parent.interfaces.INavigationHandler;
 import com.dwaynedevelopment.passtimes.base.profile.interfaces.IAccountHandler;
@@ -23,13 +28,14 @@ import com.dwaynedevelopment.passtimes.utils.NavigationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.dissmissKeyboardOnItemSelected;
-import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
+
 
 
 public class BaseActivity extends AppCompatActivity implements INavigationHandler, IAccountHandler {
 
     private ViewPager viewPager;
     private AuthUtils mAuth;
+    private ProfileReceiver profileReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +48,16 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
     @Override
     protected void onStart() {
         super.onStart();
-        onTouchesBegan(this, R.id.ac_base);
+        profileReceiver = new ProfileReceiver();
+        IntentFilter actionFilter = new IntentFilter();
+        actionFilter.addAction("ACTION_SEND_USER");
+        registerReceiver(profileReceiver, actionFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(profileReceiver);
     }
 
     @Override
@@ -163,6 +178,19 @@ public class BaseActivity extends AppCompatActivity implements INavigationHandle
             this.overridePendingTransition(0, 0);
             startActivity(intent);
             finish();
+        }
+    }
+
+
+    private static final String TAG = "BaseActivity";
+    private class ProfileReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String id = intent.getStringExtra("EXTRA_USER_ID");
+            Log.i(TAG, "onReceive: " + id);
+            ProfileDialogFragment viewEventDialogFragment = ProfileDialogFragment.newInstance(id);
+            viewEventDialogFragment.show(getSupportFragmentManager(), ProfileDialogFragment.TAG);
         }
     }
 }

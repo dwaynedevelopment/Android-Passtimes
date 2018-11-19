@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
-import com.dwaynedevelopment.passtimes.base.search.SearchFragment;
+import com.dwaynedevelopment.passtimes.base.search.fragments.SearchFragment;
 import com.dwaynedevelopment.passtimes.parent.adapters.BaseViewPagerAdapter;
 import com.dwaynedevelopment.passtimes.base.feed.fragments.FeedFragment;
 import com.dwaynedevelopment.passtimes.base.leaderboard.fragments.LeaderboardFragment;

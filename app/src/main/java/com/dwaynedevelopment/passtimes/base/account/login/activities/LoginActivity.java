@@ -24,7 +24,7 @@ import com.google.firebase.auth.AuthResult;
 
 import java.util.Objects;
 
-import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
+
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
 
 public class LoginActivity extends AppCompatActivity implements ILoginHandler {
@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity implements ILoginHandler {
     @Override
     protected void onStart() {
         super.onStart();
-        onTouchesBegan(this, R.id.ac_login);
+
     }
 
     private void invokeFragment() {

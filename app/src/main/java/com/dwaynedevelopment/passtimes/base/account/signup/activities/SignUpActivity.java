@@ -24,7 +24,6 @@ import com.dwaynedevelopment.passtimes.base.account.terms.activities.TermsActivi
 import com.dwaynedevelopment.passtimes.base.account.login.activities.LoginActivity;
 import com.dwaynedevelopment.passtimes.base.account.signup.interfaces.ISignUpHandler;
 import com.dwaynedevelopment.passtimes.base.account.signup.fragments.SignUpFragment;
-import com.dwaynedevelopment.passtimes.parent.activities.BaseActivity;
 import com.dwaynedevelopment.passtimes.utils.AuthUtils;
 import com.dwaynedevelopment.passtimes.utils.FirebaseFirestoreUtils;
 import com.google.android.gms.tasks.Continuation;
@@ -55,7 +54,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_GALLERY_IMA
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_READ_EXTERNAL_STORAGE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ROOT_STORAGE_USER_PROFILES;
 import static com.dwaynedevelopment.passtimes.utils.PermissionUtils.permissionReadExternalStorage;
-import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
+
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.shakeViewWithAnimation;
 
@@ -79,12 +78,6 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
         mAuth = AuthUtils.getInstance();
         mDatabase = FirebaseFirestoreUtils.getInstance();
         invokeFragment();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        onTouchesBegan(this, R.id.ac_signup);
     }
 
     private void invokeFragment() {
@@ -131,7 +124,6 @@ public class SignUpActivity extends AppCompatActivity implements ISignUpHandler 
             default:
                 break;
         }
-
     }
 
     @Override

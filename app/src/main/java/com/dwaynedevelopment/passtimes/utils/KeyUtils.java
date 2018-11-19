@@ -24,6 +24,9 @@ public class KeyUtils {
     public static final String EXTRA_REGISTRATION  = "com.dwaynedevelopment.passtimes.EXTRA_REGISTRATION";
     public static final String PREFERENCE_SIGN_OUT = "com.dwaynedevelopment.passtimes.PREFERENCE_SIGN_OUT";
 
+    public static final String FB_PERMISSION_PROFILE = "public_profile";
+    public static final String FB_PERMISSION_EMAIL = "email";
+
     public static final int NOTIFY_INSERTED_DATA = 0x0311;
     public static final int NOTIFY_MODIFIED_DATA = 0x0411;
     public static final int NOTIFY_REMOVED_DATA = 0x0511;

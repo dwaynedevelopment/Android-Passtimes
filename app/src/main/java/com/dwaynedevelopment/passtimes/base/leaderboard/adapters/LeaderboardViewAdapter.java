@@ -46,7 +46,7 @@ public class LeaderboardViewAdapter extends RecyclerView.Adapter<LeaderboardView
     public void onBindViewHolder(@NonNull LeaderboardViewAdapter.ViewHolder viewHolder, int i) {
         List<Player> result = createListFromMapEntries(leaderboardMap);
 
-        Collections.sort(result, Collections.reverseOrder(new Player.PlayerComparator()));
+        result.sort(Collections.reverseOrder(new Player.PlayerComparator()));
 
         final Player playerAttendee = result.get(i);
 

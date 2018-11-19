@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/ab_create_event"
@@ -32,18 +36,11 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="false"
-        android:scrollbars="none"
-        app:layout_anchor="@id/ab_create_event"
-        app:layout_anchorGravity="bottom"
-        android:layout_gravity="bottom">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_below="@+id/ab_create_event">
 
             <TextView
                 style="@style/Titles"
@@ -137,10 +134,44 @@
                 android:layout_marginTop="-32dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@android:color/transparent"
+                android:background="@android:color/white"
                 app:mti_bgLblDateSelectedColor="@color/colorSecondaryAccentActive"
                 app:mti_ringLblDateSelectedColor="@color/colorSecondaryAccent"
                 android:layout_below="@+id/tv_date_and_time"/>
+
+
+            <TextView
+                style="@style/Titles"
+                android:id="@+id/tv_title_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Max Players"
+                android:layout_below="@+id/ti_location"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/ti_max_player"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@id/ti_location"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@+id/tv_title_max"
+                android:background="@android:color/transparent"
+                android:textColorHint="@color/colorThirdAccent">
+
+                <AutoCompleteTextView
+                    android:id="@+id/et_max_players"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/et_dynamic_style"
+                    android:hint="Max Players"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:padding="10dp"
+                    android:textColor="@color/colorDarkPrimary"
+                    android:textSize="18sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
 
             <TextView
                 style="@style/Titles"
@@ -148,7 +179,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Date And Time"
-                android:layout_below="@+id/ti_location"/>
+                android:layout_below="@+id/tv_title_max"/>
 
             <include
                 android:id="@+id/ll_times"
@@ -173,8 +204,5 @@
 
         </RelativeLayout>
 
-    </android.support.v4.widget.NestedScrollView>
-
-
-
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>
+</android.support.v4.widget.NestedScrollView>

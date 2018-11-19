@@ -125,31 +125,28 @@ public class FavoriteFragment extends Fragment {
         }
     }
 
-    private final OnCompleteListener<QuerySnapshot> favoriteCompleteListener = new OnCompleteListener<QuerySnapshot>() {
-        @Override
-        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-            ArrayList<Sport> sportsArray = new ArrayList<>();
+    private final OnCompleteListener<QuerySnapshot> favoriteCompleteListener = task -> {
+        ArrayList<Sport> sportsArray = new ArrayList<>();
 
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                    Log.d(TAG, document.getId() + " => " + document.getData());
-                    sportsArray.add(document.toObject(Sport.class));
+        if (task.isSuccessful()) {
+            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                Log.d(TAG, document.getId() + " => " + document.getData());
+                sportsArray.add(document.toObject(Sport.class));
 
-                    FavoriteViewAdapter adapter = new FavoriteViewAdapter((AppCompatActivity) getActivity(), sportsArray);
-                    if (getActivity() != null) {
-                        if (getView() != null) {
-                            RecyclerView recyclerView = getView().findViewById(R.id.rv_favorite);
-                            recyclerView.setHasFixedSize(true);
-                            recyclerView.setLayoutManager(new GridLayoutManager(getActivity().getApplicationContext(), 3));
-                            recyclerView.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                            Log.i(TAG, "FAVORITES SIGNUP: ");
-                        }
+                FavoriteViewAdapter adapter = new FavoriteViewAdapter((AppCompatActivity) getActivity(), sportsArray);
+                if (getActivity() != null) {
+                    if (getView() != null) {
+                        RecyclerView recyclerView = getView().findViewById(R.id.rv_favorite);
+                        recyclerView.setHasFixedSize(true);
+                        recyclerView.setLayoutManager(new GridLayoutManager(getActivity().getApplicationContext(), 3));
+                        recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        Log.i(TAG, "FAVORITES SIGNUP: ");
                     }
                 }
-            } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
             }
+        } else {
+            Log.d(TAG, "Error getting documents: ", task.getException());
         }
     };
 

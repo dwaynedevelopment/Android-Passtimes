@@ -58,7 +58,7 @@ import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_GALLERY_IMA
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.REQUEST_READ_EXTERNAL_STORAGE;
 import static com.dwaynedevelopment.passtimes.utils.KeyUtils.ROOT_STORAGE_USER_PROFILES;
 import static com.dwaynedevelopment.passtimes.utils.PermissionUtils.permissionReadExternalStorage;
-import static com.dwaynedevelopment.passtimes.utils.ViewUtils.onTouchesBegan;
+
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.parentLayoutStatus;
 import static com.dwaynedevelopment.passtimes.utils.ViewUtils.shakeViewWithAnimation;
 
@@ -88,7 +88,7 @@ public class EditActivity extends AppCompatActivity implements IEditHandler {
     @Override
     protected void onStart() {
         super.onStart();
-        onTouchesBegan(this, R.id.ac_edit);
+
     }
 
     @Override

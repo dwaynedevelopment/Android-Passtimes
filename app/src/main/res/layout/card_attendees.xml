@@ -66,8 +66,6 @@
                 android:textColor="@color/colorDarkPrimary"
                 android:textStyle="bold|italic" />
 
-
-
             <ImageView
                 android:id="@+id/ic_experience"
                 android:layout_width="wrap_content"

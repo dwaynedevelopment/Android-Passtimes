@@ -149,9 +149,9 @@ public class LeaderboardFragment extends Fragment {
 
                                                     if (playerAdded.getId().equals(mAuth.getCurrentSignedUser().getId())) {
                                                         if (getView() != null) {
-
-                                                            playerPoints =getView().findViewById(R.id.tv_experience_points_user);
+                                                            playerPoints = getView().findViewById(R.id.tv_experience_points_user);
                                                             playerPoints.setText(String.valueOf(playerAdded.getOverallXP()));
+                                                            mAuth.getCurrentSignedUser().setOverallXP(playerAdded.getOverallXP());
                                                             playerRankName = getView().findViewById(R.id.tv_rank_name);
                                                             playerRankName.setText(playerAdded.getName());
                                                             playerRankNumber = getView().findViewById(R.id.tv_rank_num);
@@ -176,22 +176,20 @@ public class LeaderboardFragment extends Fragment {
                                             if (getActivity() != null) {
                                                 //THREAD: MODIFIED PLAYER
                                                 getActivity().runOnUiThread(() -> {
-                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                                        leaderboardHashMap.replace(playerEdited.getId(), playerEdited);
-                                                        adapterViewStatus(leaderboardViewAdapter, NOTIFY_MODIFIED_DATA, index);
+                                                    leaderboardHashMap.replace(playerEdited.getId(), playerEdited);
+                                                    adapterViewStatus(leaderboardViewAdapter, NOTIFY_MODIFIED_DATA, index);
 
-                                                        if (playerEdited.getId().equals(mAuth.getCurrentSignedUser().getId())) {
-                                                            if (getView() != null) {
+                                                    if (playerEdited.getId().equals(mAuth.getCurrentSignedUser().getId())) {
+                                                        if (getView() != null) {
 
-                                                                playerPoints = getView().findViewById(R.id.tv_experience_points_user);
-                                                                playerPoints.setText(String.valueOf(playerEdited.getOverallXP()));
-                                                                playerRankName = getView().findViewById(R.id.tv_rank_name);
-                                                                playerRankName.setText(playerEdited.getName());
-                                                                playerRankNumber = getView().findViewById(R.id.tv_rank_num);
-                                                                playerRankProfile = getView().findViewById(R.id.ci_rank_profile);
+                                                            playerPoints = getView().findViewById(R.id.tv_experience_points_user);
+                                                            playerPoints.setText(String.valueOf(playerEdited.getOverallXP()));
+                                                            playerRankName = getView().findViewById(R.id.tv_rank_name);
+                                                            playerRankName.setText(playerEdited.getName());
+                                                            playerRankNumber = getView().findViewById(R.id.tv_rank_num);
+                                                            playerRankProfile = getView().findViewById(R.id.ci_rank_profile);
 
-                                                                Glide.with(getActivity().getApplicationContext()).load(playerEdited.getThumbnail()).into(playerRankProfile);
-                                                            }
+                                                            Glide.with(getActivity().getApplicationContext()).load(playerEdited.getThumbnail()).into(playerRankProfile);
                                                         }
                                                     }
                                                 });

@@ -45,7 +45,7 @@ public class AttendingFeedViewAdapter extends RecyclerView.Adapter<AttendingFeed
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         List<Event> result = createListFromMapEntries(attendingMap);
 
-        Collections.sort(result, Collections.reverseOrder(new Event.EventComparator()));
+        result.sort(new Event.EventComparator());
 
         final Event event = result.get(i);
 

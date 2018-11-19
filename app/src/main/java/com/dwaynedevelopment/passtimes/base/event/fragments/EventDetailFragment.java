@@ -242,7 +242,11 @@ public class EventDetailFragment extends Fragment {
                                         if (!attendeesList.containsKey(attendeeReference.getId())) {
                                             attendeesList.put(attendeeReference.getId(), attendeeReference);
                                             if(!attendeesList.containsKey(mAuth.getCurrentSignedUser().getId())) {
-                                                joinEventButton.setVisibility(View.VISIBLE);
+                                                if (eventSelected.getMaxAttendees() > attendeesList.size()) {
+                                                    joinEventButton.setVisibility(View.VISIBLE);
+                                                } else {
+                                                    joinEventButton.setVisibility(View.GONE);
+                                                }
                                             } else {
                                                 if (!isHostToggle) {
                                                     unjoinEventImageButton.setVisibility(View.VISIBLE);
@@ -260,7 +264,7 @@ public class EventDetailFragment extends Fragment {
                                                     adapterViewStatus(attendeeFeedViewAdapter, NOTIFY_INSERTED_DATA, finalI);
                                                 });
                                             }
-                                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                        } else {
                                             if (getActivity() != null) {
                                                 //THREAD: MODIFIED ATTENDING
                                                 getActivity().runOnUiThread(() -> {

@@ -19,24 +19,7 @@ import static android.view.animation.AnimationUtils.loadAnimation;
 
 public class ViewUtils {
 
-    /** invokeToastMessage();
-     * @param context
-     * @param status
-     * @param message
-     */
-//    public static void invokeToastMessage(Context context, int status, String message) {
-//        switch (status) {
-//            case TOAST_SUCCESS:
-//                Toasty.success(context, message);
-//                break;
-//            case TOAST_WARNING:
-//                Toasty.warning(context, message);
-//                break;
-//            case TOAST_ERROR:
-//                Toasty.error(context, message);
-//                break;
-//        }
-//    }
+
 
     public static void dissmissKeyboardOnItemSelected(AppCompatActivity activity, View view) {
         if (view != null) {
@@ -46,14 +29,7 @@ public class ViewUtils {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    public static void onTouchesBegan(AppCompatActivity activity, int resourceView) {
-        activity.findViewById(resourceView).setOnTouchListener((v, event) -> {
-            InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(Objects.requireNonNull(activity.getCurrentFocus()).getWindowToken(), 0);
-            return false;
-        });
-    }
+
 
     /** shakeViewWithAnimation();
      * @param context

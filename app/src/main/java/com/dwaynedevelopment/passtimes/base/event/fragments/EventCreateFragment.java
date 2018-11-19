@@ -15,11 +15,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -29,6 +31,8 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.NumberPicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -58,7 +62,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -90,6 +96,7 @@ public class EventCreateFragment extends Fragment {
     private EditText etTitle;
     private EditText etStartTime;
     private EditText etEndTime;
+    private EditText etMaxPlayers;
     private AutoCompleteTextView etAddress;
     private PlaceData mPlaceData;
     private PlaceData placeDataEdit;
@@ -98,6 +105,7 @@ public class EventCreateFragment extends Fragment {
     private Event eventToModify;
     private boolean isEditing = false;
     private Location location;
+    private List<String> numbers = new ArrayList<>();
 
     public static EventCreateFragment newInstance(String editEventDocumentReference) {
         Bundle args = new Bundle();
@@ -126,6 +134,11 @@ public class EventCreateFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        for (int i = 0; i <50 ; i++) {
+            if (i % 2 == 0) {
+                numbers.add(String.valueOf(i));
+            }
+        }
         if (getActivity() != null) {
 
             mDb = FirebaseFirestoreUtils.getInstance();
@@ -178,7 +191,7 @@ public class EventCreateFragment extends Fragment {
                                     etAddress.setText(placeDataEdit.getName());
                                     etStartTime.setText(getTimeFromDate(eventToModify.getStartDate()));
                                     etEndTime.setText(getTimeFromDate(eventToModify.getEndDate()));
-
+                                    etMaxPlayers.setText(String.valueOf(eventToModify.getMaxAttendees()));
                                 }
                             }
                         });
@@ -199,6 +212,8 @@ public class EventCreateFragment extends Fragment {
                 timeline.setOnDateSelectedListener(dateSelectedListener);
 
                 etTitle = getView().findViewById(R.id.et_title);
+
+                etMaxPlayers = getView().findViewById(R.id.et_max_players);
 
                 etStartTime = getView().findViewById(R.id.et_start_time);
                 etStartTime.setShowSoftInputOnFocus(false);
@@ -266,7 +281,8 @@ public class EventCreateFragment extends Fragment {
                 if (validateTextField(etTitle, "Please enter a Title for the event") &&
                         validateTextField(etAddress, "Please enter a Location for the event") &&
                         validateTextField(etStartTime, "Please select a Start Time") &&
-                        validateTextField(etEndTime, "Please select an End Time")) {
+                        validateTextField(etEndTime, "Please select an End Time") &&
+                        validateTextField(etMaxPlayers, "Please select A Max Player Amount")) {
 
                     if (eventToModify != null) {
                         if (placeDataEdit != null) {
@@ -277,7 +293,7 @@ public class EventCreateFragment extends Fragment {
                             eventDocumentReference.update("latitude", placeDataEdit.getLatLng().latitude);
                             eventDocumentReference.update("location", etAddress.getText().toString());
                             eventDocumentReference.update("longitude", placeDataEdit.getLatLng().longitude);
-                            eventDocumentReference.update("maxAttendees", 5);
+                            eventDocumentReference.update("maxAttendees", Integer.valueOf(etMaxPlayers.getText().toString()));
                             eventDocumentReference.update("title", etTitle.getText().toString())
                                     .addOnSuccessListener(aVoid -> {
                                         if (iEventHandler != null) {
@@ -287,22 +303,30 @@ public class EventCreateFragment extends Fragment {
                         }
 
                     } else if (validateTime()) {
-                        final DocumentReference playerDocumentReference = mDb.getFirestore()
-                                .document("/"+DATABASE_REFERENCE_USERS+"/"+mAuth.getCurrentSignedUser().getId());
 
-                        final Event eventCreated = new Event(selectedSport.getCategory(), selectedSport.getActive(), etTitle.getText().toString(), etAddress.getText().toString(),
-                                mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), 5, playerDocumentReference);
+                        if (selectedSport != null) {
 
-                        final DocumentReference eventDocumentReference = mDb.getFirestore()
-                                .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventCreated.getId());
+                            final DocumentReference playerDocumentReference = mDb.getFirestore()
+                                    .document("/"+DATABASE_REFERENCE_USERS+"/"+mAuth.getCurrentSignedUser().getId());
 
-                        mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
-                        mDb.addAttendee(eventCreated, playerDocumentReference);
-                        mDb.addAttendings(mAuth.getCurrentSignedUser(), eventDocumentReference);
+                            final Event eventCreated = new Event(selectedSport.getCategory(), selectedSport.getActive(), etTitle.getText().toString(), etAddress.getText().toString(),
+                                    mPlaceData.getLatLng().latitude, mPlaceData.getLatLng().longitude, mStartCalendar.getTimeInMillis(), mEndCalendar.getTimeInMillis(), Integer.valueOf(etMaxPlayers.getText().toString()), playerDocumentReference);
 
-                        if (iEventHandler != null) {
-                            iEventHandler.dismissDetailView();
+                            final DocumentReference eventDocumentReference = mDb.getFirestore()
+                                    .document("/"+DATABASE_REFERENCE_EVENTS+"/"+ eventCreated.getId());
+
+                            mDb.insertDocument(DATABASE_REFERENCE_EVENTS, eventCreated.getId(), eventCreated);
+                            mDb.addAttendee(eventCreated, playerDocumentReference);
+                            mDb.addAttendings(mAuth.getCurrentSignedUser(), eventDocumentReference);
+
+                            if (iEventHandler != null) {
+                                iEventHandler.dismissDetailView();
+                            }
+                        } else {
+                            Toast.makeText(getContext(), "Select a Sport", Toast.LENGTH_SHORT).show();
                         }
+
+
                     }
                 }
             }
